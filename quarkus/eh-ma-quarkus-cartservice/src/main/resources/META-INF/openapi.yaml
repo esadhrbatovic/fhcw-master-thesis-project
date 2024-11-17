@@ -1,0 +1,364 @@
+openapi: 3.0.3
+info:
+  title: ShoppingCartService API
+  version: 1.0.0
+  description: |
+    API specification for the ShoppingCartService of the e-shop application.
+    Manages shopping carts, including adding, viewing, updating, and deleting items.
+    Allows users to initiate the checkout process.
+
+servers:
+  - url: https://shoppingcart.yourshop.com
+    description: Production server
+  - url: https://shoppingcart.staging.yourshop.com
+    description: Staging server
+
+paths:
+  /cart/items:
+    get:
+      summary: Get all items in the user's shopping cart
+      operationId: getCartItems
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Cart items retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Add an item to the shopping cart
+      operationId: addItemToCart
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Product ID and quantity to add to the cart
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCartItemRequest'
+      responses:
+        '201':
+          description: Item added to cart successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/items/{item_id}:
+    put:
+      summary: Update the quantity of an item in the cart
+      operationId: updateCartItem
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ItemIdPathParam'
+      requestBody:
+        description: New quantity for the cart item
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCartItemRequest'
+      responses:
+        '200':
+          description: Cart item updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartItemResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Item does not exist in the cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Remove an item from the shopping cart
+      operationId: deleteCartItem
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ItemIdPathParam'
+      responses:
+        '200':
+          description: Cart item removed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCartItemResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Item does not exist in the cart
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/empty:
+    post:
+      summary: Empty the shopping cart
+      operationId: emptyCart
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Shopping cart emptied successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyCartResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /cart/checkout:
+    post:
+      summary: Initiate the checkout process for the shopping cart
+      operationId: checkoutCart
+      tags:
+        - Shopping Cart
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Checkout initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+        '400':
+          description: Bad Request - Cart is empty or invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ItemIdPathParam:
+      name: item_id
+      in: path
+      description: ID of the cart item
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 789e1234-e89b-12d3-a456-426614174001
+
+  schemas:
+    CartItem:
+      type: object
+      properties:
+        item_id:
+          type: string
+          format: uuid
+          example: 789e1234-e89b-12d3-a456-426614174001
+        product_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        product_title:
+          type: string
+          example: "Photo Editor Pro"
+        quantity:
+          type: integer
+          example: 2
+        price:
+          type: number
+          format: float
+          example: 49.99
+        total_price:
+          type: number
+          format: float
+          example: 99.98
+      required:
+        - item_id
+        - product_id
+        - product_title
+        - quantity
+        - price
+        - total_price
+      additionalProperties: false
+
+    CartResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: 456e7890-e89b-12d3-a456-426614174002
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CartItem'
+        total_items:
+          type: integer
+          example: 3
+        total_price:
+          type: number
+          format: float
+          example: 149.97
+      required:
+        - user_id
+        - items
+        - total_items
+        - total_price
+      additionalProperties: false
+
+    AddCartItemRequest:
+      type: object
+      required:
+        - product_id
+        - quantity
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        quantity:
+          type: integer
+          minimum: 1
+          example: 1
+      additionalProperties: false
+
+    UpdateCartItemRequest:
+      type: object
+      required:
+        - quantity
+      properties:
+        quantity:
+          type: integer
+          minimum: 1
+          example: 2
+      additionalProperties: false
+
+    CartItemResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Item added to cart successfully."
+        item:
+          $ref: '#/components/schemas/CartItem'
+      required:
+        - message
+        - item
+      additionalProperties: false
+
+    DeleteCartItemResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Cart item removed successfully."
+      required:
+        - message
+      additionalProperties: false
+
+    EmptyCartResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Shopping cart emptied successfully."
+      required:
+        - message
+      additionalProperties: false
+
+    CheckoutResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Checkout initiated successfully."
+        order_id:
+          type: string
+          format: uuid
+          example: 321e6547-e89b-12d3-a456-426614174003
+      required:
+        - message
+        - order_id
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid input data."
+        details:
+          type: string
+          example: "Quantity must be at least 1."
+      additionalProperties: false
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Shopping Cart
+    description: Endpoints related to managing the shopping cart.

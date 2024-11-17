@@ -7,7 +7,7 @@ import jakarta.enterprise.context.RequestScoped;
 import java.util.UUID;
 
 @RequestScoped
-public class PaymentMethosApiService implements PaymentMethodsApi {
+public class PaymentMethodsApiService implements PaymentMethodsApi {
 
     @Override
     public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {

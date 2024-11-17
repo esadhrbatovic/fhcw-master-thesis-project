@@ -1,0 +1,255 @@
+openapi: 3.0.3
+info:
+  title: UserService API
+  version: 1.0.0
+  description: |
+    API specification for the UserService of the e-shop application.
+    Manages user data and personal information, including email, password, name, address, and phone number.
+
+servers:
+  - url: https://userservice.yourshop.com
+    description: Production server
+  - url: https://userservice.staging.yourshop.com
+    description: Staging server
+
+paths:
+  /users/{user_id}:
+    get:
+      summary: Get a user's profile
+      operationId: getUserProfile
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a user's profile
+      operationId: updateUserProfile
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      requestBody:
+        description: Updated user profile data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to update this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a user
+      operationId: deleteUser
+      tags:
+        - User Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to delete this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    UserIdPathParam:
+      name: user_id
+      in: path
+      description: UUID of the user
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+
+  schemas:
+    UserProfileResponse:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        phone_number:
+          type: string
+          example: '+1234567890'
+        address:
+          $ref: '#/components/schemas/Address'
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-10-15T10:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-10-16T12:00:00Z'
+      additionalProperties: false
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: user@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: NewStrongP@ssw0rd
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        phone_number:
+          type: string
+          example: '+1234567890'
+        address:
+          $ref: '#/components/schemas/Address'
+      additionalProperties: false
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: '123 Main St'
+        city:
+          type: string
+          example: 'Anytown'
+        state:
+          type: string
+          example: 'State'
+        postal_code:
+          type: string
+          example: '12345'
+        country:
+          type: string
+          example: 'Country'
+      additionalProperties: false
+
+    DeleteUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User deleted successfully.
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Unauthorized access.
+        details:
+          type: string
+          example: You are not authorized to access this resource.
+      additionalProperties: false
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: User Management
+    description: Endpoints related to managing user data and personal information.

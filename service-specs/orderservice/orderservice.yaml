@@ -1,0 +1,333 @@
+openapi: 3.0.3
+info:
+  title: OrderService API
+  version: 1.0.0
+  description: |
+    API specification for the OrderService of the e-shop application.
+    Processes orders and maintains order status.
+    Exposes endpoints to view orders and order details.
+
+servers:
+  - url: https://orderservice.yourshop.com
+    description: Production server
+  - url: https://orderservice.staging.yourshop.com
+    description: Staging server
+
+paths:
+  /orders:
+    get:
+      summary: Get a list of all orders (admin only)
+      operationId: getAllOrders
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/StatusQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        '200':
+          description: Orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /orders/{order_id}:
+    get:
+      summary: Get details of a specific order
+      operationId: getOrderById
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/OrderIdPathParam'
+      responses:
+        '200':
+          description: Order retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Order does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{user_id}/orders:
+    get:
+      summary: Get all orders for a specific user
+      operationId: getUserOrders
+      tags:
+        - Orders
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/StatusQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        '200':
+          description: User's orders retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access these orders
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    adminAuth:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: Token for admin access
+
+  parameters:
+    OrderIdPathParam:
+      name: order_id
+      in: path
+      description: UUID of the order
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 789e4567-e89b-12d3-a456-426614174000
+
+    UserIdPathParam:
+      name: user_id
+      in: path
+      description: UUID of the user
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    StatusQueryParam:
+      name: status
+      in: query
+      description: Filter orders by status
+      required: false
+      schema:
+        type: string
+        enum:
+          - Pending
+          - Processing
+          - Completed
+          - Cancelled
+        example: "Completed"
+
+    SortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'date_asc', 'date_desc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - date_asc
+          - date_desc
+        example: 'date_desc'
+
+  schemas:
+    Order:
+      type: object
+      properties:
+        order_id:
+          type: string
+          format: uuid
+          example: 789e4567-e89b-12d3-a456-426614174000
+        user_id:
+          type: string
+          format: uuid
+          example: 456e7890-e89b-12d3-a456-426614174002
+        status:
+          type: string
+          enum:
+            - Pending
+            - Processing
+            - Completed
+            - Cancelled
+          example: "Completed"
+        total_amount:
+          type: number
+          format: float
+          example: 149.97
+        currency:
+          type: string
+          example: "EUR"
+          enum:
+            - "EUR"
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-10-15T10:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-10-16T12:00:00Z'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+      required:
+        - order_id
+        - user_id
+        - status
+        - total_amount
+        - currency
+        - created_at
+        - updated_at
+        - items
+      additionalProperties: false
+
+    OrderItem:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        product_title:
+          type: string
+          example: "Photo Editor Pro"
+        quantity:
+          type: integer
+          example: 2
+        price:
+          type: number
+          format: float
+          example: 49.99
+        total_price:
+          type: number
+          format: float
+          example: 99.98
+      required:
+        - product_id
+        - product_title
+        - quantity
+        - price
+        - total_price
+      additionalProperties: false
+
+    OrderResponse:
+      allOf:
+        - $ref: '#/components/schemas/Order'
+
+    OrderListResponse:
+      type: object
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: '#/components/schemas/Order'
+        pagination:
+          type: object
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            total_pages:
+              type: integer
+              example: 5
+            total_items:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
+          additionalProperties: false
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unauthorized access."
+        details:
+          type: string
+          example: "You are not authorized to access this resource."
+      additionalProperties: false
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Orders
+    description: Endpoints related to viewing orders and order details.

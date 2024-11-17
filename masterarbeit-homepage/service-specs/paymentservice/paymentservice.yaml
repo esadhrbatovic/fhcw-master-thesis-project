@@ -1,0 +1,328 @@
+openapi: 3.0.3
+info:
+  title: PaymentService API
+  version: 1.0.0
+  description: |
+    API specification for the PaymentService of the e-shop application.
+    Manages payment methods and processes payments as part of the microservice choreography.
+    Provides endpoints for users to retrieve available payment methods and admin endpoints to manage payment methods.
+
+servers:
+  - url: https://paymentservice.yourshop.com
+    description: Production server
+  - url: https://paymentservice.staging.yourshop.com
+    description: Staging server
+
+paths:
+  /payment-methods:
+    get:
+      summary: Get a list of available payment methods
+      operationId: getPaymentMethods
+      tags:
+        - Payment Methods
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Payment methods retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodListResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new payment method (admin only)
+      operationId: createPaymentMethod
+      tags:
+        - Payment Methods
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      requestBody:
+        description: Payment method data to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePaymentMethodRequest'
+      responses:
+        '201':
+          description: Payment method created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /payment-methods/{payment_method_id}:
+    put:
+      summary: Update a payment method (admin only)
+      operationId: updatePaymentMethod
+      tags:
+        - Payment Methods
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentMethodIdPathParam'
+      requestBody:
+        description: Updated payment method data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePaymentMethodRequest'
+      responses:
+        '200':
+          description: Payment method updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Payment method does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a payment method (admin only)
+      operationId: deletePaymentMethod
+      tags:
+        - Payment Methods
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentMethodIdPathParam'
+      responses:
+        '200':
+          description: Payment method deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePaymentMethodResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Payment method does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    adminAuth:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: Token for admin access
+
+  parameters:
+    PaymentMethodIdPathParam:
+      name: payment_method_id
+      in: path
+      description: UUID of the payment method
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 987e6543-e89b-12d3-a456-426614174004
+
+  schemas:
+    PaymentMethod:
+      type: object
+      properties:
+        payment_method_id:
+          type: string
+          format: uuid
+          example: 987e6543-e89b-12d3-a456-426614174004
+        name:
+          type: string
+          example: "Credit Card"
+        description:
+          type: string
+          example: "Pay using Visa, MasterCard, or American Express."
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: "active"
+        transaction_fee:
+          type: number
+          format: float
+          description: "Transaction fee percentage (e.g., 2.5 for 2.5%)"
+          example: 2.5
+        icon_url:
+          type: string
+          format: uri
+          example: "https://yourshop.com/images/payment-icons/credit-card.png"
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-10-15T10:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-10-16T12:00:00Z'
+      required:
+        - payment_method_id
+        - name
+        - status
+        - created_at
+        - updated_at
+      additionalProperties: false
+
+    PaymentMethodResponse:
+      allOf:
+        - $ref: '#/components/schemas/PaymentMethod'
+
+    PaymentMethodListResponse:
+      type: object
+      properties:
+        payment_methods:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMethod'
+      additionalProperties: false
+
+    CreatePaymentMethodRequest:
+      type: object
+      required:
+        - name
+        - status
+      properties:
+        name:
+          type: string
+          example: "PayPal"
+        description:
+          type: string
+          example: "Pay securely using your PayPal account."
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: "active"
+        transaction_fee:
+          type: number
+          format: float
+          description: "Transaction fee percentage (e.g., 3.0 for 3.0%)"
+          example: 3.0
+        icon_url:
+          type: string
+          format: uri
+          example: "https://yourshop.com/images/payment-icons/paypal.png"
+      additionalProperties: false
+
+    UpdatePaymentMethodRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "PayPal"
+        description:
+          type: string
+          example: "Pay securely using your PayPal account."
+        status:
+          type: string
+          enum:
+            - active
+            - inactive
+          example: "inactive"
+        transaction_fee:
+          type: number
+          format: float
+          description: "Transaction fee percentage (e.g., 3.0 for 3.0%)"
+          example: 2.9
+        icon_url:
+          type: string
+          format: uri
+          example: "https://yourshop.com/images/payment-icons/paypal.png"
+      additionalProperties: false
+
+    DeletePaymentMethodResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Payment method deleted successfully."
+      required:
+        - message
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid input data."
+        details:
+          type: string
+          example: "The name field is required."
+      additionalProperties: false
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Payment Methods
+    description: Endpoints related to managing payment methods.

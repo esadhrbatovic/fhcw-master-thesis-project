@@ -1,0 +1,426 @@
+openapi: 3.0.3
+info:
+  title: ProductCatalogService API
+  version: 1.0.0
+  description: |
+    API specification for the ProductCatalogService of the e-shop application.
+    Manages digital products, including creation, updates, deletion, and retrieval.
+    Provides search and pagination capabilities.
+
+servers:
+  - url: https://productcatalog.yourshop.com
+    description: Production server
+  - url: https://productcatalog.staging.yourshop.com
+    description: Staging server
+
+paths:
+  /products:
+    get:
+      summary: List all products with optional search and pagination
+      operationId: listProducts
+      tags:
+        - Product Management
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/SearchQueryParam'
+        - $ref: '#/components/parameters/CategoryQueryParam'
+        - $ref: '#/components/parameters/PriceMinQueryParam'
+        - $ref: '#/components/parameters/PriceMaxQueryParam'
+        - $ref: '#/components/parameters/CreatedAfterQueryParam'
+        - $ref: '#/components/parameters/CreatedBeforeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        '200':
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+        '400':
+          description: Bad Request - Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new product
+      operationId: createProduct
+      tags:
+        - Product Management
+      security:
+        - bearerAuth: []
+      requestBody:
+        description: Product data to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '201':
+          description: Product created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /products/{product_id}:
+    get:
+      summary: Get a product by ID
+      operationId: getProductById
+      tags:
+        - Product Management
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPathParam'
+      responses:
+        '200':
+          description: Product retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '404':
+          description: Not Found - Product does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      summary: Update a product
+      operationId: updateProduct
+      tags:
+        - Product Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPathParam'
+      requestBody:
+        description: Updated product data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductRequest'
+      responses:
+        '200':
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Product does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a product
+      operationId: deleteProduct
+      tags:
+        - Product Management
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPathParam'
+      responses:
+        '200':
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteProductResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Product does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    ProductIdPathParam:
+      name: product_id
+      in: path
+      description: UUID of the product
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 321e4567-e89b-12d3-a456-426614174000
+
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    SearchQueryParam:
+      name: search
+      in: query
+      description: Search term to filter products by title or description
+      required: false
+      schema:
+        type: string
+        example: "photo editor"
+
+    CategoryQueryParam:
+      name: category
+      in: query
+      description: Filter products by category
+      required: false
+      schema:
+        type: string
+        example: "Software"
+
+    PriceMinQueryParam:
+      name: price_min
+      in: query
+      description: Minimum price to filter products
+      required: false
+      schema:
+        type: number
+        format: float
+        example: 10.00
+
+    PriceMaxQueryParam:
+      name: price_max
+      in: query
+      description: Maximum price to filter products
+      required: false
+      schema:
+        type: number
+        format: float
+        example: 100.00
+
+    CreatedAfterQueryParam:
+      name: created_after
+      in: query
+      description: Filter products created after a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-01-01T00:00:00Z'
+
+    CreatedBeforeQueryParam:
+      name: created_before
+      in: query
+      description: Filter products created before a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-12-31T23:59:59Z'
+
+    SortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'price_asc', 'price_desc', 'date_asc', 'date_desc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - price_asc
+          - price_desc
+          - date_asc
+          - date_desc
+          - title_asc
+          - title_desc
+        example: 'price_asc'
+
+  schemas:
+    Product:
+      type: object
+      properties:
+        product_id:
+          type: string
+          format: uuid
+          example: 321e4567-e89b-12d3-a456-426614174000
+        title:
+          type: string
+          example: "Photo Editor Pro"
+        description:
+          type: string
+          example: "A professional photo editing software."
+        category:
+          type: string
+          example: "Software"
+        price:
+          type: number
+          format: float
+          example: 49.99
+        currency:
+          type: string
+          example: "EUR"
+          enum:
+            - "EUR"
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-10-15T10:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-10-16T12:00:00Z'
+      required:
+        - product_id
+        - title
+        - description
+        - category
+        - price
+        - currency
+        - created_at
+        - updated_at
+      additionalProperties: false
+
+    CreateProductRequest:
+      type: object
+      required:
+        - title
+        - description
+        - category
+        - price
+      properties:
+        title:
+          type: string
+          example: "Photo Editor Pro"
+        description:
+          type: string
+          example: "A professional photo editing software."
+        category:
+          type: string
+          example: "Software"
+        price:
+          type: number
+          format: float
+          example: 49.99
+      additionalProperties: false
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          example: "Photo Editor Pro"
+        description:
+          type: string
+          example: "An advanced photo editing software with new features."
+        category:
+          type: string
+          example: "Software"
+        price:
+          type: number
+          format: float
+          example: 59.99
+      additionalProperties: false
+
+    ProductResponse:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+
+    ProductListResponse:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        pagination:
+          type: object
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            total_pages:
+              type: integer
+              example: 5
+            total_items:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
+          additionalProperties: false
+      additionalProperties: false
+
+    DeleteProductResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Product deleted successfully."
+      additionalProperties: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Invalid input data."
+        details:
+          type: string
+          example: "Price must be a positive number."
+      additionalProperties: false
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Product Management
+    description: Endpoints related to managing digital products.

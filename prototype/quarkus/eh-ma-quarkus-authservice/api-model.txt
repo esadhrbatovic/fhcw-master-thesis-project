@@ -1,0 +1,29 @@
+RegisterRequest:
+ Credentials:
+  email : string
+  password: string
+ UserData:
+  firstname : string
+  lastname : string
+  phonenumber : string
+  Adress:
+   country
+   city
+   street
+   postalCode
+
+RegisterResponse:
+ token : string
+ message : string
+
+LoginRequest:
+ Credentials
+
+LoginResponse:
+ token : string
+ message : string
+
+Events:
+- UserRegistered
+- UserLoggedIn
+

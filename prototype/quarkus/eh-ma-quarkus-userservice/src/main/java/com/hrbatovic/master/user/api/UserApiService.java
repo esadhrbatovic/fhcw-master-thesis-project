@@ -11,19 +11,20 @@ import java.util.UUID;
 @RequestScoped
 public class UserApiService implements UsersApi {
 
-
     @Override
-    public DeleteUserResponse deleteUser(UUID userId) {
+    public UserProfileResponse getUser(UUID id) {
         return null;
     }
 
     @Override
-    public UserProfileResponse getUserProfile(UUID userId) {
+    public UserProfileResponse updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
         return null;
     }
 
     @Override
-    public UserProfileResponse updateUserProfile(UUID userId, UpdateUserProfileRequest updateUserProfileRequest) {
+    public DeleteUserResponse deleteUser(UUID id) {
         return null;
     }
+
 }
+

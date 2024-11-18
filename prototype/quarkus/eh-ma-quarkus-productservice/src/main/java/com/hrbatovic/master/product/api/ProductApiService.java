@@ -11,12 +11,7 @@ import java.util.UUID;
 public class ProductApiService implements ProductsApi {
 
     @Override
-    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
-        return null;
-    }
-
-    @Override
-    public DeleteProductResponse deleteProduct(UUID productId) {
+    public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         return null;
     }
 
@@ -26,12 +21,18 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
-    public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         return null;
     }
 
     @Override
-    public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
+    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
         return null;
     }
+
+    @Override
+    public DeleteProductResponse deleteProduct(UUID productId) {
+        return null;
+    }
+
 }

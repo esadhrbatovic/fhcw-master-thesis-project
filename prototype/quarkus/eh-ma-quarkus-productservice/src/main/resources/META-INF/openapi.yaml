@@ -1,17 +1,15 @@
 openapi: 3.0.3
 info:
-  title: ProductCatalogService API
+  title: ProductService API
   version: 1.0.0
   description: |
-    API specification for the ProductCatalogService of the e-shop application.
+    API specification for the ProductService of the e-shop application.
     Manages digital products, including creation, updates, deletion, and retrieval.
     Provides search and pagination capabilities.
 
 servers:
-  - url: https://productcatalog.yourshop.com
-    description: Production server
-  - url: https://productcatalog.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8083
+    description: local dev
 
 paths:
   /products:
@@ -78,7 +76,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /products/{product_id}:
+  /products/{id}:
     get:
       summary: Get a product by ID
       operationId: getProductById
@@ -180,7 +178,7 @@ components:
 
   parameters:
     ProductIdPathParam:
-      name: product_id
+      name: id
       in: path
       description: UUID of the product
       required: true
@@ -229,7 +227,7 @@ components:
         example: "Software"
 
     PriceMinQueryParam:
-      name: price_min
+      name: priceMin
       in: query
       description: Minimum price to filter products
       required: false
@@ -239,7 +237,7 @@ components:
         example: 10.00
 
     PriceMaxQueryParam:
-      name: price_max
+      name: priceMax
       in: query
       description: Maximum price to filter products
       required: false
@@ -249,7 +247,7 @@ components:
         example: 100.00
 
     CreatedAfterQueryParam:
-      name: created_after
+      name: createdAfter
       in: query
       description: Filter products created after a specific date
       required: false
@@ -259,7 +257,7 @@ components:
         example: '2023-01-01T00:00:00Z'
 
     CreatedBeforeQueryParam:
-      name: created_before
+      name: createdBefore
       in: query
       description: Filter products created before a specific date
       required: false
@@ -271,24 +269,24 @@ components:
     SortQueryParam:
       name: sort
       in: query
-      description: Sort order (e.g., 'price_asc', 'price_desc', 'date_asc', 'date_desc')
+      description: Sort order (e.g., 'priceAsc', 'priceDesc', 'dateAsc', 'dateDesc')
       required: false
       schema:
         type: string
         enum:
-          - price_asc
-          - price_desc
-          - date_asc
-          - date_desc
-          - title_asc
-          - title_desc
-        example: 'price_asc'
+          - priceAsc
+          - priceDesc
+          - dateAsc
+          - dateDesc
+          - titleAsc
+          - titleDesc
+        example: 'priceAsc'
 
   schemas:
     Product:
       type: object
       properties:
-        product_id:
+        id:
           type: string
           format: uuid
           example: 321e4567-e89b-12d3-a456-426614174000
@@ -310,24 +308,23 @@ components:
           example: "EUR"
           enum:
             - "EUR"
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: '2023-10-15T10:00:00Z'
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: '2023-10-16T12:00:00Z'
       required:
-        - product_id
+        - id
         - title
         - description
         - category
         - price
         - currency
-        - created_at
-        - updated_at
-      additionalProperties: false
+        - createdAt
+        - updatedAt
 
     CreateProductRequest:
       type: object
@@ -350,7 +347,6 @@ components:
           type: number
           format: float
           example: 49.99
-      additionalProperties: false
 
     UpdateProductRequest:
       type: object
@@ -368,7 +364,6 @@ components:
           type: number
           format: float
           example: 59.99
-      additionalProperties: false
 
     ProductResponse:
       allOf:
@@ -384,20 +379,18 @@ components:
         pagination:
           type: object
           properties:
-            current_page:
+            currentPage:
               type: integer
               example: 1
-            total_pages:
+            totalPages:
               type: integer
               example: 5
-            total_items:
+            totalItems:
               type: integer
               example: 50
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     DeleteProductResponse:
       type: object
@@ -405,7 +398,6 @@ components:
         message:
           type: string
           example: "Product deleted successfully."
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -416,7 +408,6 @@ components:
         details:
           type: string
           example: "Price must be a positive number."
-      additionalProperties: false
 
 security:
   - bearerAuth: []

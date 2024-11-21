@@ -7,18 +7,16 @@ info:
     Manages user data and personal information, including email, password, name, address, and phone number.
 
 servers:
-  - url: https://userservice.yourshop.com
-    description: Production server
-  - url: https://userservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8082
+    description: local dev
 
 paths:
-  /users/{user_id}:
+  /users/{id}:
     get:
       summary: Get a user's profile
-      operationId: getUserProfile
+      operationId: getUser
       tags:
-        - User Management
+        - User
       security:
         - bearerAuth: []
       parameters:
@@ -51,9 +49,9 @@ paths:
 
     put:
       summary: Update a user's profile
-      operationId: updateUserProfile
+      operationId: updateUser
       tags:
-        - User Management
+        - User
       security:
         - bearerAuth: []
       parameters:
@@ -101,7 +99,7 @@ paths:
       summary: Delete a user
       operationId: deleteUser
       tags:
-        - User Management
+        - User
       security:
         - bearerAuth: []
       parameters:
@@ -141,7 +139,7 @@ components:
 
   parameters:
     UserIdPathParam:
-      name: user_id
+      name: id
       in: path
       description: UUID of the user
       required: true
@@ -154,7 +152,7 @@ components:
     UserProfileResponse:
       type: object
       properties:
-        user_id:
+        id:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
@@ -162,13 +160,13 @@ components:
           type: string
           format: email
           example: user@example.com
-        first_name:
+        firstName:
           type: string
           example: John
-        last_name:
+        lastName:
           type: string
           example: Doe
-        phone_number:
+        phoneNumber:
           type: string
           example: '+1234567890'
         address:
@@ -181,7 +179,6 @@ components:
           type: string
           format: date-time
           example: '2023-10-16T12:00:00Z'
-      additionalProperties: false
 
     UpdateUserProfileRequest:
       type: object
@@ -195,18 +192,17 @@ components:
           format: password
           minLength: 8
           example: NewStrongP@ssw0rd
-        first_name:
+        firstName:
           type: string
           example: John
-        last_name:
+        lastName:
           type: string
           example: Doe
-        phone_number:
+        phoneNumber:
           type: string
           example: '+1234567890'
         address:
           $ref: '#/components/schemas/Address'
-      additionalProperties: false
 
     Address:
       type: object
@@ -220,13 +216,12 @@ components:
         state:
           type: string
           example: 'State'
-        postal_code:
+        postalCode:
           type: string
           example: '12345'
         country:
           type: string
           example: 'Country'
-      additionalProperties: false
 
     DeleteUserResponse:
       type: object
@@ -234,7 +229,6 @@ components:
         message:
           type: string
           example: User deleted successfully.
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -245,11 +239,10 @@ components:
         details:
           type: string
           example: You are not authorized to access this resource.
-      additionalProperties: false
 
 security:
   - bearerAuth: []
 
 tags:
-  - name: User Management
+  - name: User
     description: Endpoints related to managing user data and personal information.

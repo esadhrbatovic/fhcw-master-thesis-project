@@ -5,16 +5,13 @@ info:
   description: API specification for the AuthService of the e-shop application. Handles user authentication and authorization.
 
 servers:
-  - url: https://api.yourshop.com
-    description: Production server
-  - url: https://api.staging.yourshop.com
-    description: Staging server
-
+  - url: localhost:8081
+    description: local dev
 paths:
   /auth/register:
     post:
       summary: Register a new user
-      operationId: registerUser
+      operationId: register
       tags:
         - Authentication
       requestBody:
@@ -41,7 +38,7 @@ paths:
   /auth/login:
     post:
       summary: Authenticate a user and obtain an access token
-      operationId: loginUser
+      operationId: login
       tags:
         - Authentication
       requestBody:
@@ -80,16 +77,49 @@ components:
         - email
         - password
       properties:
+        userData:
+          $ref: '#/components/schemas/UserForm'
+        credentials:
+          $ref: '#/components/schemas/CredentialsForm'
+
+    UserForm:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneNumber:
+          type : string
+        address:
+          $ref: '#/components/schemas/AddressForm'
+
+    AddressForm:
+      type: object
+      properties:
+        street:
+          type: string
+          example: '123 Main St'
+        city:
+          type: string
+          example: 'Anytown'
+        state:
+          type: string
+          example: 'State'
+        postalCode:
+          type: string
+          example: '12345'
+        country:
+          type: string
+          example: 'Country'
+
+    CredentialsForm:
+      type: object
+      properties:
         email:
           type: string
-          format: email
-          example: user@example.com
         password:
           type: string
-          format: password
-          minLength: 8
-          example: StrongP@ssw0rd
-      additionalProperties: false
 
     RegisterResponse:
       type: object
@@ -97,39 +127,27 @@ components:
         message:
           type: string
           example: User registered successfully.
-      additionalProperties: false
+        token:
+          type: string
+          example: "bearer ey...."
 
     LoginRequest:
       type: object
-      required:
-        - email
-        - password
       properties:
-        email:
-          type: string
-          format: email
-          example: user@example.com
-        password:
-          type: string
-          format: password
-          example: StrongP@ssw0rd
-      additionalProperties: false
+        credentials:
+          $ref: '#/components/schemas/CredentialsForm'
 
     LoginResponse:
       type: object
       properties:
-        access_token:
+        token:
           type: string
           description: JWT access token
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-        token_type:
+        message:
           type: string
-          example: Bearer
-        expires_in:
-          type: integer
           description: Access token expiry time in seconds
-          example: 3600
-      additionalProperties: false
+          example: "Login successful"
 
 
     ErrorResponse:
@@ -141,11 +159,10 @@ components:
         details:
           type: string
           example: The password provided does not meet the security requirements.
-      additionalProperties: false
 
 security:
   - bearerAuth: []
 
 tags:
   - name: Authentication
-    description: Endpoints related to user authentication and authorization.
+    description: Register and login user.

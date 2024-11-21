@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>E-Shop POC Application - API Specifications</title>
+    <title>Hrbatovic Esad - Master Thesis Project - Solution</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,82 +44,102 @@
     </style>
 </head>
 <body>
-    <h1>E-Shop POC Application - API Specifications</h1>
-    <p>Welcome to the technical documentation of the E-Shop Proof of Concept application. Below you will find links to the OpenAPI specifications for each microservice in the application, along with a brief description of each service.</p>
+    <h1>E-Shop POC Application</h1>
+    <p>Welcome to the technical documentation of the E-Shop Proof of Concept application. Below you will find links to the OpenAPI specifications for each microservice in the application, along with a brief description of each service and further architectural documentation.</p>
 
+    <h2>High Level Architecture</h2>
+
+    <div class="architecture-diagram">
+        <img src="images/architecture-diagram.jpg" alt="High-Level Architecture Diagram">
+    </div>
+
+    <h2>API Definitions</h2>
     <ul class="service-list">
         <li class="service-item">
-            <h2>AuthService</h2>
+            <h3>AuthService</h3>
             <p>Handles authentication and authorization, including login, logout, and token management.</p>
             <ul class="links">
-                <li><a href="service-specs/authservice/authservice.html">API Documentation</a></li>
-                <li><a href="service-specs/authservice/authservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/authservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/authservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>UserService</h2>
+            <h3>UserService</h3>
             <p>Manages user profiles, registration, and account updates.</p>
             <ul class="links">
-                <li><a href="service-specs/userservice/userservice.html">API Documentation</a></li>
-                <li><a href="service-specs/userservice/userservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/userservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/userservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>ProductCatalogService</h2>
+            <h3>ProductService</h3>
             <p>Manages the catalog of digital products, including creation, updating, and deletion of products.</p>
             <ul class="links">
-                <li><a href="service-specs/productcatalogservice/productcatalogservice.html">API Documentation</a></li>
-                <li><a href="service-specs/productcatalogservice/productcatalogservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/productservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/productservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>ShoppingCartService</h2>
+            <h3>CartService</h3>
             <p>Allows users to add items to their shopping cart, view items, modify quantities, delete items, empty the cart, and proceed to checkout.</p>
             <ul class="links">
-                <li><a href="service-specs/shoppingcartservice/shoppingcartservice.html">API Documentation</a></li>
-                <li><a href="service-specs/shoppingcartservice/shoppingcartservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/cartservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/cartservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>OrderService</h2>
+            <h3>OrderService</h3>
             <p>Processes orders and maintains order status. Provides endpoints for viewing orders and order details.</p>
             <ul class="links">
-                <li><a href="service-specs/orderservice/orderservice.html">API Documentation</a></li>
-                <li><a href="service-specs/orderservice/orderservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/orderservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/orderservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>PaymentService</h2>
+            <h3>PaymentService</h3>
             <p>Manages payment methods and processes payments. Allows users to retrieve available payment methods and admins to manage them.</p>
             <ul class="links">
-                <li><a href="service-specs/paymentservice/paymentservice.html">API Documentation</a></li>
-                <li><a href="service-specs/paymentservice/paymentservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/paymentservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/paymentservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>LicenseService</h2>
+            <h3>LicenseService</h3>
             <p>Generates and manages digital licenses for purchased products. Admins can manage license templates and view generated licenses.</p>
             <ul class="links">
-                <li><a href="service-specs/licenseservice/licenseservice.html">API Documentation</a></li>
-                <li><a href="service-specs/licenseservice/licenseservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/licenseservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/licenseservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>NotificationService</h2>
+            <h3>NotificationService</h3>
             <p>Sends notifications (e.g., emails) to users. Admins can list and filter sent notifications.</p>
             <ul class="links">
-                <li><a href="service-specs/notificationservice/notificationservice.html">API Documentation</a></li>
-                <li><a href="service-specs/notificationservice/notificationservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/notificationservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/notificationservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
         <li class="service-item">
-            <h2>TrackingService</h2>
+            <h3>TrackingService</h3>
             <p>Collects and records events for analytics and monitoring. Admins can list and filter recorded events.</p>
             <ul class="links">
-                <li><a href="service-specs/trackingservice/trackingservice.html">API Documentation</a></li>
-                <li><a href="service-specs/trackingservice/trackingservice.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/trackingservice/openapi.html">API Documentation</a></li>
+                <li><a href="service-specs/trackingservice/openapi.yaml">OpenAPI YAML Specification</a></li>
             </ul>
         </li>
     </ul>
+
+
+    
+    <h2>Database Schemas</h2>
+    <p>work in progress</p>
+
+    
+    <h2>Event Definitions</h2>
+    <p>work in progress</p>
+
+
+    <h2>Cross Cutting Concerns</h2>
+    <p>work in progress</p>
 </body>
 </html>

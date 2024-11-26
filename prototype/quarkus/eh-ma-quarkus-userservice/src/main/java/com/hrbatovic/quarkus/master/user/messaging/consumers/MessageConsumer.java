@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.user.messaging.consumer;
+package com.hrbatovic.quarkus.master.user.messaging.consumers;
 
 import com.hrbatovic.quarkus.master.user.db.entities.UserEntity;
 import jakarta.enterprise.context.ApplicationScoped;

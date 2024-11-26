@@ -25,12 +25,6 @@ public class RegistrationEntity extends PanacheMongoEntityBase {
         return result.firstResult();
     }
 
-    public static RegistrationEntity findByUsername(String username) {
-        String query = String.format("{'userEntity.username': '%s'}", username);
-        PanacheQuery<RegistrationEntity> result = RegistrationEntity.find(query);
-        return result.firstResult();
-    }
-
     public static RegistrationEntity findByEmail(String email) {
         String query = String.format("{'userEntity.email': '%s'}", email);
         PanacheQuery<RegistrationEntity> result = RegistrationEntity.find(query);

@@ -11,6 +11,41 @@ servers:
     description: local dev
 
 paths:
+  /users:
+    get:
+      summary: List all users with optional search and pagination
+      operationId: listUsers
+      tags:
+        - User
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/SearchQueryParam'
+        - $ref: '#/components/parameters/CreatedAfterQueryParam'
+        - $ref: '#/components/parameters/CreatedBeforeQueryParam'
+        - $ref: '#/components/parameters/SortQueryParam'
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '400':
+          description: Bad Request - Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /users/{id}:
     get:
       summary: Get a user's profile
@@ -148,6 +183,70 @@ components:
         format: uuid
         example: 123e4567-e89b-12d3-a456-426614174000
 
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    SearchQueryParam:
+      name: search
+      in: query
+      description: Search term to filter users by name or email
+      required: false
+      schema:
+        type: string
+        example: "john.doe@example.com"
+
+    CreatedAfterQueryParam:
+      name: createdAfter
+      in: query
+      description: Filter users created after a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-01-01T00:00:00Z'
+
+    CreatedBeforeQueryParam:
+      name: createdBefore
+      in: query
+      description: Filter users created before a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-12-31T23:59:59Z'
+
+    SortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'nameAsc', 'nameDesc', 'dateAsc', 'dateDesc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - nameAsc
+          - nameDesc
+          - dateAsc
+          - dateDesc
+        example: 'nameAsc'
+
   schemas:
     UserProfileResponse:
       type: object
@@ -229,6 +328,29 @@ components:
         message:
           type: string
           example: User deleted successfully.
+
+    UserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserProfileResponse'
+        pagination:
+          type: object
+          properties:
+            currentPage:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 5
+            totalItems:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
 
     ErrorResponse:
       type: object

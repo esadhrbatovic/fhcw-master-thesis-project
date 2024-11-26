@@ -1,4 +1,4 @@
-package com.hrbatovic.master.auth;
+package com.hrbatovic.quarkus.master.auth;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

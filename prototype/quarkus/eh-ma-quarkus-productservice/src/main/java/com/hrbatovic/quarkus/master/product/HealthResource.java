@@ -1,4 +1,4 @@
-package com.hrbatovic.master.product;
+package com.hrbatovic.quarkus.master.product;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

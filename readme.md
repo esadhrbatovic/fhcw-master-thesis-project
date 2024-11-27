@@ -16,12 +16,16 @@ npx @redocly/cli build-docs openapi.yaml
 
 #### Build Native Executable:
 
-This command builds a native executable for your Quarkus application using the native profile and sets the quarkus.native.container-build property to true.
+Build for docker:
 
 ```bash
 mvn package -Pnative --define quarkus.native.container-build=true
 ```
+Build OS native:
 
+```bash
+mvn install -Dnative
+```
 #### Containerize:
 
 ```bash
@@ -41,8 +45,15 @@ docker run -i --rm --name eh-ma-quarkus-userservice -p 8082:8082 esadh/quarkus-u
 
 #### Build Native Image:
 
+Build for Docker: 
 ```bash
 mvn -Pnative spring-boot:build-image
+```
+
+Build OS native:
+
+```bash
+mvn -Pnative native:compile
 ```
 
 #### Run Examples:
@@ -55,6 +66,7 @@ docker run -i --rm --name eh-ma-springboot-apigateway -p 8080:8080 esadh/springb
 
 #### Build Native Image:
 
+Build for Docker:
 
 ```bash
 ./gradlew dockerBuildNative
@@ -66,6 +78,11 @@ or for optimized native mage:
 ./gradlew optimizedDockerBuildNative
 ```
 
+Build OS native:
+
+```bash
+./gradlew nativeCompile
+```
 #### Run Examples:
 
 ```bash

@@ -1,3 +1,0 @@
-npx @redocly/cli build-docs openapi.yaml
-
-generate redocly html version of the openapi.yaml

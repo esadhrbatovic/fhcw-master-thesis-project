@@ -19,32 +19,26 @@ public class ProductEntity extends PanacheMongoEntityBase {
     @BsonId
     private UUID id;
 
-    @NotNull
-    @BsonProperty("title")
     private String title;
 
-    @NotNull
-    @BsonProperty("description")
     private String description;
 
-    @NotNull
-    @BsonProperty("categoryId")
     private UUID categoryId;
 
-    @NotNull
-    @BsonProperty("price")
     private BigDecimal price;
 
-    @NotNull
-    @BsonProperty("currency")
     private String currency;
 
-    @NotNull
-    @BsonProperty("createdAt")
+    private String imageUrl;
+
+    private boolean licenseAvailable;
+
+    private boolean deleted;
+
+    private List<String> tags;
+
     private LocalDateTime createdAt;
 
-    @NotNull
-    @BsonProperty("updatedAt")
     private LocalDateTime updatedAt;
 
     public ProductEntity(){
@@ -139,6 +133,7 @@ public class ProductEntity extends PanacheMongoEntityBase {
         return query;
     }
 
+
     public UUID getId() {
         return id;
     }
@@ -187,6 +182,38 @@ public class ProductEntity extends PanacheMongoEntityBase {
         this.currency = currency;
     }
 
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isLicenseAvailable() {
+        return licenseAvailable;
+    }
+
+    public void setLicenseAvailable(boolean licenseAvailable) {
+        this.licenseAvailable = licenseAvailable;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -203,27 +230,6 @@ public class ProductEntity extends PanacheMongoEntityBase {
         this.updatedAt = updatedAt;
     }
 
-    // Equals and HashCode
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductEntity that = (ProductEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(categoryId, that.categoryId) &&
-                Objects.equals(price, that.price) &&
-                Objects.equals(currency, that.currency) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(updatedAt, that.updatedAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description, categoryId, price, currency, createdAt, updatedAt);
-    }
-
     @Override
     public String toString() {
         return "ProductEntity{" +
@@ -233,6 +239,10 @@ public class ProductEntity extends PanacheMongoEntityBase {
                 ", categoryId=" + categoryId +
                 ", price=" + price +
                 ", currency='" + currency + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", licenseAvailable=" + licenseAvailable +
+                ", deleted=" + deleted +
+                ", tags=" + tags +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

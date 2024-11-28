@@ -7,7 +7,9 @@ import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.mapper.Mapper;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
+import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestScoped
 public class ProductApiService implements ProductsApi {
 
+    @Override
     public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         PanacheQuery<ProductEntity> query = ProductEntity.findProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
 
@@ -32,9 +35,9 @@ public class ProductApiService implements ProductsApi {
                 .collect(Collectors.toList());
 
         Map<UUID, String> categoryMap = CategoryEntity.find("_id in ?1", categoryIds).stream()
-                .map(CategoryEntity.class::cast) // Ensure casting to CategoryEntity
+                .map(CategoryEntity.class::cast)
                 .collect(Collectors.toMap(
-                        c -> UUID.fromString(c.getId().toString()), // Convert back to UUID
+                        c -> UUID.fromString(c.getId().toString()),
                         CategoryEntity::getName
                 ));
 
@@ -44,7 +47,7 @@ public class ProductApiService implements ProductsApi {
         long totalItems = query.count();
         int totalPages = query.pageCount();
 
-        ProductListResponsePagination pagination = new ProductListResponsePagination();
+        Pagination pagination = new Pagination();
         pagination.setCurrentPage(page != null ? page : 1);
         pagination.setLimit(limit != null ? limit : 10);
         pagination.setTotalItems((int) totalItems);
@@ -54,6 +57,7 @@ public class ProductApiService implements ProductsApi {
         return response;
     }
 
+    @Override
     public ProductResponse getProductById(UUID productId) {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
@@ -70,7 +74,39 @@ public class ProductApiService implements ProductsApi {
     }
     @Override
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
-        return null;
+        ProductEntity productEntity = ProductEntity.findById(productId);
+        if (productEntity == null) {
+            throw new IllegalArgumentException("Product with ID " + productId + " not found");
+        }
+
+        CategoryEntity categoryEntity = CategoryEntity.findById(productEntity.getCategoryId());
+        String categoryName = Optional.ofNullable(categoryEntity)
+                .map(CategoryEntity::getName)
+                .orElse(null);
+
+        if(StringUtils.isNotEmpty(updateProductRequest.getCategory()) && !StringUtils.equals(updateProductRequest.getCategory(), categoryName)){
+            CategoryEntity category = CategoryEntity.find("name", updateProductRequest.getCategory()).firstResult();
+            if (category == null) {
+                category = new CategoryEntity();
+                category.setName(updateProductRequest.getCategory());
+                category.persist();
+            }
+            productEntity.setCategoryId(category.getId());
+            categoryName = category.getName();
+        }
+
+        productEntity.setTitle(updateProductRequest.getTitle());
+        productEntity.setDescription(updateProductRequest.getDescription());
+        productEntity.setPrice(BigDecimal.valueOf(updateProductRequest.getPrice()));
+        productEntity.setImageUrl(updateProductRequest.getImageUrl());
+        if(updateProductRequest.getTags() != null){
+            productEntity.setTags(updateProductRequest.getTags());
+        }
+        productEntity.setDeleted(updateProductRequest.getDeleted());
+        productEntity.setUpdatedAt(LocalDateTime.now());
+
+        productEntity.persistOrUpdate();
+        return Mapper.mapEntityToResponse(productEntity, categoryName);
     }
 
     @Override

@@ -22,6 +22,10 @@ public abstract class Mapper {
         productEntity.setCategoryId(categoryId);
         productEntity.setPrice(BigDecimal.valueOf(request.getPrice()));
         productEntity.setCurrency("EUR");
+        productEntity.setImageUrl(request.getImageUrl());
+        productEntity.setLicenseAvailable(false);
+        productEntity.setTags(request.getTags());
+        productEntity.setDeleted(false);
         productEntity.setCreatedAt(LocalDateTime.now());
         productEntity.setUpdatedAt(LocalDateTime.now());
         return productEntity;
@@ -37,6 +41,10 @@ public abstract class Mapper {
         response.setCurrency(ProductResponse.CurrencyEnum.EUR);
         response.setCreatedAt(entity.getCreatedAt());
         response.setUpdatedAt(entity.getUpdatedAt());
+        response.setImageUrl(entity.getImageUrl());
+        response.setLicenseAvailable(entity.isLicenseAvailable());
+        response.setTags(entity.getTags());
+        response.setDeleted(entity.isDeleted());
         return response;
     }
 
@@ -50,6 +58,10 @@ public abstract class Mapper {
         product.setCurrency(Product.CurrencyEnum.valueOf(entity.getCurrency()));
         product.setCreatedAt(entity.getCreatedAt());
         product.setUpdatedAt(entity.getUpdatedAt());
+        product.setImageUrl(entity.getImageUrl());
+        product.setLicenseAvailable(entity.isLicenseAvailable());
+        product.setTags(entity.getTags());
+        product.setDeleted(entity.isDeleted());
         return product;
     }
 
@@ -69,6 +81,10 @@ public abstract class Mapper {
         response.setCurrency(ProductResponse.CurrencyEnum.valueOf(entity.getCurrency()));
         response.setCreatedAt(entity.getCreatedAt());
         response.setUpdatedAt(entity.getUpdatedAt());
+        response.setImageUrl(entity.getImageUrl());
+        response.setLicenseAvailable(entity.isLicenseAvailable());
+        response.setTags(entity.getTags());
+        response.setDeleted(entity.isDeleted());
         return response;
     }
 }

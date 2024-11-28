@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class MessageConsumer {
+
     @Inject
     ManagedExecutor executor;
-
 
     @Incoming("product-created-in")
     public void onProductCreated(ProductEntity productEntity) {

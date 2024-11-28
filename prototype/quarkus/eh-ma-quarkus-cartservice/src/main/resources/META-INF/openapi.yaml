@@ -142,8 +142,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /cart/empty:
-    post:
+  /cart:
+    delete:
       summary: Empty the shopping cart
       operationId: emptyCart
       tags:
@@ -214,15 +214,15 @@ components:
     CartItem:
       type: object
       properties:
-        item_id:
+        itemId:
           type: string
           format: uuid
           example: 789e1234-e89b-12d3-a456-426614174001
-        product_id:
+        productId:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
-        product_title:
+        productTitle:
           type: string
           example: "Photo Editor Pro"
         quantity:
@@ -232,23 +232,23 @@ components:
           type: number
           format: float
           example: 49.99
-        total_price:
+        totalPrice:
           type: number
           format: float
           example: 99.98
       required:
-        - item_id
-        - product_id
-        - product_title
+        - itemId
+        - productId
+        - productTitle
         - quantity
         - price
-        - total_price
+        - totalPrice
       additionalProperties: false
 
     CartResponse:
       type: object
       properties:
-        user_id:
+        userId:
           type: string
           format: uuid
           example: 456e7890-e89b-12d3-a456-426614174002
@@ -256,27 +256,27 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/CartItem'
-        total_items:
+        totalItems:
           type: integer
           example: 3
-        total_price:
+        totalPrice:
           type: number
           format: float
           example: 149.97
       required:
-        - user_id
+        - userId
         - items
-        - total_items
-        - total_price
+        - totalItems
+        - totalPrice
       additionalProperties: false
 
     AddCartItemRequest:
       type: object
       required:
-        - product_id
+        - productId
         - quantity
       properties:
-        product_id:
+        productId:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
@@ -336,13 +336,13 @@ components:
         message:
           type: string
           example: "Checkout initiated successfully."
-        order_id:
+        orderId:
           type: string
           format: uuid
           example: 321e6547-e89b-12d3-a456-426614174003
       required:
         - message
-        - order_id
+        - orderId
       additionalProperties: false
 
     ErrorResponse:

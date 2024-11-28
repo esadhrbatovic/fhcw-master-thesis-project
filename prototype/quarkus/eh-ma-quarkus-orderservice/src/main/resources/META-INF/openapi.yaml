@@ -48,7 +48,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /orders/{order_id}:
+  /orders/{orderId}:
     get:
       summary: Get details of a specific order
       operationId: getOrderById
@@ -64,7 +64,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/OrderResponse'
+                $ref: '#/components/schemas/Order'
         '401':
           description: Unauthorized - Invalid or missing token
           content:
@@ -84,7 +84,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /users/{user_id}/orders:
+  /users/{userId}/orders:
     get:
       summary: Get all orders for a specific user
       operationId: getUserOrders
@@ -138,7 +138,7 @@ components:
 
   parameters:
     OrderIdPathParam:
-      name: order_id
+      name: orderId
       in: path
       description: UUID of the order
       required: true
@@ -148,7 +148,7 @@ components:
         example: 789e4567-e89b-12d3-a456-426614174000
 
     UserIdPathParam:
-      name: user_id
+      name: userId
       in: path
       description: UUID of the user
       required: true
@@ -208,11 +208,11 @@ components:
     Order:
       type: object
       properties:
-        order_id:
+        orderId:
           type: string
           format: uuid
           example: 789e4567-e89b-12d3-a456-426614174000
-        user_id:
+        userId:
           type: string
           format: uuid
           example: 456e7890-e89b-12d3-a456-426614174002
@@ -224,7 +224,7 @@ components:
             - Completed
             - Cancelled
           example: "Completed"
-        total_amount:
+        totalAmount:
           type: number
           format: float
           example: 149.97
@@ -233,11 +233,11 @@ components:
           example: "EUR"
           enum:
             - "EUR"
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: '2023-10-15T10:00:00Z'
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: '2023-10-16T12:00:00Z'
@@ -246,24 +246,24 @@ components:
           items:
             $ref: '#/components/schemas/OrderItem'
       required:
-        - order_id
-        - user_id
+        - orderId
+        - userId
         - status
-        - total_amount
+        - totalAmount
         - currency
-        - created_at
-        - updated_at
+        - createdAt
+        - updatedAt
         - items
       additionalProperties: false
 
     OrderItem:
       type: object
       properties:
-        product_id:
+        productId:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
-        product_title:
+        productTitle:
           type: string
           example: "Photo Editor Pro"
         quantity:
@@ -273,21 +273,17 @@ components:
           type: number
           format: float
           example: 49.99
-        total_price:
+        totalPrice:
           type: number
           format: float
           example: 99.98
       required:
-        - product_id
-        - product_title
+        - productId
+        - productTitle
         - quantity
         - price
-        - total_price
+        - totalPrice
       additionalProperties: false
-
-    OrderResponse:
-      allOf:
-        - $ref: '#/components/schemas/Order'
 
     OrderListResponse:
       type: object
@@ -299,13 +295,13 @@ components:
         pagination:
           type: object
           properties:
-            current_page:
+            currentPage:
               type: integer
               example: 1
-            total_pages:
+            totalPages:
               type: integer
               example: 5
-            total_items:
+            totalItems:
               type: integer
               example: 50
             limit:

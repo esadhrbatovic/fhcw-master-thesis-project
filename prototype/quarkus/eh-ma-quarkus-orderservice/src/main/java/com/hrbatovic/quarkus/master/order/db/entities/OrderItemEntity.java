@@ -3,7 +3,10 @@ package com.hrbatovic.quarkus.master.order.db.entities;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class OrderItemEntity {
+import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+
+//needs to extend MongoEntityBase because otherwise native mode doesn't work unless we annotate with @RegisterForReflection
+public class OrderItemEntity extends PanacheMongoEntityBase {
 
     private UUID productId;
 
@@ -14,9 +17,6 @@ public class OrderItemEntity {
     private BigDecimal productPrice;
 
     private BigDecimal totalPrice;
-
-    public OrderItemEntity() {
-    }
 
     public UUID getProductId() {
         return productId;

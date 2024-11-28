@@ -20,7 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-//TODO create endpoints for categories, rework product and categories relationship, optimize join
+//TODO rework product and categories relationship, optimize join
 
 @RequestScoped
 public class ProductApiService implements ProductsApi {

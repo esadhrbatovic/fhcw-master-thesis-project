@@ -1,22 +1,22 @@
 package com.hrbatovic.quarkus.master.cart.mapper;
 
-import com.hrbatovic.master.quarkus.cart.model.CartItem;
-import com.hrbatovic.quarkus.master.cart.db.entities.CartItemEntity;
+import com.hrbatovic.master.quarkus.cart.model.CartProduct;
+import com.hrbatovic.quarkus.master.cart.db.entities.CartProductEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class Mapper {
 
 
-    public static CartItem map(CartItemEntity cartItemEntity) {
-        CartItem cartItem = new CartItem();
+    public static CartProduct map(CartProductEntity cartProductEntity) {
+        CartProduct cartItem = new CartProduct();
 
-        cartItem.setItemId(cartItemEntity.getId());
-        cartItem.setPrice(cartItemEntity.getProductPrice().floatValue());
-        cartItem.setTotalPrice(cartItemEntity.getTotalPrice().floatValue());
-        cartItem.setProductTitle(cartItemEntity.getProductTitle());
-        cartItem.setQuantity(cartItemEntity.getQuantity());
-        cartItem.setProductId(cartItemEntity.getProductId());
+        cartItem.setProductId(cartProductEntity.getProductId());
+        cartItem.setPrice(cartProductEntity.getProductPrice().floatValue());
+        cartItem.setTotalPrice(cartProductEntity.getTotalPrice().floatValue());
+        cartItem.setProductTitle(cartProductEntity.getProductTitle());
+        cartItem.setQuantity(cartProductEntity.getQuantity());
+        cartItem.setProductId(cartProductEntity.getProductId());
 
         return cartItem;
 

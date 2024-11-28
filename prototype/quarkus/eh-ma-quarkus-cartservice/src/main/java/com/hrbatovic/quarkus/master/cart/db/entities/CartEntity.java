@@ -17,14 +17,14 @@ public class CartEntity extends PanacheMongoEntityBase {
 
     private UUID userId;
 
-    private List<CartItemEntity> cartItems;
+    private List<CartProductEntity> cartProducts;
 
     private Integer totalItems;
 
     private BigDecimal totalPrice;
 
     public static CartEntity findByUserId(UUID userId){
-        PanacheQuery<CartEntity> result = CartEntity.find("{'userId': ?1}", userId);
+        PanacheQuery<CartEntity> result = CartEntity.find("userId", userId);
 
         return result.firstResult();
     }
@@ -49,12 +49,12 @@ public class CartEntity extends PanacheMongoEntityBase {
         this.userId = userId;
     }
 
-    public List<CartItemEntity> getCartItems() {
-        return cartItems;
+    public List<CartProductEntity> getCartProducts() {
+        return cartProducts;
     }
 
-    public void setCartItems(List<CartItemEntity> cartItems) {
-        this.cartItems = cartItems;
+    public void setCartProducts(List<CartProductEntity> cartProducts) {
+        this.cartProducts = cartProducts;
     }
 
     public Integer getTotalItems() {
@@ -78,7 +78,7 @@ public class CartEntity extends PanacheMongoEntityBase {
         return "CartEntity{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", cartItems=" + cartItems +
+                ", cartProducts=" + cartProducts +
                 ", totalItems=" + totalItems +
                 ", totalPrice=" + totalPrice +
                 '}';

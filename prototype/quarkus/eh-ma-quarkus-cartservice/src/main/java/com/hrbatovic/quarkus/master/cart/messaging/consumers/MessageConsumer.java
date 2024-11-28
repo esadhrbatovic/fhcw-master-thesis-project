@@ -1,5 +1,6 @@
 package com.hrbatovic.quarkus.master.cart.messaging.consumers;
 
+import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -52,6 +53,20 @@ public class MessageConsumer {
             }
 
             pE.delete();
+        });
+    }
+
+    @Incoming("order-created-in")
+    public void onOrderCreated(UUID orderId) {
+        System.out.println("Recieved order-created-in event: " + orderId);
+
+        executor.runAsync(()->{
+            CartEntity cartEntity = CartEntity.findById(orderId);
+            if(cartEntity == null){
+                return;
+            }
+
+            cartEntity.delete();
         });
     }
 

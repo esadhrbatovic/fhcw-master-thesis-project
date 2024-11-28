@@ -7,7 +7,10 @@ import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.mapper.Mapper;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,6 +24,18 @@ import java.util.stream.Collectors;
 
 @RequestScoped
 public class ProductApiService implements ProductsApi {
+
+    @Inject
+    @Channel("product-created-out")
+    Emitter<ProductEntity> productCreatedEmitter;
+
+    @Inject
+    @Channel("product-updated-out")
+    Emitter<ProductEntity> productUpdatedEmitter;
+
+    @Inject
+    @Channel("product-deleted-out")
+    Emitter<UUID> productDeletedEmitter;
 
     @Override
     public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
@@ -106,6 +121,7 @@ public class ProductApiService implements ProductsApi {
         productEntity.setUpdatedAt(LocalDateTime.now());
 
         productEntity.persistOrUpdate();
+        productUpdatedEmitter.send(productEntity);
         return Mapper.mapEntityToResponse(productEntity, categoryName);
     }
 
@@ -121,7 +137,7 @@ public class ProductApiService implements ProductsApi {
         ProductEntity productEntity = Mapper.toEntity(createProductRequest, category.getId());
 
         productEntity.persist();
-
+        productCreatedEmitter.send(productEntity);
         return Mapper.toResponse(productEntity, category.getName());
     }
 
@@ -134,7 +150,7 @@ public class ProductApiService implements ProductsApi {
         }
 
         productEntity.delete();
-
+        productDeletedEmitter.send(productId);
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product successfully deleted.");
         return response;

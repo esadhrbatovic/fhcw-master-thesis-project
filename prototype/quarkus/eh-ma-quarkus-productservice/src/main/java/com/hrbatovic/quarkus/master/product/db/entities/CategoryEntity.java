@@ -1,5 +1,6 @@
 package com.hrbatovic.quarkus.master.product.db.entities;
 
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.Objects;
@@ -8,6 +9,7 @@ import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 import org.bson.codecs.pojo.annotations.BsonId;
 import java.util.UUID;
 
+@MongoEntity(collection = "categories")
 public class CategoryEntity extends PanacheMongoEntityBase {
 
     @BsonId

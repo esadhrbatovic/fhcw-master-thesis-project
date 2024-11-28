@@ -3,6 +3,7 @@ package com.hrbatovic.quarkus.master.product.db.entities;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 
+@MongoEntity(collection = "products")
 public class ProductEntity extends PanacheMongoEntityBase {
 
     @BsonId

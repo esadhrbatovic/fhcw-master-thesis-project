@@ -1,4 +1,4 @@
-package com.hrbatovic.master.cart.api;
+package com.hrbatovic.quarkus.master.cart.api;
 
 import com.hrbatovic.master.quarkus.cart.api.CartApi;
 import com.hrbatovic.master.quarkus.cart.model.*;

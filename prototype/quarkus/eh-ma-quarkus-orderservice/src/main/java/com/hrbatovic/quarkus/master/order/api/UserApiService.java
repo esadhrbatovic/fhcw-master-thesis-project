@@ -1,4 +1,4 @@
-package com.hrbatovic.master.order.api;
+package com.hrbatovic.quarkus.master.order.api;
 
 import com.hrbatovic.master.quarkus.order.api.UsersApi;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponse;

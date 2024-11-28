@@ -1,15 +1,9 @@
-package com.hrbatovic.quarkus.master.cart.db.entities;
-
-import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
-import org.bson.codecs.pojo.annotations.BsonId;
+package com.hrbatovic.quarkus.master.order.db.entities;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-public class CartItemEntity extends PanacheMongoEntityBase {
-
-    @BsonId
-    private UUID id;
+public class OrderItemEntity {
 
     private UUID productId;
 
@@ -21,19 +15,7 @@ public class CartItemEntity extends PanacheMongoEntityBase {
 
     private BigDecimal totalPrice;
 
-
-
-
-    public CartItemEntity() {
-        this.id = UUID.randomUUID();
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
+    public OrderItemEntity() {
     }
 
     public UUID getProductId() {
@@ -78,9 +60,8 @@ public class CartItemEntity extends PanacheMongoEntityBase {
 
     @Override
     public String toString() {
-        return "CartItemEntity{" +
-                "id=" + id +
-                ", productId=" + productId +
+        return "OrderItemEntity{" +
+                "productId=" + productId +
                 ", productTitle='" + productTitle + '\'' +
                 ", quantity=" + quantity +
                 ", productPrice=" + productPrice +

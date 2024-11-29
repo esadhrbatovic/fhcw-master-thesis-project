@@ -1,4 +1,4 @@
-package com.hrbatovic.master.payment;
+package com.hrbatovic.master.quarkus.payment;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

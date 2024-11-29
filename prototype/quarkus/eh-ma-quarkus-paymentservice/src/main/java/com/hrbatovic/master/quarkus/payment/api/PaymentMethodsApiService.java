@@ -1,4 +1,4 @@
-package com.hrbatovic.master.payment.api;
+package com.hrbatovic.master.quarkus.payment.api;
 
 import com.hrbatovic.master.quarkus.payment.api.PaymentMethodsApi;
 import com.hrbatovic.master.quarkus.payment.model.*;

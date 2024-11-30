@@ -6,6 +6,9 @@ import java.util.UUID;
 public class LicensesGeneratedEventPayload implements Serializable {
     private UUID orderId;
 
+    public LicensesGeneratedEventPayload() {
+    }
+
     public UUID getOrderId() {
         return orderId;
     }

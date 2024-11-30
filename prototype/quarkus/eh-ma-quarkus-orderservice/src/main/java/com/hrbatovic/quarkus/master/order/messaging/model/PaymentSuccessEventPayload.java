@@ -8,6 +8,9 @@ public class PaymentSuccessEventPayload implements Serializable {
 
     private OrderEntity orderEntity;
 
+    public PaymentSuccessEventPayload() {
+    }
+
     public OrderEntity getOrderEntity() {
         return orderEntity;
     }

@@ -8,6 +8,9 @@ public class OrderCreatedEventPayload implements Serializable {
 
     private OrderEntity orderEntity;
 
+    public OrderCreatedEventPayload() {
+    }
+
     public OrderEntity getOrderEntity() {
         return orderEntity;
     }

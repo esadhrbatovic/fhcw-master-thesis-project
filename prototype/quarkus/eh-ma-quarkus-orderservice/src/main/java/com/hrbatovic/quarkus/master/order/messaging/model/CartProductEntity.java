@@ -1,10 +1,12 @@
 package com.hrbatovic.quarkus.master.order.messaging.model;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@RegisterForReflection
 public class CartProductEntity extends PanacheMongoEntityBase {
 
     private UUID productId;
@@ -16,6 +18,9 @@ public class CartProductEntity extends PanacheMongoEntityBase {
     private BigDecimal productPrice;
 
     private BigDecimal totalPrice;
+
+    public CartProductEntity() {
+    }
 
     public UUID getProductId() {
         return productId;

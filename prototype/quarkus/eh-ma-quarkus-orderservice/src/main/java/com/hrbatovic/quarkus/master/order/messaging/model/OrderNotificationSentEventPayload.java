@@ -6,6 +6,9 @@ import java.util.UUID;
 public class OrderNotificationSentEventPayload implements Serializable {
     private UUID orderId;
 
+    public OrderNotificationSentEventPayload() {
+    }
+
     public UUID getOrderId() {
         return orderId;
     }

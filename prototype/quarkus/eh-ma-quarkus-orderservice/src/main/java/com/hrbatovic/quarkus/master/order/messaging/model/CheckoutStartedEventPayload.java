@@ -12,6 +12,9 @@ public class CheckoutStartedEventPayload implements Serializable {
 
     private LocalDateTime timestamp;
 
+    public CheckoutStartedEventPayload() {
+    }
+
     public CartEntity getCartEntity() {
         return cartEntity;
     }

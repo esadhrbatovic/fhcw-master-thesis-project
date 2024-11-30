@@ -1,6 +1,5 @@
-package com.hrbatovic.master.license.api;
+package com.hrbatovic.master.quarkus.license.api;
 
-import com.hrbatovic.master.quarkus.license.api.LicensesApi;
 import com.hrbatovic.master.quarkus.license.model.LicenseListResponse;
 import com.hrbatovic.master.quarkus.license.model.LicenseResponse;
 import jakarta.enterprise.context.RequestScoped;

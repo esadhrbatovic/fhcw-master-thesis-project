@@ -1,4 +1,4 @@
-package com.hrbatovic.master.license;
+package com.hrbatovic.master.quarkus.license;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

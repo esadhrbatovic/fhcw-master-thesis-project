@@ -1,4 +1,4 @@
-package com.hrbatovic.master.notification.api;
+package com.hrbatovic.quarkus.master.notification.api;
 
 import com.hrbatovic.master.quarkus.notification.api.NotificationsApi;
 import com.hrbatovic.master.quarkus.notification.model.NotificationListResponse;

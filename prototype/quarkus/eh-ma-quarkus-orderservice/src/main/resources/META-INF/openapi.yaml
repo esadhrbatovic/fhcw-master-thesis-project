@@ -219,10 +219,10 @@ components:
         status:
           type: string
           enum:
-            - Pending
-            - Processing
-            - Completed
-            - Cancelled
+            - created
+            - payment_completed
+            - licenses_generated
+            - completed
           example: "Completed"
         totalAmount:
           type: number

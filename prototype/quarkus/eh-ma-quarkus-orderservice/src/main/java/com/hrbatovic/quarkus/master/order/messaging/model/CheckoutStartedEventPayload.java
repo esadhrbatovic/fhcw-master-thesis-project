@@ -8,6 +8,8 @@ public class CheckoutStartedEventPayload implements Serializable {
 
     private CartEntity cartEntity;
 
+    private String paymentToken;
+
     private LocalDateTime timestamp;
 
     public CartEntity getCartEntity() {
@@ -18,20 +20,19 @@ public class CheckoutStartedEventPayload implements Serializable {
         this.cartEntity = cartEntity;
     }
 
+    public String getPaymentToken() {
+        return paymentToken;
+    }
+
+    public void setPaymentToken(String paymentToken) {
+        this.paymentToken = paymentToken;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
-    }
-
-
-    @Override
-    public String toString() {
-        return "CheckoutStartedEventPayload{" +
-                "cartEntity=" + cartEntity +
-                ", timestamp=" + timestamp +
-                '}';
     }
 }

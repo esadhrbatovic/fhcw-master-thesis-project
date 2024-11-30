@@ -3,8 +3,7 @@ package com.hrbatovic.quarkus.master.order.messaging.consumers;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
-import com.hrbatovic.quarkus.master.order.messaging.model.CheckoutStartedEventPayload;
-import com.hrbatovic.quarkus.master.order.messaging.model.UserUpdatedMsgPayload;
+import com.hrbatovic.quarkus.master.order.messaging.model.*;
 import com.hrbatovic.quarkus.master.order.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -24,7 +23,7 @@ public class MessageConsumer {
 
     @Inject
     @Channel("order-created-out")
-    Emitter<UUID> orderCreatedEmitter;
+    Emitter<OrderCreatedEventPayload> orderCreatedEmitter;
 
     @Incoming("checkout-started-in")
     public void onCheckoutStarted(CheckoutStartedEventPayload checkoutStartedEventPayload){
@@ -42,10 +41,13 @@ public class MessageConsumer {
         orderEntity.setUserId(checkoutStartedEventPayload.getCartEntity().getUserId());
         orderEntity.setStatus("open");
         orderEntity.setTotalAmount(checkoutStartedEventPayload.getCartEntity().getTotalPrice());
+        orderEntity.setPaymenToken(checkoutStartedEventPayload.getPaymentToken());
 
         orderEntity.persist();
 
-        orderCreatedEmitter.send(orderEntity.getId());
+        OrderCreatedEventPayload orderCreatedEventPayload = new OrderCreatedEventPayload();
+        orderCreatedEventPayload.setOrderEntity(orderEntity);
+        orderCreatedEmitter.send(orderCreatedEventPayload);
     }
 
     @Incoming("product-created-in")
@@ -127,6 +129,46 @@ public class MessageConsumer {
             }
             userEntity.persistOrUpdate();
         });
+    }
+
+    @Incoming("payment-success-in")
+    public void onPaymentSuccess(PaymentSuccessEventPayload paymentSuccessEventPayload) {
+        System.out.println("Recieved payment-success-in event: " + paymentSuccessEventPayload);
+
+        executor.runAsync(() -> {
+            OrderEntity orderEntity = paymentSuccessEventPayload.getOrderEntity();
+            orderEntity.setStatus("payment_completed");
+            orderEntity.setUpdatedAt(LocalDateTime.now());
+            orderEntity.update();
+        });
+    }
+
+
+    @Incoming("licenses-generated-in")
+    public void onLicensesGenerated(LicensesGeneratedEventPayload licensesGeneratedEventPayload){
+        System.out.println("Recieved licenses-generated-in event: " + licensesGeneratedEventPayload);
+
+        executor.runAsync(() -> {
+            OrderEntity orderEntity = OrderEntity.findById(licensesGeneratedEventPayload.getOrderId());
+            orderEntity.setUpdatedAt(LocalDateTime.now());
+            orderEntity.setStatus("licenses_generated");
+            orderEntity.update();
+        });
+
+    }
+
+
+    @Incoming("order-notification-sent-in")
+    public void onOrderNotificationSent(OrderNotificationSentEventPayload orderNotificationSentEventPayload){
+        System.out.println("Recieved order-notification-sent-in event: " + orderNotificationSentEventPayload);
+
+        executor.runAsync(() -> {
+            OrderEntity orderEntity = OrderEntity.findById(orderNotificationSentEventPayload.getOrderId());
+            orderEntity.setUpdatedAt(LocalDateTime.now());
+            orderEntity.setStatus("completed");
+            orderEntity.update();
+        });
+
     }
 
 

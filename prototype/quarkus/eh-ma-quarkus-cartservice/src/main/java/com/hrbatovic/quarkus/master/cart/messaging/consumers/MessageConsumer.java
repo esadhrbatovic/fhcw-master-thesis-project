@@ -2,6 +2,7 @@ package com.hrbatovic.quarkus.master.cart.messaging.consumers;
 
 import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
+import com.hrbatovic.quarkus.master.cart.messaging.model.OrderCreatedEventPayload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -57,11 +58,11 @@ public class MessageConsumer {
     }
 
     @Incoming("order-created-in")
-    public void onOrderCreated(UUID orderId) {
-        System.out.println("Recieved order-created-in event: " + orderId);
+    public void onOrderCreated(OrderCreatedEventPayload orderCreatedEvent) {
+        System.out.println("Recieved order-created-in event: " + orderCreatedEvent);
 
         executor.runAsync(()->{
-            CartEntity cartEntity = CartEntity.findById(orderId);
+            CartEntity cartEntity = CartEntity.findById(orderCreatedEvent.getOrderEntity().getId());
             if(cartEntity == null){
                 return;
             }

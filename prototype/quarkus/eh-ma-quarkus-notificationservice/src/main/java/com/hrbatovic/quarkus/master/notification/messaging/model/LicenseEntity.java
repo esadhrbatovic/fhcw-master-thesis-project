@@ -1,17 +1,11 @@
-package com.hrbatovic.master.quarkus.license.db.entities;
+package com.hrbatovic.quarkus.master.notification.messaging.model;
 
-import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import org.bson.codecs.pojo.annotations.BsonId;
-
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+public class LicenseEntity implements Serializable {
 
-@MongoEntity(collection = "licenses")
-public class LicenseEntity extends PanacheMongoEntityBase {
-
-    @BsonId
     private UUID serialNumber;
 
     private UUID productId;
@@ -27,10 +21,6 @@ public class LicenseEntity extends PanacheMongoEntityBase {
     private LocalDateTime expiresAt;
 
     private boolean active;
-
-    public LicenseEntity() {
-        this.serialNumber = UUID.randomUUID();
-    }
 
     public UUID getSerialNumber() {
         return serialNumber;
@@ -54,6 +44,14 @@ public class LicenseEntity extends PanacheMongoEntityBase {
 
     public void setUserId(UUID userId) {
         this.userId = userId;
+    }
+
+    public UUID getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(UUID orderId) {
+        this.orderId = orderId;
     }
 
     public Integer getLicenseDuration() {
@@ -86,14 +84,6 @@ public class LicenseEntity extends PanacheMongoEntityBase {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    public UUID getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(UUID orderId) {
-        this.orderId = orderId;
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.hrbatovic.master.notification;
+package com.hrbatovic.quarkus.master.notification;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

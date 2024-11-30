@@ -1,19 +1,14 @@
-package com.hrbatovic.quarkus.master.order.db.entities;
+package com.hrbatovic.quarkus.master.cart.messaging.model;
 
 
-import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
-import io.quarkus.mongodb.panache.common.MongoEntity;
-import org.bson.codecs.pojo.annotations.BsonId;
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@MongoEntity(collection = "orders")
-public class OrderEntity extends PanacheMongoEntityBase {
+public class OrderEntity implements Serializable {
 
-    @BsonId
     private UUID id;
 
     private UUID userId;
@@ -31,14 +26,6 @@ public class OrderEntity extends PanacheMongoEntityBase {
     private String paymenToken;
 
     private List<OrderItemEntity> orderItems;
-
-    public OrderEntity() {
-    }
-
-    public OrderEntity(UUID id) {
-        this.id = id;
-        this.status = "open";
-    }
 
     public UUID getId() {
         return id;

@@ -308,7 +308,8 @@ components:
       required: true
       schema:
         type: string
-        example: 'ABCDEF-123456-GHIJKL-789012'
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174003
 
     PageQueryParam:
       name: page
@@ -419,7 +420,8 @@ components:
       properties:
         serialNumber:
           type: string
-          example: 'ABCDEF-123456-GHIJKL-789012'
+          format: uuid
+          example: 456e7890-e89b-12d3-a456-426614174003
         userId:
           type: string
           format: uuid

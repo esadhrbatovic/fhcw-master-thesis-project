@@ -100,7 +100,7 @@ public class AuthResource implements AuthApi {
     @Override
     public UpdateCredentialsResponse adminUpdateCredentials(UUID id, UpdateCredentialsRequest updateCredentialsRequest) {
         //TODO: api validation, error handling, authorisation
-        return updateCredentialsInternal(id, updateCredentialsRequest);
+        return updateCredentialsInternal(id, updateCredentialsRequest); //TODO: no token in response for admin
     }
 
     private UpdateCredentialsResponse updateCredentialsInternal(UUID userId, UpdateCredentialsRequest updateCredentialsRequest) {
@@ -117,6 +117,8 @@ public class AuthResource implements AuthApi {
 
         updateCredentialsResponse.setMessage("Credentials updated successfully");
         updateCredentialsResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity));
+
+        //TODO: emit credentials updated event - other services need updated email
 
         return updateCredentialsResponse;
     }

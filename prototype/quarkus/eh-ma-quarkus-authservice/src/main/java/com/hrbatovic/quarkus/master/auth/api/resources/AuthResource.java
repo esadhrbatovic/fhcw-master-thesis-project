@@ -93,7 +93,18 @@ public class AuthResource implements AuthApi {
     public UpdateCredentialsResponse updateCredentials(UpdateCredentialsRequest updateCredentialsRequest) {
         //TODO: api validation, error handling, authorisation
 
-        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(UUID.fromString(userSub));
+        return updateCredentialsInternal(UUID.fromString(userSub), updateCredentialsRequest);
+    }
+
+
+    @Override
+    public UpdateCredentialsResponse adminUpdateCredentials(UUID id, UpdateCredentialsRequest updateCredentialsRequest) {
+        //TODO: api validation, error handling, authorisation
+        return updateCredentialsInternal(id, updateCredentialsRequest);
+    }
+
+    private UpdateCredentialsResponse updateCredentialsInternal(UUID userId, UpdateCredentialsRequest updateCredentialsRequest) {
+        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if(registrationEntity == null){
             throw new RuntimeException("User not found");
         }
@@ -110,5 +121,4 @@ public class AuthResource implements AuthApi {
         return updateCredentialsResponse;
     }
 
-    //TODO: admin change credentials endpoint
 }

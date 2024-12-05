@@ -255,16 +255,17 @@ components:
           type: string
           format: uuid
           example: 123e4567-e89b-12d3-a456-426614174000
-        email:
-          type: string
-          format: email
-          example: user@example.com
         firstName:
           type: string
           example: John
         lastName:
           type: string
           example: Doe
+        role:
+          type: string
+        email:
+          type: string
+          example: user@example.com
         phoneNumber:
           type: string
           example: '+1234567890'
@@ -282,21 +283,15 @@ components:
     UpdateUserProfileRequest:
       type: object
       properties:
-        email:
-          type: string
-          format: email
-          example: user@example.com
-        password:
-          type: string
-          format: password
-          minLength: 8
-          example: NewStrongP@ssw0rd
         firstName:
           type: string
           example: John
         lastName:
           type: string
           example: Doe
+        role:
+          type: string
+          example: customer
         phoneNumber:
           type: string
           example: '+1234567890'

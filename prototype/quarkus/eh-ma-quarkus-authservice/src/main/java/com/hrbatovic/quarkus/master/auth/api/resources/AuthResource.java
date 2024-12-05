@@ -4,14 +4,17 @@ import com.hrbatovic.master.quarkus.auth.api.AuthApi;
 import com.hrbatovic.master.quarkus.auth.model.*;
 import com.hrbatovic.quarkus.master.auth.JwtBuilder;
 import com.hrbatovic.quarkus.master.auth.Hasher;
-import com.hrbatovic.quarkus.master.auth.db.entities.AddressEntity;
-import com.hrbatovic.quarkus.master.auth.db.entities.CredentialsEntity;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
-import com.hrbatovic.quarkus.master.auth.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
+import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+
+import java.util.UUID;
 
 @RequestScoped
 public class AuthResource implements AuthApi {
@@ -26,11 +29,19 @@ public class AuthResource implements AuthApi {
     Hasher passwordHasher;
 
     @Inject
+    @Claim(standard = Claims.sub)
+    String userSub;
+
+    @Inject
     @Channel("user-registered-out")
-    Emitter<UserEntity> userRegisteredEmitter;
+    Emitter<UserRegisteredEvent> userRegisteredEmitter;
+
+    @Inject
+    MapUtil mapper;
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
+        //TODO: api validation, error handling, authorisation
 
         RegistrationEntity registrationEntity = RegistrationEntity.findByEmail(loginRequest.getCredentials().getEmail());
 
@@ -45,17 +56,21 @@ public class AuthResource implements AuthApi {
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setMessage("Logged in successfully");
-        loginResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity.getUserEntity()));
+        loginResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity));
 
         return loginResponse;
     }
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
+        //TODO: api validation, error handling, authorisation
+
         RegistrationEntity registrationEntity = new RegistrationEntity();
-        registrationEntity.setUserEntity(map(registerRequest.getUserData()));
-        registrationEntity.setCredentialsEntity(map(registerRequest.getCredentials()));
-        registrationEntity.getUserEntity().setEmail(registerRequest.getCredentials().getEmail());
+        registrationEntity.setUserEntity(mapper.map(registerRequest.getUserData()));
+
+        registrationEntity.setCredentialsEntity(mapper.map(registerRequest.getCredentials()));
+
+        registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(registerRequest.getCredentials().getPassword()));
 
         if (RegistrationEntity.count() == 0) {
             registrationEntity.getUserEntity().setRole(ROLE_ADMIN);
@@ -65,39 +80,35 @@ public class AuthResource implements AuthApi {
 
         registrationEntity.persist();
 
-        RegisterResponse registerResponse = new RegisterResponse();
+        UserRegisteredEvent userRegisteredEvent = mapper.map(registerRequest);
+        userRegisteredEvent.setRole(registrationEntity.getUserEntity().getRole());
+        userRegisteredEvent.setId(registrationEntity.getUserEntity().id);
+        userRegisteredEmitter.send(userRegisteredEvent);
 
-        userRegisteredEmitter.send(registrationEntity.getUserEntity());
-
-        registerResponse.setMessage("User registered successfully");
-        registerResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity.getUserEntity()));
-        return registerResponse;
+        return new RegisterResponse().message("User registered successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
     }
 
-    private UserEntity map(UserForm userData) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setFirstName(userData.getFirstName());
-        userEntity.setLastName(userData.getLastName());
-        userEntity.setAddress(map(userData.getAddress()));
-        userEntity.setPhoneNumber(userData.getPhoneNumber());
-        return userEntity;
+    //TODO: also provide current credentials - for email or password update or both
+    @Override
+    public UpdateCredentialsResponse updateCredentials(UpdateCredentialsRequest updateCredentialsRequest) {
+        //TODO: api validation, error handling, authorisation
+
+        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(UUID.fromString(userSub));
+        if(registrationEntity == null){
+            throw new RuntimeException("User not found");
+        }
+
+        registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest.getCredentials()));
+
+        registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(updateCredentialsRequest.getCredentials().getPassword()));
+
+        UpdateCredentialsResponse updateCredentialsResponse = new UpdateCredentialsResponse();
+
+        updateCredentialsResponse.setMessage("Credentials updated successfully");
+        updateCredentialsResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity));
+
+        return updateCredentialsResponse;
     }
 
-    private AddressEntity map(AddressForm addressForm) {
-        AddressEntity addressEntity = new AddressEntity();
-        addressEntity.setCity(addressForm.getCity());
-        addressEntity.setCountry(addressForm.getCountry());
-        addressEntity.setPostalCode(addressForm.getPostalCode());
-        addressEntity.setState(addressForm.getState());
-        addressEntity.setStreet(addressForm.getStreet());
-
-        return addressEntity;
-    }
-
-    private CredentialsEntity map(CredentialsForm credentialsForm) {
-        CredentialsEntity credentialsEntity = new CredentialsEntity();
-        credentialsEntity.setPassword(passwordHasher.hash(credentialsForm.getPassword()));
-        credentialsEntity.setEmail(credentialsForm.getEmail());
-        return credentialsEntity;
-    }
+    //TODO: admin change credentials endpoint
 }

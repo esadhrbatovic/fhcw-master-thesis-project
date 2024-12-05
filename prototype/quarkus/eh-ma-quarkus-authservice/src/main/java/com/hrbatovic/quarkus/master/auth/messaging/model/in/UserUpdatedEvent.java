@@ -1,19 +1,16 @@
-package com.hrbatovic.quarkus.master.user.messaging.model;
+package com.hrbatovic.quarkus.master.auth.messaging.model.in;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-public class UserUpdateMsgPayload implements Serializable {
+public class UserUpdatedEvent implements Serializable {
     private UUID id;
     private String firstName;
     private String lastName;
     private String role;
     private String email;
-    private String password;
-    private String phoneNumber;
-    private AddressPayload address;
 
-    public UserUpdateMsgPayload() {
+    public UserUpdatedEvent() {
     }
 
     public UUID getId() {
@@ -54,30 +51,5 @@ public class UserUpdateMsgPayload implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public AddressPayload getAddress() {
-        return address;
-    }
-
-    public void setAddress(AddressPayload address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 }

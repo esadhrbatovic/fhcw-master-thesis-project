@@ -1,11 +1,10 @@
 package com.hrbatovic.quarkus.master.auth.messaging.consumers;
 
-import com.hrbatovic.quarkus.master.auth.Hasher;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
-import com.hrbatovic.quarkus.master.auth.messaging.model.UserUpdateMsgPayload;
+import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
+import com.hrbatovic.quarkus.master.auth.messaging.model.in.UserUpdatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import com.hrbatovic.quarkus.master.auth.mapper.Mapper;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
@@ -18,32 +17,22 @@ public class MessageConsumer {
     ManagedExecutor executor;
 
     @Inject
-    Hasher hasher;
+    MapUtil mapper;
 
     @Incoming("user-updated-in")
-    public void consumeUserUpdated(UserUpdateMsgPayload userUpdateMsgPayload) {
-        System.out.println("Recieved user-updated-in event");
+    public void onUserUpdated(UserUpdatedEvent userUpdatedEvent){
         executor.runAsync(() -> {
-            RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userUpdateMsgPayload.getId());
-            if (registrationEntity == null) {
+            RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userUpdatedEvent.getId());
+            if(registrationEntity == null){
                 return;
             }
 
-            if (registrationEntity.getCredentialsEntity() == null) {
-                return;
-            }
-
-            registrationEntity.setUserEntity(Mapper.update(userUpdateMsgPayload, registrationEntity.getUserEntity()));
-
-            registrationEntity.getCredentialsEntity().setEmail(userUpdateMsgPayload.getEmail());
-
-            if(userUpdateMsgPayload.getPassword() != null){
-                registrationEntity.getCredentialsEntity().setPassword(hasher.hash(userUpdateMsgPayload.getPassword()));
-            }
+            mapper.update(userUpdatedEvent, registrationEntity.getUserEntity());
 
             registrationEntity.persistOrUpdate();
         });
     }
+
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {

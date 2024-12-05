@@ -26,7 +26,7 @@ public class RegistrationEntity extends PanacheMongoEntityBase {
     }
 
     public static RegistrationEntity findByEmail(String email) {
-        String query = String.format("{'userEntity.email': '%s'}", email);
+        String query = String.format("{'credentialsEntity.email': '%s'}", email);
         PanacheQuery<RegistrationEntity> result = RegistrationEntity.find(query);
         return result.firstResult();
     }

@@ -1,6 +1,8 @@
 package com.hrbatovic.quarkus.master.user.messaging.consumers;
 
 import com.hrbatovic.quarkus.master.user.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.user.mapper.MapUtil;
+import com.hrbatovic.quarkus.master.user.messaging.model.in.UserRegisteredEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -14,17 +16,22 @@ public class MessageConsumer {
     @Inject
     ManagedExecutor executor;
 
+    @Inject
+    MapUtil mapper;
+
     @Incoming("user-registered-in")
-    public void consumeUser(UserEntity userEntity) {
+    public void consumeUser(UserRegisteredEvent userRegisteredEvent) {
         System.out.println("Recieved user-registered-in event");
 
         executor.runAsync(() -> {
-            if (UserEntity.findById(userEntity.id) != null) {
+            if (UserEntity.findById(userRegisteredEvent.getId()) != null) {
                 return;
             }
+            UserEntity userEntity = mapper.map(userRegisteredEvent);
+
             userEntity.setCreatedAt(LocalDateTime.now());
             userEntity.setUpdatedAt(LocalDateTime.now());
-            userEntity.persistOrUpdate();
+            userEntity.persist();
         });
     }
 

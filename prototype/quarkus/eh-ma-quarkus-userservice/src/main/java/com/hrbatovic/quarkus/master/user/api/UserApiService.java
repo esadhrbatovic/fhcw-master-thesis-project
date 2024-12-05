@@ -3,8 +3,8 @@ package com.hrbatovic.quarkus.master.user.api;
 import com.hrbatovic.master.quarkus.user.api.UsersApi;
 import com.hrbatovic.master.quarkus.user.model.*;
 import com.hrbatovic.quarkus.master.user.db.entities.UserEntity;
-import com.hrbatovic.quarkus.master.user.mapper.Mapper;
-import com.hrbatovic.quarkus.master.user.messaging.model.UserUpdateMsgPayload;
+import com.hrbatovic.quarkus.master.user.mapper.MapUtil;
+import com.hrbatovic.quarkus.master.user.messaging.model.out.UserUpdatedEvent;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -14,16 +14,20 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.*;
 
+//TODO: user operations seperate from admin operations because role can only be changed and viewed by admins
 @RequestScoped
 public class UserApiService implements UsersApi {
 
     @Inject
     @Channel("user-updated-out")
-    Emitter<UserUpdateMsgPayload> userUpdatedEmitter;
+    Emitter<UserUpdatedEvent> userUpdatedEmitter;
 
     @Inject
     @Channel("user-deleted-out")
     Emitter<UUID> userDeletedEmitter;
+
+    @Inject
+    MapUtil mapper;
 
     @Override
     public UserProfileResponse getUser(UUID id) {
@@ -32,7 +36,7 @@ public class UserApiService implements UsersApi {
             throw new RuntimeException("user not found");
         }
 
-        return Mapper.map(userEntity);
+        return mapper.map(userEntity);
     }
 
     @Override
@@ -46,7 +50,7 @@ public class UserApiService implements UsersApi {
         int totalPages = query.pageCount();
 
         UserListResponse userListResponse = new UserListResponse();
-        userListResponse.setUsers(map(userEntityList));
+        userListResponse.setUsers(mapper.map(userEntityList));
 
         UserListResponsePagination pagination = new UserListResponsePagination();
         pagination.setCurrentPage(page != null ? page : 1);
@@ -55,7 +59,6 @@ public class UserApiService implements UsersApi {
         pagination.setTotalPages(totalPages);
 
         userListResponse.setPagination(pagination);
-
 
         return userListResponse;
     }
@@ -67,15 +70,15 @@ public class UserApiService implements UsersApi {
             throw new RuntimeException("User not found");
         }
 
-        Mapper.update(userEntity, updateUserProfileRequest);
+        mapper.update(userEntity, updateUserProfileRequest);
 
         userEntity.persistOrUpdate();
 
-        UserUpdateMsgPayload userUpdatePayload = Mapper.map(updateUserProfileRequest);
-        userUpdatePayload.setId(id);
-        userUpdatedEmitter.send(userUpdatePayload);
+        UserUpdatedEvent userUpdatedEvent = mapper.map(updateUserProfileRequest);
+        userUpdatedEvent.setId(userEntity.getId());
+        userUpdatedEmitter.send(userUpdatedEvent);
 
-        return Mapper.map(userEntity);
+        return mapper.map(userEntity);
     }
 
     @Override
@@ -91,19 +94,6 @@ public class UserApiService implements UsersApi {
         DeleteUserResponse deleteUserResponse = new DeleteUserResponse();
         deleteUserResponse.setMessage("User deleted successfully");
         return deleteUserResponse;
-    }
-
-    private List<UserProfileResponse> map(List<UserEntity> userEntityList) {
-        if(userEntityList == null){
-            return new ArrayList<>();
-        }
-
-        List<UserProfileResponse> userProfileResponseList = new ArrayList<>();
-        userEntityList.forEach(u->{
-            userProfileResponseList.add(Mapper.map(u));
-        });
-
-        return userProfileResponseList;
     }
 
 }

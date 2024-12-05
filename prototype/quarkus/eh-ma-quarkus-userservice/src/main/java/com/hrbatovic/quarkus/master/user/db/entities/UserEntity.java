@@ -194,7 +194,7 @@ public class UserEntity extends PanacheMongoEntityBase  {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", role='" + role + '\'' +
-                ", email='" + email + '\'' +
+                ", deliveryMail='" + email + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", address=" + address +
                 ", createdAt=" + createdAt +

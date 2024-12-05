@@ -62,6 +62,32 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /auth/credentials:
+    put:
+      summary: Update user credentials
+      operationId: updateCredentials
+      tags:
+        - Credentials
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCredentialsRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCredentialsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   securitySchemes:
@@ -73,9 +99,6 @@ components:
   schemas:
     RegisterRequest:
       type: object
-      required:
-        - email
-        - password
       properties:
         userData:
           $ref: '#/components/schemas/UserForm'
@@ -137,6 +160,12 @@ components:
         credentials:
           $ref: '#/components/schemas/CredentialsForm'
 
+    UpdateCredentialsRequest:
+      type: object
+      properties:
+        credentials:
+          $ref: '#/components/schemas/CredentialsForm'
+
     LoginResponse:
       type: object
       properties:
@@ -148,6 +177,19 @@ components:
           type: string
           description: Access token expiry time in seconds
           example: "Login successful"
+
+    UpdateCredentialsResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
+
 
 
     ErrorResponse:

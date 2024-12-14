@@ -1,10 +1,11 @@
 package com.hrbatovic.quarkus.master.order.messaging.consumers;
 
+import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.order.messaging.model.*;
-import com.hrbatovic.quarkus.master.order.mapper.Mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -17,6 +18,9 @@ import java.util.UUID;
 
 @ApplicationScoped
 public class MessageConsumer {
+
+    @Inject
+    MapUtil mapper;
 
     @Inject
     ManagedExecutor executor;
@@ -35,11 +39,11 @@ public class MessageConsumer {
         }
 
         orderEntity = new OrderEntity(checkoutStartedEventPayload.getCartEntity().getId());
-        orderEntity.setOrderItems(Mapper.map(checkoutStartedEventPayload.getCartEntity().getCartProducts()));
+        orderEntity.setOrderItems(mapper.toOrderItemEntityList(checkoutStartedEventPayload.getCartEntity().getCartProducts()));
         orderEntity.setCurrency("EUR");
         orderEntity.setCreatedAt(LocalDateTime.now());
         orderEntity.setUserId(checkoutStartedEventPayload.getCartEntity().getUserId());
-        orderEntity.setStatus("open");
+        orderEntity.setStatus(Order.StatusEnum.OPEN.toString());
         orderEntity.setTotalAmount(checkoutStartedEventPayload.getCartEntity().getTotalPrice());
         orderEntity.setPaymenToken(checkoutStartedEventPayload.getPaymentToken());
 
@@ -137,7 +141,7 @@ public class MessageConsumer {
 
         executor.runAsync(() -> {
             OrderEntity orderEntity = paymentSuccessEventPayload.getOrderEntity();
-            orderEntity.setStatus("payment_completed");
+            orderEntity.setStatus(Order.StatusEnum.PAYMENT_COMPLETED.toString());
             orderEntity.setUpdatedAt(LocalDateTime.now());
             orderEntity.update();
         });
@@ -151,7 +155,7 @@ public class MessageConsumer {
         executor.runAsync(() -> {
             OrderEntity orderEntity = OrderEntity.findById(licensesGeneratedEventPayload.getOrderId());
             orderEntity.setUpdatedAt(LocalDateTime.now());
-            orderEntity.setStatus("licenses_generated");
+            orderEntity.setStatus(Order.StatusEnum.LICENSES_GENERATED.toString());
             orderEntity.update();
         });
 
@@ -165,7 +169,7 @@ public class MessageConsumer {
         executor.runAsync(() -> {
             OrderEntity orderEntity = OrderEntity.findById(orderNotificationSentEventPayload.getOrderId());
             orderEntity.setUpdatedAt(LocalDateTime.now());
-            orderEntity.setStatus("completed");
+            orderEntity.setStatus(Order.StatusEnum.COMPLETED.toString());
             orderEntity.update();
         });
 

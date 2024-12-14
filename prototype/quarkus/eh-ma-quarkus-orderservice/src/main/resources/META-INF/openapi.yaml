@@ -186,10 +186,10 @@ components:
       schema:
         type: string
         enum:
-          - Pending
-          - Processing
-          - Completed
-          - Cancelled
+          - OPEN
+          - PAYMENT_COMPLETED
+          - LICENSES_GENERATED
+          - COMPLETED
         example: "Completed"
 
     SortQueryParam:
@@ -219,11 +219,11 @@ components:
         status:
           type: string
           enum:
-            - created
-            - payment_completed
-            - licenses_generated
-            - completed
-          example: "Completed"
+            - OPEN
+            - PAYMENT_COMPLETED
+            - LICENSES_GENERATED
+            - COMPLETED
+          example: "open"
         totalAmount:
           type: number
           format: float

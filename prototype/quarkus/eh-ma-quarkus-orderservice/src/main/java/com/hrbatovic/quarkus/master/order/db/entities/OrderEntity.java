@@ -2,12 +2,16 @@ package com.hrbatovic.quarkus.master.order.db.entities;
 
 
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.mongodb.panache.common.MongoEntity;
+import io.quarkus.panache.common.Sort;
 import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @MongoEntity(collection = "orders")
@@ -33,6 +37,56 @@ public class OrderEntity extends PanacheMongoEntityBase {
     private List<OrderItemEntity> orderItems;
 
     public OrderEntity() {
+    }
+
+
+    public static PanacheQuery<OrderEntity> buildUserQuery(UUID userId, String status, String sort) {
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryBuilder = new StringBuilder();
+
+        queryBuilder.append("{ 'userId': :userId }");
+        params.put("userId", userId);
+
+        if (status != null && !status.isEmpty()) {
+            queryBuilder.append(", { 'status': :status }");
+            params.put("status", status);
+        }
+
+        String fullQuery = "{ '$and': [ " + queryBuilder.toString() + " ] }";
+        Sort sortOrder = resolveSortOrder(sort);
+
+        return (sortOrder != null)
+                ? find(fullQuery, sortOrder, params)
+                : find(fullQuery, params);
+    }
+
+    public static PanacheQuery<OrderEntity> buildQuery(String status, String sort) {
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder queryBuilder = new StringBuilder();
+
+        if (status != null && !status.isEmpty()) {
+            queryBuilder.append("{ 'status': :status }");
+            params.put("status", status);
+        } else {
+            queryBuilder.append("{}");
+        }
+
+        Sort sortOrder = resolveSortOrder(sort);
+        return (sortOrder != null)
+                ? find(queryBuilder.toString(), sortOrder, params)
+                : find(queryBuilder.toString(), params);
+    }
+
+    private static Sort resolveSortOrder(String sort) {
+        if (sort == null || sort.isEmpty()) return null;
+
+        switch (sort) {
+            case "dateAsc": return Sort.ascending("createdAt");
+            case "dateDesc": return Sort.descending("createdAt");
+            case "amountAsc": return Sort.ascending("totalAmount");
+            case "amountDesc": return Sort.descending("totalAmount");
+            default: return null;
+        }
     }
 
     public OrderEntity(UUID id) {

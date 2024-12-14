@@ -12,15 +12,14 @@ import java.util.UUID;
 @RequestScoped
 public class PaymentMethodsApiService implements PaymentMethodsApi {
 
-
     @Inject
-    MapUtil mapping;
+    MapUtil mapper;
 
     @Override
     public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
-        PaymentMethodEntity paymentMethodEntity = mapping.map(createPaymentMethodRequest);
+        PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
         paymentMethodEntity.persistOrUpdate();
-        return mapping.toApi(paymentMethodEntity);
+        return mapper.toApi(paymentMethodEntity);
     }
 
     @Override
@@ -36,14 +35,14 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(id);
         //TODO: error handling
 
-        return mapping.toApiDetail(paymentMethodEntity);
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 
     @Override
     public PaymentMethodListResponse getPaymentMethods() {
         PaymentMethodListResponse paymentMethodListResponse = new PaymentMethodListResponse();
         List<PaymentMethodEntity> paymentMethodEntities = PaymentMethodEntity.listAll();
-        paymentMethodListResponse.setPaymentMethods(mapping.toApiList(paymentMethodEntities));
+        paymentMethodListResponse.setPaymentMethods(mapper.toApiList(paymentMethodEntities));
         return paymentMethodListResponse;
     }
 
@@ -52,8 +51,8 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(paymentMethodId);
         //TODO : error handling
 
-        mapping.patch(updatePaymentMethodRequest, paymentMethodEntity);
+        mapper.patch(updatePaymentMethodRequest, paymentMethodEntity);
         paymentMethodEntity.persistOrUpdate();
-        return mapping.toApiDetail(paymentMethodEntity);
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 }

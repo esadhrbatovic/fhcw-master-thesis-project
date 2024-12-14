@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.cart.db.entities;
+package com.hrbatovic.quarkus.master.notification.db.entities;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -12,6 +12,11 @@ public class UserEntity extends PanacheMongoEntityBase {
     @BsonId
     public UUID id;
     private String role;
+    private String email;
+
+
+    public UserEntity() {
+    }
 
     public UUID getId() {
         return id;
@@ -29,11 +34,20 @@ public class UserEntity extends PanacheMongoEntityBase {
         this.role = role;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     @Override
     public String toString() {
         return "UserEntity{" +
                 "id=" + id +
                 ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
                 '}';
     }
 }

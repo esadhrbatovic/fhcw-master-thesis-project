@@ -28,7 +28,7 @@ public abstract class MapUtil {
     @Mapping(target = "password", ignore = true)
     public abstract CredentialsEntity map(CredentialsForm credentials);
 
-    @Mapping(target="id", ignore = true)
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "firstName", source = "userData.firstName")
     @Mapping(target = "lastName", source = "userData.lastName")
     @Mapping(target = "role", ignore = true)

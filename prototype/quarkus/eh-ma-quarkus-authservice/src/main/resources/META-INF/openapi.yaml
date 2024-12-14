@@ -74,7 +74,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCredentialsRequest'
+              $ref: '#/components/schemas/UserUpdateCredentialsRequest'
       responses:
         '200':
           description: User authenticated successfully
@@ -103,14 +103,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpdateCredentialsRequest'
+              $ref: '#/components/schemas/AdminUpdateCredentialsRequest'
       responses:
         '200':
           description: User authenticated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdateCredentialsResponse'
+                $ref: '#/components/schemas/SuccessResponse'
         '400':
           description: Bad Request
           content:
@@ -185,6 +185,25 @@ components:
         password:
           type: string
 
+    AdminUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+
+    UserUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
     RegisterResponse:
       type: object
       properties:
@@ -196,12 +215,6 @@ components:
           example: "bearer ey...."
 
     LoginRequest:
-      type: object
-      properties:
-        credentials:
-          $ref: '#/components/schemas/CredentialsForm'
-
-    UpdateCredentialsRequest:
       type: object
       properties:
         credentials:
@@ -231,7 +244,13 @@ components:
           description: Access token expiry time in seconds
           example: "Credentials updated successfuly"
 
-
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
     ErrorResponse:
       type: object

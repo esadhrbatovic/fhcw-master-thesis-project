@@ -20,14 +20,13 @@ public class RegistrationEntity extends PanacheMongoEntityBase {
     }
 
     public static RegistrationEntity findByUserid(UUID userId) {
-        PanacheQuery<RegistrationEntity> result = RegistrationEntity.find("{'userEntity._id': ?1}", userId);
+        PanacheQuery<RegistrationEntity> result = RegistrationEntity.find("userEntity._id", userId);
 
         return result.firstResult();
     }
 
     public static RegistrationEntity findByEmail(String email) {
-        String query = String.format("{'credentialsEntity.email': '%s'}", email);
-        PanacheQuery<RegistrationEntity> result = RegistrationEntity.find(query);
+        PanacheQuery<RegistrationEntity> result = RegistrationEntity.find("credentialsEntity.email", email);
         return result.firstResult();
     }
 

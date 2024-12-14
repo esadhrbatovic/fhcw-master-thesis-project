@@ -1,10 +1,7 @@
 package com.hrbatovic.quarkus.master.auth.mapper;
 
-import com.hrbatovic.master.quarkus.auth.model.CredentialsForm;
-import com.hrbatovic.master.quarkus.auth.model.RegisterRequest;
-import com.hrbatovic.master.quarkus.auth.model.UserForm;
+import com.hrbatovic.master.quarkus.auth.model.*;
 import com.hrbatovic.quarkus.master.auth.db.entities.CredentialsEntity;
-import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
 import com.hrbatovic.quarkus.master.auth.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.auth.messaging.model.in.UserUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
@@ -18,6 +15,14 @@ public abstract class MapUtil {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)
     public abstract UserEntity map(UserForm userData);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    public abstract CredentialsEntity map(UserUpdateCredentialsRequest credentials);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    public abstract CredentialsEntity map(AdminUpdateCredentialsRequest updateCredentialsRequest);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", ignore = true)

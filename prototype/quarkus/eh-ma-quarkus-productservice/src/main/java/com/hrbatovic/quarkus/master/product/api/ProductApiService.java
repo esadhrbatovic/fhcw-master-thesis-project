@@ -4,7 +4,7 @@ import com.hrbatovic.master.quarkus.product.api.ProductsApi;
 import com.hrbatovic.master.quarkus.product.model.*;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
-import com.hrbatovic.quarkus.master.product.mapper.Mapper;
+import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -12,7 +12,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,9 @@ import java.util.stream.Collectors;
 
 @RequestScoped
 public class ProductApiService implements ProductsApi {
+
+    @Inject
+    MapUtil mapper;
 
     @Inject
     @Channel("product-created-out")
@@ -57,7 +59,7 @@ public class ProductApiService implements ProductsApi {
                 ));
 
         ProductListResponse response = new ProductListResponse();
-        response.setProducts(Mapper.mapEntitiesToModels(productEntityList, categoryMap));
+        response.setProducts(mapper.map(productEntityList, categoryMap));
 
         long totalItems = query.count();
         int totalPages = query.pageCount();
@@ -85,7 +87,7 @@ public class ProductApiService implements ProductsApi {
                 .map(CategoryEntity::getName)
                 .orElse("Unknown");
 
-        return Mapper.mapEntityToResponse(productEntity, categoryName);
+        return mapper.map(productEntity, categoryName);
     }
     @Override
     public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
@@ -95,34 +97,22 @@ public class ProductApiService implements ProductsApi {
         }
 
         CategoryEntity categoryEntity = CategoryEntity.findById(productEntity.getCategoryId());
-        String categoryName = Optional.ofNullable(categoryEntity)
-                .map(CategoryEntity::getName)
-                .orElse(null);
 
-        if(StringUtils.isNotEmpty(updateProductRequest.getCategory()) && !StringUtils.equals(updateProductRequest.getCategory(), categoryName)){
-            CategoryEntity category = CategoryEntity.find("name", updateProductRequest.getCategory()).firstResult();
-            if (category == null) {
-                category = new CategoryEntity();
-                category.setName(updateProductRequest.getCategory());
-                category.persist();
+        if(StringUtils.isNotEmpty(updateProductRequest.getCategory()) && !StringUtils.equals(updateProductRequest.getCategory(), categoryEntity.getName())){
+            categoryEntity = CategoryEntity.find("name", updateProductRequest.getCategory()).firstResult();
+            if (categoryEntity == null) {
+                categoryEntity = new CategoryEntity();
+                categoryEntity.setName(updateProductRequest.getCategory());
+                categoryEntity.persist();
             }
-            productEntity.setCategoryId(category.getId());
-            categoryName = category.getName();
         }
 
-        productEntity.setTitle(updateProductRequest.getTitle());
-        productEntity.setDescription(updateProductRequest.getDescription());
-        productEntity.setPrice(BigDecimal.valueOf(updateProductRequest.getPrice()));
-        productEntity.setImageUrl(updateProductRequest.getImageUrl());
-        if(updateProductRequest.getTags() != null){
-            productEntity.setTags(updateProductRequest.getTags());
-        }
-        productEntity.setDeleted(updateProductRequest.getDeleted());
-        productEntity.setUpdatedAt(LocalDateTime.now());
+        mapper.update(productEntity, updateProductRequest, categoryEntity);
 
-        productEntity.persistOrUpdate();
+        productEntity.update();
+
         productUpdatedEmitter.send(productEntity);
-        return Mapper.mapEntityToResponse(productEntity, categoryName);
+        return mapper.map(productEntity, categoryEntity.getName());
     }
 
     @Override
@@ -134,11 +124,11 @@ public class ProductApiService implements ProductsApi {
             category.persist();
         }
 
-        ProductEntity productEntity = Mapper.toEntity(createProductRequest, category.getId());
+        ProductEntity productEntity = mapper.map(createProductRequest, category.getId());
 
         productEntity.persist();
         productCreatedEmitter.send(productEntity);
-        return Mapper.toResponse(productEntity, category.getName());
+        return mapper.map(productEntity, category.getName());
     }
 
     @Override

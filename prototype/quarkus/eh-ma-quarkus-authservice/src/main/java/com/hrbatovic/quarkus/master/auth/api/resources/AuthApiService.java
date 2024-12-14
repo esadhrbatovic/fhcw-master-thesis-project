@@ -17,7 +17,7 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 import java.util.UUID;
 
 @RequestScoped
-public class AuthResource implements AuthApi {
+public class AuthApiService implements AuthApi {
 
     public static final String ROLE_ADMIN = "admin";
     public static final String ROLE_CUSTOMER = "customer";
@@ -88,39 +88,46 @@ public class AuthResource implements AuthApi {
         return new RegisterResponse().message("User registered successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
     }
 
-    //TODO: also provide current credentials - for email or password update or both
     @Override
-    public UpdateCredentialsResponse updateCredentials(UpdateCredentialsRequest updateCredentialsRequest) {
-        //TODO: api validation, error handling, authorisation
-
-        return updateCredentialsInternal(UUID.fromString(userSub), updateCredentialsRequest);
-    }
-
-
-    @Override
-    public UpdateCredentialsResponse adminUpdateCredentials(UUID id, UpdateCredentialsRequest updateCredentialsRequest) {
-        //TODO: api validation, error handling, authorisation
-        return updateCredentialsInternal(id, updateCredentialsRequest); //TODO: no token in response for admin
-    }
-
-    private UpdateCredentialsResponse updateCredentialsInternal(UUID userId, UpdateCredentialsRequest updateCredentialsRequest) {
+    public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
+        UUID userId = UUID.fromString(userSub);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if(registrationEntity == null){
             throw new RuntimeException("User not found");
         }
+        if(!passwordHasher.check(updateCredentialsRequest.getOldPassword(), registrationEntity.getCredentialsEntity().getPassword())){
+            throw new RuntimeException("Old password is wrong");
+        }
 
-        registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest.getCredentials()));
+        registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest));
 
-        registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(updateCredentialsRequest.getCredentials().getPassword()));
 
-        UpdateCredentialsResponse updateCredentialsResponse = new UpdateCredentialsResponse();
+        registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(updateCredentialsRequest.getNewPassword()));
 
-        updateCredentialsResponse.setMessage("Credentials updated successfully");
-        updateCredentialsResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity));
+        registrationEntity.update();
 
         //TODO: emit credentials updated event - other services need updated email
 
-        return updateCredentialsResponse;
+        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
+    }
+
+
+    @Override
+    public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest updateCredentialsRequest) {
+        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(id);
+        if(registrationEntity == null){
+            throw new RuntimeException("User not found");
+        }
+
+        registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest));
+
+        registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(updateCredentialsRequest.getPassword()));
+
+        registrationEntity.update();
+
+        //TODO: emit credentials updated event - other services need updated email
+
+        return new SuccessResponse().message("Credentials updated successfully");
     }
 
 }

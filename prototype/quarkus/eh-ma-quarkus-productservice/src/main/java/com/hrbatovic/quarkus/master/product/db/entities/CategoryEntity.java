@@ -1,8 +1,12 @@
 package com.hrbatovic.quarkus.master.product.db.entities;
 
+import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.mongodb.panache.common.MongoEntity;
+import io.quarkus.panache.common.Page;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
@@ -17,6 +21,21 @@ public class CategoryEntity extends PanacheMongoEntityBase {
 
     @NotNull
     private String name;
+
+    public static PanacheQuery<CategoryEntity> findCategories(int page, int limit, String search) {
+        String query = (search != null && !search.isEmpty())
+                ? "{ 'name': { '$regex': :search, '$options': 'i' } }"
+                : "{}";
+
+        Map<String, Object> params = new HashMap<>();
+        if (search != null && !search.isEmpty()) {
+            params.put("search", search);
+        }
+
+        PanacheQuery<CategoryEntity> panacheQuery = find(query, params);
+        panacheQuery.page(Page.of(page - 1, limit));
+        return panacheQuery;
+    }
 
     public CategoryEntity() {
         this.id =UUID.randomUUID();

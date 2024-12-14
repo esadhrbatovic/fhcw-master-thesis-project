@@ -7,12 +7,11 @@ import jakarta.ws.rs.core.MediaType;
 
 
 @Path("/health")
-public class HealthResource {
+public class HealthApiService {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() throws Exception {
-
         return "Quarkus authservice is up and running!";
     }
 

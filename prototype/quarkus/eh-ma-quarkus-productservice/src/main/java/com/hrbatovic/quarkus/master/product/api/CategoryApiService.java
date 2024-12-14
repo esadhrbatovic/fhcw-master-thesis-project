@@ -5,9 +5,10 @@ import com.hrbatovic.master.quarkus.product.model.Category;
 import com.hrbatovic.master.quarkus.product.model.CategoryListResponse;
 import com.hrbatovic.master.quarkus.product.model.Pagination;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
+import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
-import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,31 +17,23 @@ import java.util.stream.Collectors;
 @RequestScoped
 public class CategoryApiService implements CategoriesApi {
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     public CategoryListResponse listCategories(Integer page, Integer limit, String search) {
-
-        String query = (search != null && !search.isEmpty())
-                ? "{ 'name': { '$regex': ?1, '$options': 'i' } }"
-                : "{}";
-
-        PanacheQuery<CategoryEntity> panacheQuery = CategoryEntity.find(query, search);
-
         if (page == null || page < 1) page = 1;
         if (limit == null || limit < 1) limit = 10;
 
-        panacheQuery.page(Page.of(page - 1, limit));
+        PanacheQuery<CategoryEntity> panacheQuery = CategoryEntity.findCategories(page, limit, search);
 
         List<CategoryEntity> categoryEntities = panacheQuery.list();
+
         long totalItems = panacheQuery.count();
         int totalPages = panacheQuery.pageCount();
 
         List<Category> categories = categoryEntities.stream()
-                .map(entity -> {
-                    Category category = new Category();
-                    category.setId(entity.getId());
-                    category.setName(entity.getName());
-                    return category;
-                })
+                .map(mapper::map)
                 .collect(Collectors.toList());
 
         CategoryListResponse response = new CategoryListResponse();
@@ -51,7 +44,6 @@ public class CategoryApiService implements CategoriesApi {
         pagination.setLimit(limit);
         pagination.setTotalItems((int) totalItems);
         pagination.setTotalPages(totalPages);
-
         response.setPagination(pagination);
 
         return response;
@@ -65,10 +57,6 @@ public class CategoryApiService implements CategoriesApi {
             throw new IllegalArgumentException("Product with ID " + id + " not found");
         }
 
-        Category category = new Category();
-        category.setId(categoryEntity.getId());
-        category.setName(categoryEntity.getName());
-
-        return category;
+        return mapper.map(categoryEntity);
     }
 }

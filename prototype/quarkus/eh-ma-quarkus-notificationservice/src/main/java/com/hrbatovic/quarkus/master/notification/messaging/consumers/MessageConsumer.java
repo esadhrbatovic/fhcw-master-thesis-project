@@ -4,10 +4,11 @@ import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.notification.messaging.model.LicensesGeneratedEventPayload;
 import com.hrbatovic.quarkus.master.notification.messaging.model.OrderNotificationSentEventPayload;
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserUpdatedEvent;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
-import io.vertx.ext.auth.User;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
@@ -16,7 +17,7 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
-import java.time.LocalDateTime;
+import java.util.UUID;
 
 @ApplicationScoped
 public class MessageConsumer {
@@ -65,6 +66,48 @@ public class MessageConsumer {
         UserEntity userEntity = UserEntity.findById(licensesGeneratedEventPayload.getUserId());
 
         mailer.send(Mail.withText(userEntity.getEmail(), "test esad mail", "Hi there! " + licensesGeneratedEventPayload.getLicenses()));
+    }
+
+    @Incoming("user-updated-in")
+    public void onUserUpdated(UserUpdatedEvent userUpdatedEvent) {
+        System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
+
+        executor.runAsync(()->{
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            if(userEntity == null){
+                return;
+            }
+
+            mapper.update(userEntity, userUpdatedEvent);
+            userEntity.update();
+        });
+    }
+
+    @Incoming("user-deleted-in")
+    public void consumeUserDeleted(UUID id) {
+        executor.runAsync(() -> {
+            UserEntity userEntity = UserEntity.findById(id);
+            if (userEntity == null) {
+                return;
+            }
+
+            userEntity.delete();
+        });
+    }
+
+    @Incoming("user-credentials-updated-in")
+    public void onUserCredentialsUpdated(UserCredentialsUpdatedEvent userCredentialsUpdatedEvent) {
+        System.out.println("Recieved user-credentials-updated-in event: " + userCredentialsUpdatedEvent);
+
+        executor.runAsync(()->{
+            UserEntity userEntity = UserEntity.findById(userCredentialsUpdatedEvent.getId());
+            if(userEntity == null){
+                return;
+            }
+
+            mapper.update(userEntity, userCredentialsUpdatedEvent);
+            userEntity.update();
+        });
     }
 
 

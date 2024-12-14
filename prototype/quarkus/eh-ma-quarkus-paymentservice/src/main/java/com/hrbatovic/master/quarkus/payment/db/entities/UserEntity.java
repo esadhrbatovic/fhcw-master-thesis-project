@@ -1,14 +1,17 @@
-package com.hrbatovic.quarkus.master.order.messaging.model;
+package com.hrbatovic.master.quarkus.payment.db.entities;
 
-import java.io.Serializable;
+import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+import io.quarkus.mongodb.panache.common.MongoEntity;
+import org.bson.codecs.pojo.annotations.BsonId;
+
 import java.util.UUID;
 
-public class UserUpdatedMsgPayload implements Serializable {
-    private UUID id;
-    private String role;
+@MongoEntity(collection = "users")
+public class UserEntity extends PanacheMongoEntityBase {
 
-    public UserUpdatedMsgPayload() {
-    }
+    @BsonId
+    public UUID id;
+    private String role;
 
     public UUID getId() {
         return id;
@@ -28,7 +31,7 @@ public class UserUpdatedMsgPayload implements Serializable {
 
     @Override
     public String toString() {
-        return "UserUpdatedMsgPayload{" +
+        return "UserEntity{" +
                 "id=" + id +
                 ", role='" + role + '\'' +
                 '}';

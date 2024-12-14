@@ -7,7 +7,6 @@ public class UserRegisteredEvent implements Serializable {
 
     private UUID id;
 
-
     private String role;
 
     private String email;

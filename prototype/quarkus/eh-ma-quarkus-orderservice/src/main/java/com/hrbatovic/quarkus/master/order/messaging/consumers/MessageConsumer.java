@@ -6,6 +6,8 @@ import com.hrbatovic.quarkus.master.order.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.order.messaging.model.*;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.UserUpdatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -95,18 +97,32 @@ public class MessageConsumer {
         });
     }
 
+    @Incoming("user-registered-in")
+    public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
+        System.out.println("Recieved user-registered-in event:" + userRegisteredEvent);
+
+        executor.runAsync(() -> {
+            if (UserEntity.findById(userRegisteredEvent.getId()) != null) {
+                return;
+            }
+
+            UserEntity userEntity = mapper.map(userRegisteredEvent);
+
+            userEntity.persist();
+        });
+    }
 
     @Incoming("user-updated-in")
-    public void consumeUserUpdated(UserUpdatedMsgPayload userUpdateMsgPayload) {
-        System.out.println("Recieved user-updated-in event: " + userUpdateMsgPayload);
+    public void onUserUpdated(UserUpdatedEvent userUpdatedEvent) {
+        System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
         executor.runAsync(() -> {
-            UserEntity userEntity = UserEntity.findById(userUpdateMsgPayload.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
             if (userEntity == null) {
                 return;
             }
 
-            userEntity.setRole(userEntity.getRole());
-            userEntity.persistOrUpdate();
+            userEntity.setRole(userUpdatedEvent.getRole());
+            userEntity.update();
         });
     }
 
@@ -123,17 +139,6 @@ public class MessageConsumer {
 
     }
 
-    @Incoming("user-registered-in")
-    public void consumeUser(UserEntity userEntity) {
-        System.out.println("Recieved user-registered-in event");
-
-        executor.runAsync(() -> {
-            if (UserEntity.findById(userEntity.id) != null) {
-                return;
-            }
-            userEntity.persistOrUpdate();
-        });
-    }
 
     @Incoming("payment-success-in")
     public void onPaymentSuccess(PaymentSuccessEventPayload paymentSuccessEventPayload) {

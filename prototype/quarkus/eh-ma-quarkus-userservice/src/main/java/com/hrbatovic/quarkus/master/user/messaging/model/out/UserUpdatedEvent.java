@@ -14,7 +14,6 @@ public class UserUpdatedEvent implements Serializable {
         public Address() {
         }
 
-
         public String getStreet() {
             return street;
         }

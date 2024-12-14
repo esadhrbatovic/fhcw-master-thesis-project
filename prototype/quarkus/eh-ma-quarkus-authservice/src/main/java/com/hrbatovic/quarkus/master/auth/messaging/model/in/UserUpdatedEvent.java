@@ -8,7 +8,6 @@ public class UserUpdatedEvent implements Serializable {
     private String firstName;
     private String lastName;
     private String role;
-    private String email;
 
     public UserUpdatedEvent() {
     }
@@ -45,11 +44,4 @@ public class UserUpdatedEvent implements Serializable {
         this.role = role;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
 }

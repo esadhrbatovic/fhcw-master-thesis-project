@@ -1,6 +1,9 @@
 package com.hrbatovic.master.quarkus.payment.mapper;
 
 import com.hrbatovic.master.quarkus.payment.db.entities.PaymentMethodEntity;
+import com.hrbatovic.master.quarkus.payment.db.entities.UserEntity;
+import com.hrbatovic.master.quarkus.payment.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.master.quarkus.payment.messaging.model.in.UserUpdatedEvent;
 import com.hrbatovic.master.quarkus.payment.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,4 +26,8 @@ public abstract class MapUtil {
 
     @Mapping(target="id", ignore = true)
     public abstract void patch(UpdatePaymentMethodRequest updatePaymentMethodRequest, @MappingTarget PaymentMethodEntity paymentMethodEntity);
+
+    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+
+    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
 }

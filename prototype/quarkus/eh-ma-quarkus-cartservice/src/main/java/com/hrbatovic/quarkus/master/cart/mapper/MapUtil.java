@@ -5,8 +5,12 @@ import com.hrbatovic.master.quarkus.cart.model.CartResponse;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
+import com.hrbatovic.quarkus.master.cart.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserUpdatedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.math.BigDecimal;
 
@@ -30,5 +34,9 @@ public abstract class MapUtil {
     @Mapping(target = "products", source="cartProducts")
     @Mapping(target = "totalProducts", source="totalItems")
     public abstract CartResponse map(CartEntity cartEntity);
+
+    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+
+    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
 
 }

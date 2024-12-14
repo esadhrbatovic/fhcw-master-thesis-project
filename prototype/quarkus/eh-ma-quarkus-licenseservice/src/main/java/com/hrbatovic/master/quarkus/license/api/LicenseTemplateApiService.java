@@ -1,4 +1,4 @@
-package com.hrbatovic.master.quarkus.licensetemplate;
+package com.hrbatovic.master.quarkus.license.api;
 
 import com.hrbatovic.master.quarkus.license.api.LicenseTemplatesApi;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;

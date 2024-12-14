@@ -3,6 +3,7 @@ package com.hrbatovic.quarkus.master.user.mapper;
 import com.hrbatovic.master.quarkus.user.model.UpdateUserProfileRequest;
 import com.hrbatovic.master.quarkus.user.model.UserProfileResponse;
 import com.hrbatovic.quarkus.master.user.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.user.messaging.model.in.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.user.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.user.messaging.model.out.UserUpdatedEvent;
 import org.mapstruct.Mapper;
@@ -31,4 +32,8 @@ public abstract class MapUtil {
     @Mapping(target="createdAt", ignore = true)
     @Mapping(target="updatedAt", ignore = true)
     public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+
+    @Mapping(target="createdAt", ignore = true)
+    @Mapping(target="updatedAt", ignore = true)
+    public abstract UserEntity update(@MappingTarget UserEntity userEntity, UserCredentialsUpdatedEvent userCredentialsUpdatedEvent);
 }

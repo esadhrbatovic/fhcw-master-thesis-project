@@ -3,6 +3,9 @@ package com.hrbatovic.quarkus.master.product.mapper;
 import com.hrbatovic.master.quarkus.product.model.*;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
+import com.hrbatovic.quarkus.master.product.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.product.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.product.messaging.model.in.UserUpdatedEvent;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -45,4 +48,8 @@ public abstract class MapUtil {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract void update(@MappingTarget ProductEntity productEntity, UpdateProductRequest updateProductRequest,  CategoryEntity categoryEntity);
+
+    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+
+    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
 }

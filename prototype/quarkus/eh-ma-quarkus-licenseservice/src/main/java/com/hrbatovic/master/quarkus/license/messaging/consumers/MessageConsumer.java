@@ -2,9 +2,13 @@ package com.hrbatovic.master.quarkus.license.messaging.consumers;
 
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;
+import com.hrbatovic.master.quarkus.license.db.entities.UserEntity;
+import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
 import com.hrbatovic.master.quarkus.license.messaging.model.LicensesGeneratedEventPayload;
 import com.hrbatovic.master.quarkus.license.messaging.model.OrderItemEntity;
 import com.hrbatovic.master.quarkus.license.messaging.model.PaymentSuccessEventPayload;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.UserUpdatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -21,6 +25,9 @@ public class MessageConsumer {
 
     @Inject
     ManagedExecutor executor;
+
+    @Inject
+    MapUtil mapper;
 
     @Inject
     @Channel("licenses-generated-out")
@@ -67,6 +74,49 @@ public class MessageConsumer {
         }
         licenseEntity.setActive(true);
         licenseEntity.persist();
+    }
+
+    @Incoming("user-registered-in")
+    public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
+        System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
+
+        executor.runAsync(()->{
+
+            if(UserEntity.findById(userRegisteredEvent.getId()) != null){
+                return;
+            }
+
+            UserEntity userEntity = mapper.map(userRegisteredEvent);
+
+            userEntity.persist();
+        });
+    }
+
+    @Incoming("user-updated-in")
+    public void onUserUpdated(UserUpdatedEvent userUpdatedEvent) {
+        System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
+
+        executor.runAsync(()->{
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            if(userEntity == null){
+                return;
+            }
+
+            mapper.update(userEntity, userUpdatedEvent);
+            userEntity.update();
+        });
+    }
+
+    @Incoming("user-deleted-in")
+    public void consumeUserDeleted(UUID id) {
+        executor.runAsync(() -> {
+            UserEntity userEntity = UserEntity.findById(id);
+            if (userEntity == null) {
+                return;
+            }
+
+            userEntity.delete();
+        });
     }
 
 

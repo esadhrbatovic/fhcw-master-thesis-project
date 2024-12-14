@@ -6,6 +6,7 @@ import com.hrbatovic.quarkus.master.auth.JwtBuilder;
 import com.hrbatovic.quarkus.master.auth.Hasher;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
 import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
+import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
@@ -35,6 +36,10 @@ public class AuthApiService implements AuthApi {
     @Inject
     @Channel("user-registered-out")
     Emitter<UserRegisteredEvent> userRegisteredEmitter;
+
+    @Inject
+    @Channel("user-credentials-updated-out")
+    Emitter<UserCredentialsUpdatedEvent> userCredentialsUpdatedEmitter;
 
     @Inject
     MapUtil mapper;
@@ -106,15 +111,15 @@ public class AuthApiService implements AuthApi {
 
         registrationEntity.update();
 
-        //TODO: emit credentials updated event - other services need updated email
+        userCredentialsUpdatedEmitter.send(new UserCredentialsUpdatedEvent(userId, registrationEntity.getCredentialsEntity().getEmail()));
 
         return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
     }
 
 
     @Override
-    public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest updateCredentialsRequest) {
-        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(id);
+    public SuccessResponse adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
+        RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if(registrationEntity == null){
             throw new RuntimeException("User not found");
         }
@@ -125,7 +130,7 @@ public class AuthApiService implements AuthApi {
 
         registrationEntity.update();
 
-        //TODO: emit credentials updated event - other services need updated email
+        userCredentialsUpdatedEmitter.send(new UserCredentialsUpdatedEvent(userId, registrationEntity.getCredentialsEntity().getEmail()));
 
         return new SuccessResponse().message("Credentials updated successfully");
     }

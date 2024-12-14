@@ -4,7 +4,9 @@ import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.master.quarkus.order.model.OrderItem;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderItemEntity;
+import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.order.messaging.model.CartProductEntity;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -24,4 +26,6 @@ public abstract class MapUtil {
 
     @Mapping(target="price", source="productPrice")
     public abstract OrderItem map(OrderItemEntity orderItemEntity);
+
+    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
 }

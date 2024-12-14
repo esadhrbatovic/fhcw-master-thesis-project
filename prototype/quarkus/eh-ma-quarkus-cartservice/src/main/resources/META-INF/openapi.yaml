@@ -8,10 +8,8 @@ info:
     Allows users to initiate the checkout process.
 
 servers:
-  - url: https://shoppingcart.yourshop.com
-    description: Production server
-  - url: https://shoppingcart.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8084
+    description: local dev
 
 paths:
   /cart-products:
@@ -236,7 +234,6 @@ components:
         - quantity
         - price
         - totalPrice
-      additionalProperties: false
 
     CartResponse:
       type: object
@@ -261,7 +258,6 @@ components:
         - products
         - totalProducts
         - totalPrice
-      additionalProperties: false
 
     AddCartProductRequest:
       type: object
@@ -277,7 +273,6 @@ components:
           type: integer
           minimum: 1
           example: 1
-      additionalProperties: false
 
     UpdateCartProductRequest:
       type: object
@@ -288,7 +283,6 @@ components:
           type: integer
           minimum: 1
           example: 2
-      additionalProperties: false
 
     CartProductResponse:
       type: object
@@ -301,7 +295,6 @@ components:
       required:
         - message
         - product
-      additionalProperties: false
 
     DeleteCartProductResponse:
       type: object
@@ -311,7 +304,6 @@ components:
           example: "Cart product removed successfully."
       required:
         - message
-      additionalProperties: false
 
     EmptyCartResponse:
       type: object
@@ -321,7 +313,6 @@ components:
           example: "Shopping cart emptied successfully."
       required:
         - message
-      additionalProperties: false
 
     CheckoutResponse:
       type: object
@@ -336,7 +327,6 @@ components:
       required:
         - message
         - orderId
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -347,7 +337,6 @@ components:
         details:
           type: string
           example: "Quantity must be at least 1."
-      additionalProperties: false
 
 security:
   - bearerAuth: []

@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /notifications:
     get:
       summary: List sent notifications (admin only)
@@ -212,7 +225,6 @@ components:
         user_id:
           type: string
           format: uuid
-          nullable: true
           description: User ID if the notification is associated with a user
           example: 456e7890-e89b-12d3-a456-426614174002
         email:
@@ -251,7 +263,6 @@ components:
         - subject
         - body
         - sent_at
-      additionalProperties: false
 
     NotificationResponse:
       allOf:
@@ -279,8 +290,6 @@ components:
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -291,7 +300,14 @@ components:
         details:
           type: string
           example: 'You are not authorized to access this resource.'
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

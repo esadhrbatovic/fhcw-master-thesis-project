@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /license-templates:
     get:
       summary: List all license templates
@@ -42,8 +55,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+    post:
+      summary: Create a new license template (admin only)
+      operationId: createLicenseTemplate
+      tags:
+        - License Templates
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      requestBody:
+        description: License template data to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLicenseTemplateRequest'
+      responses:
+        '201':
+          description: License template created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LicenseTemplateResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /license-templates/{product_id}:
+  /license-templates/{productId}:
     get:
       summary: Get license template by product ID
       operationId: getLicenseTemplateByProductId
@@ -82,7 +135,7 @@ paths:
 
     put:
       summary: Create or update license template for a product
-      operationId: upsertLicenseTemplate
+      operationId: updateLicenseTemplate
       tags:
         - License Templates
       security:
@@ -96,7 +149,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UpsertLicenseTemplateRequest'
+              $ref: '#/components/schemas/UpdateLicenseTemplateRequest'
       responses:
         '200':
           description: License template updated successfully
@@ -124,6 +177,43 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         '403':
           description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+
+    delete:
+      summary: Delete a license template (admin only)
+      operationId: deleteLicenseTemplate
+      tags:
+        - License Templates
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/ProductIdPathParam'
+      responses:
+        '200':
+          description: License template deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteLicenseTemplateResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - License template does not exist
           content:
             application/json:
               schema:
@@ -164,7 +254,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /licenses/{serial_number}:
+  /licenses/{serialNumber}:
     get:
       summary: Get license by serial number
       operationId: getLicenseBySerialNumber
@@ -215,7 +305,7 @@ components:
 
   parameters:
     ProductIdPathParam:
-      name: product_id
+      name: productId
       in: path
       description: UUID of the product
       required: true
@@ -225,13 +315,14 @@ components:
         example: 321e4567-e89b-12d3-a456-426614174000
 
     SerialNumberPathParam:
-      name: serial_number
+      name: serialNumber
       in: path
       description: Serial number of the license
       required: true
       schema:
         type: string
-        example: 'ABCDEF-123456-GHIJKL-789012'
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174003
 
     PageQueryParam:
       name: page
@@ -255,7 +346,7 @@ components:
         default: 10
 
     UserIdQueryParam:
-      name: user_id
+      name: userId
       in: query
       description: Filter licenses by user ID
       required: false
@@ -265,7 +356,7 @@ components:
         example: 456e7890-e89b-12d3-a456-426614174002
 
     ProductIdQueryParam:
-      name: product_id
+      name: productId
       in: query
       description: Filter licenses by product ID
       required: false
@@ -277,41 +368,40 @@ components:
     SortQueryParam:
       name: sort
       in: query
-      description: Sort order (e.g., 'date_asc', 'date_desc')
+      description: Sort order (e.g., 'dateAsc', 'dateDesc')
       required: false
       schema:
         type: string
         enum:
-          - date_asc
-          - date_desc
-        example: 'date_desc'
+          - dateAsc
+          - dateDesc
+        example: 'dateDesc'
 
   schemas:
     LicenseTemplate:
       type: object
       properties:
-        product_id:
+        productId:
           type: string
           format: uuid
           example: 321e4567-e89b-12d3-a456-426614174000
-        license_duration:
+        licenseDuration:
           type: integer
           description: Duration of the license in days (0 for perpetual)
           example: 365
-        created_at:
+        createdAt:
           type: string
           format: date-time
           example: '2023-10-15T10:00:00Z'
-        updated_at:
+        updatedAt:
           type: string
           format: date-time
           example: '2023-10-16T12:00:00Z'
       required:
-        - product_id
-        - license_duration
-        - created_at
-        - updated_at
-      additionalProperties: false
+        - productId
+        - licenseDuration
+        - createdAt
+        - updatedAt
 
     LicenseTemplateResponse:
       allOf:
@@ -320,46 +410,45 @@ components:
     LicenseTemplateListResponse:
       type: object
       properties:
-        license_templates:
+        licenseTemplates:
           type: array
           items:
             $ref: '#/components/schemas/LicenseTemplate'
-      additionalProperties: false
 
-    UpsertLicenseTemplateRequest:
+    UpdateLicenseTemplateRequest:
       type: object
       required:
-        - license_duration
+        - licenseDuration
       properties:
-        license_duration:
+        licenseDuration:
           type: integer
           description: Duration of the license in days (0 for perpetual)
           example: 365
-      additionalProperties: false
 
     License:
       type: object
       properties:
-        serial_number:
+        serialNumber:
           type: string
-          example: 'ABCDEF-123456-GHIJKL-789012'
-        user_id:
+          format: uuid
+          example: 456e7890-e89b-12d3-a456-426614174003
+        userId:
           type: string
           format: uuid
           example: 456e7890-e89b-12d3-a456-426614174002
-        product_id:
+        productId:
           type: string
           format: uuid
           example: 321e4567-e89b-12d3-a456-426614174000
-        license_duration:
+        licenseDuration:
           type: integer
           description: Duration of the license in days (0 for perpetual)
           example: 365
-        issued_at:
+        issuedAt:
           type: string
           format: date-time
           example: '2023-10-17T09:00:00Z'
-        expires_at:
+        expiresAt:
           type: string
           format: date-time
           example: '2024-10-17T09:00:00Z'
@@ -371,13 +460,28 @@ components:
             - revoked
           example: 'active'
       required:
-        - serial_number
-        - user_id
-        - product_id
-        - license_duration
-        - issued_at
+        - serialNumber
+        - userId
+        - productId
+        - licenseDuration
+        - issuedAt
         - status
-      additionalProperties: false
+
+    CreateLicenseTemplateRequest:
+      type: object
+      required:
+        - productId
+        - licenseDuration
+      properties:
+        productId:
+          type: string
+          format: uuid
+          description: ID of the product for which the license template is created
+          example: 321e4567-e89b-12d3-a456-426614174000
+        licenseDuration:
+          type: integer
+          description: Duration of the license in days (0 for perpetual)
+          example: 365
 
     LicenseResponse:
       allOf:
@@ -393,20 +497,18 @@ components:
         pagination:
           type: object
           properties:
-            current_page:
+            currentPage:
               type: integer
               example: 1
-            total_pages:
+            totalPages:
               type: integer
               example: 5
-            total_items:
+            totalItems:
               type: integer
               example: 50
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -417,7 +519,23 @@ components:
         details:
           type: string
           example: 'License duration must be a non-negative integer.'
-      additionalProperties: false
+
+    DeleteLicenseTemplateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "License template deleted successfully."
+      required:
+        - message
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

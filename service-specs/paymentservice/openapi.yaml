@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /payment-methods:
     get:
       summary: Get a list of available payment methods
@@ -77,7 +90,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /payment-methods/{payment_method_id}:
+  /payment-methods/{id}:
+    get:
+      summary: Get details of a payment method (admin only)
+      operationId: getPaymentMethodById
+      tags:
+        - Payment Methods
+      security:
+        - bearerAuth: []
+        - adminAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PaymentMethodIdPathParam'
+      responses:
+        '200':
+          description: Payment method retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodDetailedResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Payment method does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
     put:
       summary: Update a payment method (admin only)
       operationId: updatePaymentMethod
@@ -101,7 +150,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PaymentMethodResponse'
+                $ref: '#/components/schemas/PaymentMethodDetailedResponse'
         '400':
           description: Bad Request - Invalid input data
           content:
@@ -177,7 +226,7 @@ components:
 
   parameters:
     PaymentMethodIdPathParam:
-      name: payment_method_id
+      name: id
       in: path
       description: UUID of the payment method
       required: true
@@ -190,46 +239,31 @@ components:
     PaymentMethod:
       type: object
       properties:
-        payment_method_id:
+        id:
           type: string
           format: uuid
           example: 987e6543-e89b-12d3-a456-426614174004
+        selector:
+          type: string
+          example: "eh-ma-payment-method-paypal"
         name:
           type: string
           example: "Credit Card"
         description:
           type: string
           example: "Pay using Visa, MasterCard, or American Express."
-        status:
+        active:
+          type: boolean
+          example: true
+        iconUrl:
           type: string
-          enum:
-            - active
-            - inactive
-          example: "active"
-        transaction_fee:
-          type: number
-          format: float
-          description: "Transaction fee percentage (e.g., 2.5 for 2.5%)"
-          example: 2.5
-        icon_url:
-          type: string
-          format: uri
           example: "https://yourshop.com/images/payment-icons/credit-card.png"
-        created_at:
+        paymentGatewayUrl:
           type: string
-          format: date-time
-          example: '2023-10-15T10:00:00Z'
-        updated_at:
+          example: "https://example.paymentprovider.com/payments"
+        merchantId:
           type: string
-          format: date-time
-          example: '2023-10-16T12:00:00Z'
-      required:
-        - payment_method_id
-        - name
-        - status
-        - created_at
-        - updated_at
-      additionalProperties: false
+          example: "eh-ma-payment-merchantId-paypal"
 
     PaymentMethodResponse:
       allOf:
@@ -238,40 +272,40 @@ components:
     PaymentMethodListResponse:
       type: object
       properties:
-        payment_methods:
+        paymentMethods:
           type: array
           items:
             $ref: '#/components/schemas/PaymentMethod'
-      additionalProperties: false
 
     CreatePaymentMethodRequest:
       type: object
-      required:
-        - name
-        - status
       properties:
         name:
           type: string
           example: "PayPal"
+        selector:
+          type: string
+          example: "eh-ma-payment-method-paypal"
         description:
           type: string
           example: "Pay securely using your PayPal account."
-        status:
+        active:
+          type: boolean
+          example: true
+        iconUrl:
           type: string
-          enum:
-            - active
-            - inactive
-          example: "active"
-        transaction_fee:
-          type: number
-          format: float
-          description: "Transaction fee percentage (e.g., 3.0 for 3.0%)"
-          example: 3.0
-        icon_url:
-          type: string
-          format: uri
           example: "https://yourshop.com/images/payment-icons/paypal.png"
-      additionalProperties: false
+        paymentGatewayUrl:
+          type: string
+          example: "https://example.paymentprovider.com/payments"
+        merchantId:
+          type: string
+          example: "eh-ma-payment-merchantId-paypal"
+        merchantSecret:
+          type: string
+          example: "eh-ma-payment-merchantSecret-paypal"
+
+
 
     UpdatePaymentMethodRequest:
       type: object
@@ -279,25 +313,67 @@ components:
         name:
           type: string
           example: "PayPal"
+        selector:
+          type: string
+          example: "eh-ma-payment-method-paypal"
         description:
           type: string
           example: "Pay securely using your PayPal account."
-        status:
+        active:
+          type: boolean
+          example: true
+        iconUrl:
           type: string
-          enum:
-            - active
-            - inactive
-          example: "inactive"
-        transaction_fee:
-          type: number
-          format: float
-          description: "Transaction fee percentage (e.g., 3.0 for 3.0%)"
-          example: 2.9
-        icon_url:
-          type: string
-          format: uri
           example: "https://yourshop.com/images/payment-icons/paypal.png"
-      additionalProperties: false
+        paymentGatewayUrl:
+          type: string
+          example: "https://example.paymentprovider.com/payments"
+        merchantId:
+          type: string
+          example: "eh-ma-payment-merchantId-paypal"
+        merchantSecret:
+          type: string
+          example: "eh-ma-payment-merchantSecret-paypal"
+
+    PaymentMethodDetailedResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "987e6543-e89b-12d3-a456-426614174004"
+        selector:
+          type: string
+          example: "eh-ma-payment-method-paypal"
+        name:
+          type: string
+          example: "PayPal"
+        description:
+          type: string
+          example: "Pay securely using your PayPal account."
+        active:
+          type: boolean
+          example: true
+        iconUrl:
+          type: string
+          example: "https://yourshop.com/images/payment-icons/paypal.png"
+        paymentGatewayUrl:
+          type: string
+          example: "https://example.paymentprovider.com/payments"
+        merchantId:
+          type: string
+          example: "eh-ma-payment-merchantId-paypal"
+        merchantSecret:
+          type: string
+          example: "eh-ma-payment-merchantSecret-paypal"
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-11-01T12:00:00Z"
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2024-11-10T18:00:00Z"
 
     DeletePaymentMethodResponse:
       type: object
@@ -307,7 +383,6 @@ components:
           example: "Payment method deleted successfully."
       required:
         - message
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -318,7 +393,14 @@ components:
         details:
           type: string
           example: "The name field is required."
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

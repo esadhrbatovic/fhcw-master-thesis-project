@@ -8,6 +8,20 @@ servers:
   - url: localhost:8081
     description: local dev
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
   /auth/register:
     post:
       summary: Register a new user
@@ -62,20 +76,84 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /auth/credentials:
+    put:
+      summary: Update user credentials
+      operationId: updateCredentials
+      tags:
+        - Credentials
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateCredentialsRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCredentialsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/credentials/{id}:
+    put:
+      summary: ADMIN - Update user credentials
+      operationId: adminUpdateCredentials
+      tags:
+        - Credentials
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateCredentialsRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
+
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: JWT
 
+  parameters:
+    UserIdPathParam:
+      name: id
+      in: path
+      description: UUID of the user
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+
   schemas:
     RegisterRequest:
       type: object
-      required:
-        - email
-        - password
       properties:
         userData:
           $ref: '#/components/schemas/UserForm'
@@ -121,6 +199,25 @@ components:
         password:
           type: string
 
+    AdminUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+
+    UserUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
     RegisterResponse:
       type: object
       properties:
@@ -149,6 +246,25 @@ components:
           description: Access token expiry time in seconds
           example: "Login successful"
 
+    UpdateCredentialsResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
     ErrorResponse:
       type: object

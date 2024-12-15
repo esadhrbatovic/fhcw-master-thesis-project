@@ -256,16 +256,12 @@ components:
               type: string
               format: uuid
               example: '789e4567-e89b-12d3-a456-426614174000'
-            [additionalProperties]:
-              type: string
-          additionalProperties: true
       required:
         - event_id
         - event_type
         - source_service
         - occurred_at
         - body
-      additionalProperties: false
 
     EventResponse:
       allOf:
@@ -293,8 +289,6 @@ components:
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -305,7 +299,6 @@ components:
         details:
           type: string
           example: 'You are not authorized to access this resource.'
-      additionalProperties: false
 
 security:
   - bearerAuth: []

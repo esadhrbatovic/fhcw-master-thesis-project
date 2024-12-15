@@ -5,141 +5,260 @@
     <title>Hrbatovic Esad - Master Thesis Project - Solution</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        h1 {
+            font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background: #f9f9f9;
             color: #333;
         }
+
+        /* Layout */
+        header {
+            background: #293241;
+            padding: 20px;
+            color: #fff;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        header p {
+            margin: 5px 0 0 0;
+            color: #eee;
+            font-size: 0.9rem;
+        }
+
+        nav {
+            background: #ffffff;
+            border-right: 1px solid #ddd;
+            padding: 20px;
+            width: 300px;
+            flex-shrink: 0;
+        }
+
+        main {
+            flex: 1;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* Sidebar (Service List) */
         .service-list {
             list-style-type: none;
             padding: 0;
+            margin: 0;
         }
+
         .service-item {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
-        .service-item h2 {
+
+        .service-item h3 {
             margin-bottom: 5px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #293241;
         }
+
         .service-item p {
             margin-top: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
             color: #555;
         }
+
         .service-item a {
             text-decoration: none;
-            color: #1a73e8;
+            color: #0066cc;
+            font-size: 0.9rem;
         }
+
         .service-item a:hover {
             text-decoration: underline;
         }
+
         .links {
             list-style-type: none;
             padding: 0;
             margin-top: 5px;
         }
+
         .links li {
-            display: inline;
             margin-right: 15px;
+            display: inline-block;
+        }
+
+        /* Content Area */
+        h2 {
+            margin-top: 0;
+            color: #293241;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .architecture-diagram img {
+            max-width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* General Typography */
+        p {
+            line-height: 1.6;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+
+            nav {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+            }
+
+            main {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Hrbatovic Esad - Master Thesis Project - Solution</h1>
-    <p>Welcome to the technical documentation of the E-Shop Proof of Concept application. Below you will find links to the OpenAPI specifications for each microservice in the application, along with a brief description of each service and further architectural documentation.</p>
+    <header>
+        <h1>E-Shop Proof of Concept - Technical Documentation</h1>
+        <p>Hrbatovic Esad - Master Thesis Project</p>
+    </header>
 
-    <h2>High Level Architecture</h2>
-
-    <div class="architecture-diagram">
-        <img src="images/architecture-diagram.jpg" alt="High-Level Architecture Diagram">
-    </div>
-
-    <h2>API Definitions</h2>
-    <ul class="service-list">
-        <li class="service-item">
-            <h3>AuthService</h3>
-            <p>Handles authentication and authorization, including login, logout, and token management.</p>
-            <ul class="links">
-                <li><a href="service-specs/authservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/authservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+    <div class="container">
+        <nav>
+            <h2>API Definitions</h2>
+            <ul class="service-list">
+                <li class="service-item">
+                    <h3><a href="#authservice">AuthService</a></h3>
+                    <p>Authentication & Authorization</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#userservice">UserService</a></h3>
+                    <p>Manage User Profiles</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#productservice">ProductService</a></h3>
+                    <p>Digital Product Catalog</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#cartservice">CartService</a></h3>
+                    <p>Shopping Cart Management</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#orderservice">OrderService</a></h3>
+                    <p>Order Processing</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#paymentservice">PaymentService</a></h3>
+                    <p>Payment Management</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#licenseservice">LicenseService</a></h3>
+                    <p>Digital License Management</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#notificationservice">NotificationService</a></h3>
+                    <p>User Notifications</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#trackingservice">TrackingService</a></h3>
+                    <p>Event Tracking & Analytics</p>
+                </li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>UserService</h3>
+        </nav>
+        <main>
+            <h2>High Level Architecture</h2>
+            <p>Below is a high-level overview of the system architecture, illustrating how the microservices interact with each other and external components.</p>
+            <div class="architecture-diagram">
+                <img src="images/architecture-diagram.jpg" alt="High-Level Architecture Diagram">
+            </div>
+
+            <h2 id="authservice">AuthService</h2>
+            <p>Handles authentication and authorization: login, logout, and token management.</p>
+            <ul class="links">
+                <li><a href="service-specs/authservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/authservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
+
+            <h2 id="userservice">UserService</h2>
             <p>Manages user profiles, registration, and account updates.</p>
             <ul class="links">
-                <li><a href="service-specs/userservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/userservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/userservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/userservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>ProductService</h3>
-            <p>Manages the catalog of digital products, including creation, updating, and deletion of products.</p>
+
+            <h2 id="productservice">ProductService</h2>
+            <p>Manages digital product catalog: creation, updating, and deletion of products.</p>
             <ul class="links">
-                <li><a href="service-specs/productservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/productservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/productservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/productservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>CartService</h3>
-            <p>Allows users to add items to their shopping cart, view items, modify quantities, delete items, empty the cart, and proceed to checkout.</p>
+
+            <h2 id="cartservice">CartService</h2>
+            <p>Allows users to add items to cart, view, modify, delete items, and proceed to checkout.</p>
             <ul class="links">
-                <li><a href="service-specs/cartservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/cartservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/cartservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/cartservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>OrderService</h3>
-            <p>Processes orders and maintains order status. Provides endpoints for viewing orders and order details.</p>
+
+            <h2 id="orderservice">OrderService</h2>
+            <p>Processes orders, maintains order status, and provides order details.</p>
             <ul class="links">
-                <li><a href="service-specs/orderservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/orderservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/orderservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/orderservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>PaymentService</h3>
-            <p>Manages payment methods and processes payments. Allows users to retrieve available payment methods and admins to manage them.</p>
+
+            <h2 id="paymentservice">PaymentService</h2>
+            <p>Manages payment methods and processes payments. Offers endpoints for available payment methods and admin management.</p>
             <ul class="links">
-                <li><a href="service-specs/paymentservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/paymentservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/paymentservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/paymentservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>LicenseService</h3>
+
+            <h2 id="licenseservice">LicenseService</h2>
             <p>Generates and manages digital licenses for purchased products. Admins can manage license templates and view generated licenses.</p>
             <ul class="links">
-                <li><a href="service-specs/licenseservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/licenseservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/licenseservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/licenseservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>NotificationService</h3>
+
+            <h2 id="notificationservice">NotificationService</h2>
             <p>Sends notifications (e.g., emails) to users. Admins can list and filter sent notifications.</p>
             <ul class="links">
-                <li><a href="service-specs/notificationservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/notificationservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/notificationservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/notificationservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-        <li class="service-item">
-            <h3>TrackingService</h3>
+
+            <h2 id="trackingservice">TrackingService</h2>
             <p>Collects and records events for analytics and monitoring. Admins can list and filter recorded events.</p>
             <ul class="links">
-                <li><a href="service-specs/trackingservice/openapi.html">API Documentation</a></li>
-                <li><a href="service-specs/trackingservice/openapi.yaml">OpenAPI YAML Specification</a></li>
+                <li><a href="service-specs/trackingservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/trackingservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-        </li>
-    </ul>
 
+            <h2>Database Schemas</h2>
+            <p>Work in progress...</p>
 
-    
-    <h2>Database Schemas</h2>
-    <p>work in progress</p>
+            <h2>Event Definitions</h2>
+            <p>Work in progress...</p>
 
-    
-    <h2>Event Definitions</h2>
-    <p>work in progress</p>
-
-
-    <h2>Cross Cutting Concerns</h2>
-    <p>work in progress</p>
+            <h2>Cross Cutting Concerns</h2>
+            <p>Work in progress...</p>
+        </main>
+    </div>
 </body>
 </html>

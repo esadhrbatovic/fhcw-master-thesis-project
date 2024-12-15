@@ -3,9 +3,7 @@ package com.hrbatovic.master.quarkus.license.mapper;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.UserEntity;
-import com.hrbatovic.master.quarkus.license.messaging.model.in.UserRegisteredEvent;
-import com.hrbatovic.master.quarkus.license.messaging.model.in.UserUpdatedEvent;
-import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateCreatedEvent;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.UserPayload;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.payload.LicensePayload;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.payload.LicenseTemplatePayload;
 import com.hrbatovic.master.quarkus.license.model.*;
@@ -31,9 +29,9 @@ public abstract class MapUtil {
 
     public abstract LicenseResponse toApi(LicenseEntity licenseEntity);
 
-    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+    public abstract UserEntity map(UserPayload userPayload);
 
-    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
+    public abstract void update(@MappingTarget UserEntity userEntity, UserPayload userPayload);
 
     public abstract List<LicensePayload> map(List<LicenseEntity> licenses);
 

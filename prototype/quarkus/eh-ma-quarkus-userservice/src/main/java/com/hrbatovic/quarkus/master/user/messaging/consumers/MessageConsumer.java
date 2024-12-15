@@ -22,13 +22,13 @@ public class MessageConsumer {
 
     @Incoming("user-registered-in")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
-        System.out.println("Recieved user-registered-in event");
+        System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
 
         executor.runAsync(() -> {
-            if (UserEntity.findById(userRegisteredEvent.getId()) != null) {
+            if (UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null) {
                 return;
             }
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.setCreatedAt(LocalDateTime.now());
             userEntity.setUpdatedAt(LocalDateTime.now());
@@ -38,7 +38,7 @@ public class MessageConsumer {
 
     @Incoming("user-credentials-updated-in")
     public void onUserCredentialsUpdated(UserCredentialsUpdatedEvent userCredentialsUpdatedEvent) {
-        System.out.println("Recieved user-credentials-updated-in event");
+        System.out.println("Recieved user-credentials-updated-in event: " + userCredentialsUpdatedEvent);
 
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(userCredentialsUpdatedEvent.getId());

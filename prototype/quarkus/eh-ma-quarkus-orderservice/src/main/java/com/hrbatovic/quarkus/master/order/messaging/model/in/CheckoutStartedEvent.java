@@ -16,14 +16,19 @@ public class CheckoutStartedEvent implements Serializable {
 
     private String paymentMethodSelector;
 
+    //Metadata
     private LocalDateTime timestamp;
+
+    private UUID sessionId;
+
+    private UUID userId;
+
+    private String userEmail;
+
+    private String sourceService;
 
     public CartPayload getCart() {
         return cart;
-    }
-
-    public LocalDateTime getTimestamp() {
-        return timestamp;
     }
 
     public UUID getPaymentToken() {
@@ -34,6 +39,26 @@ public class CheckoutStartedEvent implements Serializable {
         return paymentMethodSelector;
     }
 
+    public LocalDateTime getTimestamp() {
+        return timestamp;
+    }
+
+    public UUID getSessionId() {
+        return sessionId;
+    }
+
+    public UUID getUserId() {
+        return userId;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public String getSourceService() {
+        return sourceService;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -41,6 +66,10 @@ public class CheckoutStartedEvent implements Serializable {
                 .append("paymentToken", paymentToken)
                 .append("paymentMethodSelector", paymentMethodSelector)
                 .append("timestamp", timestamp)
+                .append("sessionId", sessionId)
+                .append("userId", userId)
+                .append("userEmail", userEmail)
+                .append("sourceService", sourceService)
                 .toString();
     }
 }

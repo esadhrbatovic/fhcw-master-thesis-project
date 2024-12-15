@@ -1,5 +1,6 @@
 package com.hrbatovic.master.quarkus.payment.messaging.consumers;
 
+import com.aayushatharva.brotli4j.common.annotations.Local;
 import com.hrbatovic.master.quarkus.payment.db.entities.PaymentMethodEntity;
 import com.hrbatovic.master.quarkus.payment.db.entities.UserEntity;
 import com.hrbatovic.master.quarkus.payment.mapper.MapUtil;
@@ -15,6 +16,7 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -44,14 +46,10 @@ public class MessageConsumer {
             //TODO: define constant for error messages
             if(paymentMethodEntity == null){
                 System.out.println("Selected payment method not available");
-                paymentFailEmitter.send(new PaymentFailEvent().setMessage("Selected Payment method not available").setOrder(mapper.map(orderCreatedEvent.getOrder())));
+                paymentFailEmitter.send(buildPaymentFailEvent(orderCreatedEvent));
                 return;
             }
-
-            PaymentSuccessEvent paymentSuccessEvent = new PaymentSuccessEvent();
-
-            paymentSuccessEvent.setOrder(mapper.map(orderCreatedEvent.getOrder()));
-            paymentSuccessEmitter.send(paymentSuccessEvent);
+            paymentSuccessEmitter.send(buildPaymentSuccessEvent(orderCreatedEvent));
         });
     }
 
@@ -61,11 +59,11 @@ public class MessageConsumer {
 
         executor.runAsync(()->{
 
-            if(UserEntity.findById(userRegisteredEvent.getId()) != null){
+            if(UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null){
                 return;
             }
 
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.persist();
         });
@@ -76,12 +74,12 @@ public class MessageConsumer {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
 
         executor.runAsync(()->{
-            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getUserPayload().getId());
             if(userEntity == null){
                 return;
             }
 
-            mapper.update(userEntity, userUpdatedEvent);
+            mapper.update(userEntity, userUpdatedEvent.getUserPayload());
             userEntity.update();
         });
     }
@@ -89,6 +87,7 @@ public class MessageConsumer {
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(id);
             if (userEntity == null) {
@@ -97,6 +96,25 @@ public class MessageConsumer {
 
             userEntity.delete();
         });
+    }
+
+    private PaymentSuccessEvent buildPaymentSuccessEvent(OrderCreatedEvent orderCreatedEvent) {
+        return new PaymentSuccessEvent().
+                setTimestamp(LocalDateTime.now())
+                .setUserId(orderCreatedEvent.getUserId())
+                .setUserEmail(orderCreatedEvent.getUserEmail())
+                .setUserEmail(orderCreatedEvent.getUserEmail())
+                .setOrder(mapper.map(orderCreatedEvent.getOrder()));
+    }
+
+    private PaymentFailEvent buildPaymentFailEvent(OrderCreatedEvent orderCreatedEvent) {
+        return new PaymentFailEvent()
+                .setMessage("Selected Payment method not available")
+                .setUserId(orderCreatedEvent.getUserId())
+                .setUserEmail(orderCreatedEvent.getUserEmail())
+                .setSessionId(orderCreatedEvent.getSessionId())
+                .setTimestamp(LocalDateTime.now())
+                .setOrder(mapper.map(orderCreatedEvent.getOrder()));
     }
 
 }

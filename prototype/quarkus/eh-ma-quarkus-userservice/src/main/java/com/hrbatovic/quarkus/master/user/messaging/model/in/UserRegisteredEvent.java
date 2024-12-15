@@ -1,126 +1,23 @@
 package com.hrbatovic.quarkus.master.user.messaging.model.in;
 
+import com.hrbatovic.quarkus.master.user.messaging.model.common.payload.UserPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
-import java.util.UUID;
 
 public class UserRegisteredEvent implements Serializable {
-    public static class Address {
-        private String street;
-        private String city;
-        private String state;
-        private String postalCode;
-        private String country;
 
-        public Address() {
-        }
+    private UserPayload userPayload;
 
-        public String getStreet() {
-            return street;
-        }
-
-        public void setStreet(String street) {
-            this.street = street;
-        }
-
-        public String getCity() {
-            return city;
-        }
-
-        public void setCity(String city) {
-            this.city = city;
-        }
-
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public String getPostalCode() {
-            return postalCode;
-        }
-
-        public void setPostalCode(String postalCode) {
-            this.postalCode = postalCode;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
+    public UserPayload getUserPayload() {
+        return userPayload;
     }
 
-    private UUID id;
-    private String firstName;
-    private String lastName;
-    private String role;
-    private String email;
-    private String phoneNumber;
-    private UserRegisteredEvent.Address address;
-
-    public UserRegisteredEvent() {
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("user", userPayload)
+                .toString();
     }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public UserRegisteredEvent.Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(UserRegisteredEvent.Address address) {
-        this.address = address;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-
 }

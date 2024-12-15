@@ -21,13 +21,14 @@ public class MessageConsumer {
 
     @Incoming("user-updated-in")
     public void onUserUpdated(UserUpdatedEvent userUpdatedEvent){
+        System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
         executor.runAsync(() -> {
-            RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userUpdatedEvent.getId());
+            RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userUpdatedEvent.getUser().getId());
             if(registrationEntity == null){
                 return;
             }
 
-            mapper.update(userUpdatedEvent, registrationEntity.getUserEntity());
+            mapper.update(userUpdatedEvent.getUser(), registrationEntity.getUserEntity());
 
             registrationEntity.persistOrUpdate();
         });
@@ -36,6 +37,7 @@ public class MessageConsumer {
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(id);
             if (registrationEntity == null) {

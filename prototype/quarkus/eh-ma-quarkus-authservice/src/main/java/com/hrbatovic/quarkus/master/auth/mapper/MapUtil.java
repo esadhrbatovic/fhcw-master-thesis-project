@@ -5,6 +5,7 @@ import com.hrbatovic.quarkus.master.auth.db.entities.CredentialsEntity;
 import com.hrbatovic.quarkus.master.auth.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.auth.messaging.model.in.UserUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.auth.messaging.model.out.payload.UserPayload;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -35,9 +36,9 @@ public abstract class MapUtil {
     @Mapping(target = "email", source = "credentials.email")
     @Mapping(target = "phoneNumber", source = "userData.phoneNumber")
     @Mapping(target = "address", source = "userData.address")
-    public abstract UserRegisteredEvent map(RegisterRequest registerRequest);
+    public abstract UserPayload map(RegisterRequest registerRequest);
 
     @Mapping(target="id", ignore = true)
-    public abstract void update(UserUpdatedEvent userUpdatedEvent, @MappingTarget UserEntity userEntity);
+    public abstract void update(UserPayload userPayload, @MappingTarget UserEntity userEntity);
 
 }

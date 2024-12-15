@@ -8,6 +8,7 @@ import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartProductPayload;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.UserPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.out.payload.OrderPayload;
 import jakarta.ws.rs.Path;
 import org.mapstruct.Mapper;
@@ -27,7 +28,7 @@ public abstract class MapUtil {
     @Mapping(target="price", source="productPrice")
     public abstract OrderItem map(OrderItemEntity orderItemEntity);
 
-    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+    public abstract UserEntity map(UserPayload userPayload);
 
     public abstract List<OrderItemEntity> toOrderItemEntityList(List<CartProductPayload> cartProducts);
 

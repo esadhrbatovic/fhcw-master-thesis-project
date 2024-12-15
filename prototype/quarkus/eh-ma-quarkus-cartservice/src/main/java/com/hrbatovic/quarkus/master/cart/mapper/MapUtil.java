@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.cart.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserUpdatedEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.payload.ProductPayload;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.payload.UserPayload;
 import com.hrbatovic.quarkus.master.cart.messaging.model.out.payload.CartPayload;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -37,9 +38,9 @@ public abstract class MapUtil {
     @Mapping(target = "totalProducts", source="totalItems")
     public abstract CartResponse map(CartEntity cartEntity);
 
-    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+    public abstract UserEntity map(UserPayload userPayload);
 
-    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
+    public abstract void update(@MappingTarget UserEntity userEntity, UserPayload userPayload);
 
     public abstract ProductEntity map(ProductPayload product);
 

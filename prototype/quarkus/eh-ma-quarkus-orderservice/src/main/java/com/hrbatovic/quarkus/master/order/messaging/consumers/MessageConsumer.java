@@ -30,34 +30,37 @@ public class MessageConsumer {
     Emitter<OrderCreatedEvent> orderCreatedEmitter;
 
     @Incoming("checkout-started-in")
-    public void onCheckoutStarted(CheckoutStartedEvent checkoutStartedEvent){
+    public void onCheckoutStarted(CheckoutStartedEvent checkoutStartedEvent) {
         System.out.println("Recieved checkout-started-in event: " + checkoutStartedEvent);
 
-        OrderEntity orderEntity = OrderEntity.findById(checkoutStartedEvent.getCart().getId());
-        if(orderEntity != null) {
-            return;
-        }
+        executor.runAsync(() -> {
+            OrderEntity orderEntity = OrderEntity.findById(checkoutStartedEvent.getCart().getId());
+            if (orderEntity != null) {
+                return;
+            }
 
-        orderEntity = mapper.map(checkoutStartedEvent.getCart());
-        orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethodSelector());
-        orderEntity.setPaymenToken(checkoutStartedEvent.getPaymentToken());
-        orderEntity.persist();
+            orderEntity = mapper.map(checkoutStartedEvent.getCart());
+            orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethodSelector());
+            orderEntity.setPaymenToken(checkoutStartedEvent.getPaymentToken());
+            orderEntity.persist();
 
-        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent().setOrder(mapper.toOrderPayload(orderEntity));
+            OrderCreatedEvent orderCreatedEvent = buildOrderCreatedEvent(checkoutStartedEvent, orderEntity);
 
-        orderCreatedEmitter.send(orderCreatedEvent);
+            orderCreatedEmitter.send(orderCreatedEvent);
+        });
     }
+
 
     @Incoming("user-registered-in")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
         System.out.println("Recieved user-registered-in event:" + userRegisteredEvent);
 
         executor.runAsync(() -> {
-            if (UserEntity.findById(userRegisteredEvent.getId()) != null) {
+            if (UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null) {
                 return;
             }
 
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.persist();
         });
@@ -67,18 +70,19 @@ public class MessageConsumer {
     public void onUserUpdated(UserUpdatedEvent userUpdatedEvent) {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
         executor.runAsync(() -> {
-            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getUserPayload().getId());
             if (userEntity == null) {
                 return;
             }
 
-            userEntity.setRole(userUpdatedEvent.getRole());
+            userEntity.setRole(userUpdatedEvent.getUserPayload().getRole());
             userEntity.update();
         });
     }
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(id);
             if (userEntity == null) {
@@ -89,7 +93,6 @@ public class MessageConsumer {
         });
 
     }
-
 
     @Incoming("payment-success-in")
     public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEventPayload) {
@@ -117,9 +120,8 @@ public class MessageConsumer {
     }
 
 
-
     @Incoming("licenses-generated-in")
-    public void onLicensesGenerated(LicensesGeneratedEvent licensesGeneratedEventPayload){
+    public void onLicensesGenerated(LicensesGeneratedEvent licensesGeneratedEventPayload) {
         System.out.println("Recieved licenses-generated-in event: " + licensesGeneratedEventPayload);
 
         executor.runAsync(() -> {
@@ -133,7 +135,7 @@ public class MessageConsumer {
 
 
     @Incoming("order-notification-sent-in")
-    public void onOrderNotificationSent(OrderNotificationSentEvent orderNotificationSentEventPayload){
+    public void onOrderNotificationSent(OrderNotificationSentEvent orderNotificationSentEventPayload) {
         System.out.println("Recieved order-notification-sent-in event: " + orderNotificationSentEventPayload);
 
         executor.runAsync(() -> {
@@ -143,6 +145,10 @@ public class MessageConsumer {
             orderEntity.update();
         });
 
+    }
+
+    private OrderCreatedEvent buildOrderCreatedEvent(CheckoutStartedEvent checkoutStartedEvent, OrderEntity orderEntity) {
+        return new OrderCreatedEvent().setUserId(checkoutStartedEvent.getUserId()).setUserEmail(checkoutStartedEvent.getUserEmail()).setTimestamp(LocalDateTime.now()).setSessionId(checkoutStartedEvent.getSessionId()).setOrder(mapper.toOrderPayload(orderEntity));
     }
 
 }

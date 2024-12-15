@@ -14,6 +14,7 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @ApplicationScoped
@@ -36,23 +37,21 @@ public class MessageConsumer {
     public void onLicensesGenerated(LicenseGeneratedEvent licenseGeneratedEvent){
         System.out.println("Recieved licenses-generated-in event: " + licenseGeneratedEvent);
         executor.runAsync(() -> {
-            sendOrderConfirmation(licenseGeneratedEvent);
-            OrderNotificationSentEvent orderNotificationSentEvent = new OrderNotificationSentEvent();
-            orderNotificationSentEvent.setOrderId(licenseGeneratedEvent.getOrderId());
-            orderNotificationSentEmitter.send(orderNotificationSentEvent);
+            sendOrderConfirmation(licenseGeneratedEvent);;
+            orderNotificationSentEmitter.send(buildOrderNotificationSentEvent(licenseGeneratedEvent));
         });
 
     }
 
     @Incoming("user-registered-in")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
-        System.out.println("Recieved user-registered-in event");
+        System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
 
         executor.runAsync(() -> {
-            if (UserEntity.findById(userRegisteredEvent.getId()) != null) {
+            if (UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null) {
                 return;
             }
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.persist();
         });
@@ -69,18 +68,19 @@ public class MessageConsumer {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
 
         executor.runAsync(()->{
-            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getUserPayload().getId());
             if(userEntity == null){
                 return;
             }
 
-            mapper.update(userEntity, userUpdatedEvent);
+            mapper.update(userEntity, userUpdatedEvent.getUserPayload());
             userEntity.update();
         });
     }
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(id);
             if (userEntity == null) {
@@ -108,6 +108,7 @@ public class MessageConsumer {
 
     @Incoming("payment-fail-in")
     public void onPaymentFail(PaymentFailEvent paymentFailEvent) {
+        System.out.println("Recieved payment-fail-in event: " + paymentFailEvent);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(paymentFailEvent.getOrder().getUserId());
             if (userEntity == null) {
@@ -118,5 +119,12 @@ public class MessageConsumer {
         });
     }
 
-
+    private static OrderNotificationSentEvent buildOrderNotificationSentEvent(LicenseGeneratedEvent licenseGeneratedEvent) {
+        return new OrderNotificationSentEvent()
+                .setTimestamp(LocalDateTime.now())
+                .setUserEmail(licenseGeneratedEvent.getUserEmail())
+                .setSessionId(licenseGeneratedEvent.getSessionId())
+                .setUserId(licenseGeneratedEvent.getUserId())
+                .setOrderId(licenseGeneratedEvent.getOrderId());
+    }
 }

@@ -2,7 +2,7 @@ package com.hrbatovic.quarkus.master.auth.api.resources;
 
 import com.hrbatovic.master.quarkus.auth.api.AuthApi;
 import com.hrbatovic.master.quarkus.auth.model.*;
-import com.hrbatovic.quarkus.master.auth.JwtBuilder;
+import com.hrbatovic.quarkus.master.auth.JwtUtil;
 import com.hrbatovic.quarkus.master.auth.Hasher;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
 import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
@@ -15,6 +15,7 @@ import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RequestScoped
@@ -24,14 +25,22 @@ public class AuthApiService implements AuthApi {
     public static final String ROLE_CUSTOMER = "customer";
 
     @Inject
-    JwtBuilder jwtBuilder;
+    JwtUtil jwtUtil;
 
     @Inject
     Hasher passwordHasher;
 
     @Inject
     @Claim(standard = Claims.sub)
-    String userSub;
+    String userSubClaim;
+
+    @Inject
+    @Claim(standard = Claims.email)
+    String emailClaim;
+
+    @Inject
+    @Claim("sid")
+    String sessionIdClaim;
 
     @Inject
     @Channel("user-registered-out")
@@ -50,18 +59,18 @@ public class AuthApiService implements AuthApi {
 
         RegistrationEntity registrationEntity = RegistrationEntity.findByEmail(loginRequest.getCredentials().getEmail());
 
-        if(registrationEntity == null){
+        if (registrationEntity == null) {
             throw new RuntimeException("Login Failed");
         }
 
-        if(!passwordHasher.check(loginRequest.getCredentials().getPassword(), registrationEntity.getCredentialsEntity().getPassword())){
+        if (!passwordHasher.check(loginRequest.getCredentials().getPassword(), registrationEntity.getCredentialsEntity().getPassword())) {
 
             throw new RuntimeException("Login Failed");
         }
 
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setMessage("Logged in successfully");
-        loginResponse.setToken(jwtBuilder.buildJwtToken(registrationEntity));
+        loginResponse.setToken(jwtUtil.buildJwtToken(registrationEntity));
 
         return loginResponse;
     }
@@ -85,42 +94,43 @@ public class AuthApiService implements AuthApi {
 
         registrationEntity.persist();
 
-        UserRegisteredEvent userRegisteredEvent = mapper.map(registerRequest);
-        userRegisteredEvent.setRole(registrationEntity.getUserEntity().getRole());
-        userRegisteredEvent.setId(registrationEntity.getUserEntity().id);
-        userRegisteredEmitter.send(userRegisteredEvent);
+        String jwtToken = jwtUtil.buildJwtToken(registrationEntity);
 
-        return new RegisterResponse().message("User registered successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
+        String sessionIdString = jwtUtil.extractClaim(jwtToken, "sid");
+
+        userRegisteredEmitter.send(buildUserRegisteredEvent(registerRequest, registrationEntity, UUID.fromString(sessionIdString), registrationEntity.getCredentialsEntity().getEmail()));
+
+        return new RegisterResponse().message("User registered successfully").token(jwtToken);
     }
+
 
     @Override
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
-        UUID userId = UUID.fromString(userSub);
+        UUID userId = UUID.fromString(userSubClaim);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
-        if(registrationEntity == null){
+        if (registrationEntity == null) {
             throw new RuntimeException("User not found");
         }
-        if(!passwordHasher.check(updateCredentialsRequest.getOldPassword(), registrationEntity.getCredentialsEntity().getPassword())){
+        if (!passwordHasher.check(updateCredentialsRequest.getOldPassword(), registrationEntity.getCredentialsEntity().getPassword())) {
             throw new RuntimeException("Old password is wrong");
         }
 
         registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest));
 
-
         registrationEntity.getCredentialsEntity().setPassword(passwordHasher.hash(updateCredentialsRequest.getNewPassword()));
 
         registrationEntity.update();
+        String jwtToken = jwtUtil.buildJwtTokenKeepSession(registrationEntity, UUID.fromString(sessionIdClaim));
 
-        userCredentialsUpdatedEmitter.send(new UserCredentialsUpdatedEvent(userId, registrationEntity.getCredentialsEntity().getEmail()));
+        userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(userId, registrationEntity, UUID.fromString(sessionIdClaim), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtBuilder.buildJwtToken(registrationEntity));
+        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken);
     }
-
 
     @Override
     public SuccessResponse adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
-        if(registrationEntity == null){
+        if (registrationEntity == null) {
             throw new RuntimeException("User not found");
         }
 
@@ -130,9 +140,32 @@ public class AuthApiService implements AuthApi {
 
         registrationEntity.update();
 
-        userCredentialsUpdatedEmitter.send(new UserCredentialsUpdatedEvent(userId, registrationEntity.getCredentialsEntity().getEmail()));
+        userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(UUID.fromString(userSubClaim), registrationEntity, UUID.fromString(sessionIdClaim), emailClaim));
 
         return new SuccessResponse().message("Credentials updated successfully");
     }
+
+    private UserRegisteredEvent buildUserRegisteredEvent(RegisterRequest registerRequest, RegistrationEntity registrationEntity, UUID sessionId, String userEmail) {
+        UserRegisteredEvent userRegisteredEvent = new UserRegisteredEvent().setUserPayload(mapper.map(registerRequest));
+        userRegisteredEvent.getUserPayload().setRole(registrationEntity.getUserEntity().getRole());
+        userRegisteredEvent.getUserPayload().setId(registrationEntity.getUserEntity().id);
+        userRegisteredEvent.setTimestamp(LocalDateTime.now());
+        userRegisteredEvent.setUserId(registrationEntity.getUserEntity().id);
+        userRegisteredEvent.setUserEmail(userEmail);
+        userRegisteredEvent.setSessionId(sessionId);
+        return userRegisteredEvent;
+    }
+
+    private UserCredentialsUpdatedEvent buildUserCredentialsUpdatedEvent(UUID userId, RegistrationEntity registrationEntity, UUID sessionId, String userEmail) {
+        UserCredentialsUpdatedEvent userCredentialsUpdatedEvent = new UserCredentialsUpdatedEvent();
+        userCredentialsUpdatedEvent.setUserEmail(userEmail);
+        userCredentialsUpdatedEvent.setUserId(userId);
+        userCredentialsUpdatedEvent.setTimestamp(LocalDateTime.now());
+        userCredentialsUpdatedEvent.setId(userId);
+        userCredentialsUpdatedEvent.setSessionId(sessionId);
+        userCredentialsUpdatedEvent.setEmail(registrationEntity.getCredentialsEntity().getEmail());
+        return userCredentialsUpdatedEvent;
+    }
+
 
 }

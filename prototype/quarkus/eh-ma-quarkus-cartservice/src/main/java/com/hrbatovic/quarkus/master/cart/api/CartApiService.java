@@ -29,15 +29,22 @@ public class CartApiService implements CartProductsApi {
 
     @Inject
     @Claim(standard = Claims.sub)
-    String userSub;
+    String userSubClaim;
 
+    @Inject
+    @Claim(standard = Claims.email)
+    String emailClaim;
+
+    @Inject
+    @Claim("sid")
+    String sessionIdClaim;
     @Inject
     @Channel("checkout-started-out")
     Emitter<CheckoutStartedEvent> checkoutStartedEmmiter;
 
     @Override
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
-        UUID userId = UUID.fromString(userSub);
+        UUID userId = UUID.fromString(userSubClaim);
         ProductEntity productEntity = findProductById(addCartProductRequest.getProductId());
 
         CartEntity cartEntity = findCartByIdOrEmpty(userId);
@@ -57,10 +64,9 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
-        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSub));
+        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
 
-        CheckoutStartedEvent checkoutStartedEvent = new CheckoutStartedEvent().setPaymentMethodSelector(startCheckoutRequest.getPaymentMethodSelector()).setPaymentToken(startCheckoutRequest.getPaymentToken()).setCart(mapper.toCartPayload(cartEntity));
-        checkoutStartedEvent.setTimestamp(LocalDateTime.now());
+        CheckoutStartedEvent checkoutStartedEvent = buildCheckoutStartedEvent(startCheckoutRequest, cartEntity);
         checkoutStartedEmmiter.send(checkoutStartedEvent);
 
         return new CheckoutResponse()
@@ -68,9 +74,11 @@ public class CartApiService implements CartProductsApi {
                 .orderId(cartEntity.getId());
     }
 
+
+
     @Override
     public DeleteCartProductResponse deleteCartProduct(UUID productId) {
-        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSub));
+        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         removeCartProduct(cartEntity, productId);
 
         recalculateCartTotals(cartEntity);
@@ -81,7 +89,7 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public EmptyCartResponse emptyCart() {
-        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSub));
+        CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         cartEntity.delete();
 
         return new EmptyCartResponse().message("Cart has been successfully emptied.");
@@ -89,7 +97,7 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public CartResponse getCartProducts() {
-        CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSub));
+        CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
         return mapper.map(cartEntity);
     }
 
@@ -99,7 +107,7 @@ public class CartApiService implements CartProductsApi {
             throw new WebApplicationException("Invalid quantity. Quantity must be at least 1.", Response.Status.BAD_REQUEST);
         }
 
-        CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSub));
+        CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
         CartProductEntity cartProduct = updateCartProductQuantity(cartEntity, productId, request.getQuantity());
 
         recalculateCartTotals(cartEntity);
@@ -184,6 +192,10 @@ public class CartApiService implements CartProductsApi {
         cartEntity.setTotalPrice(BigDecimal.ZERO);
         return cartEntity;
 
+    }
+
+    private CheckoutStartedEvent buildCheckoutStartedEvent(StartCheckoutRequest startCheckoutRequest, CartEntity cartEntity) {
+        return new CheckoutStartedEvent().setTimestamp(LocalDateTime.now()).setUserId(UUID.fromString(userSubClaim)).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setPaymentMethodSelector(startCheckoutRequest.getPaymentMethodSelector()).setPaymentToken(startCheckoutRequest.getPaymentToken()).setCart(mapper.toCartPayload(cartEntity));
     }
 
 }

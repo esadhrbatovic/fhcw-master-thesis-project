@@ -1,76 +1,29 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in;
 
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.UserPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.util.UUID;
 
 public class UserRegisteredEvent implements Serializable {
 
-    private UUID id;
+    private UserPayload userPayload;
 
-    private String role;
-
-    private String email;
-
-    private String firstName;
-
-    private String lastName;
-
-    public UserRegisteredEvent() {
+    public UserPayload getUserPayload() {
+        return userPayload;
     }
 
-    public UUID getId() {
-        return id;
-    }
-
-    public UserRegisteredEvent setId(UUID id) {
-        this.id = id;
-        return this;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public UserRegisteredEvent setRole(String role) {
-        this.role = role;
-        return this;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public UserRegisteredEvent setEmail(String email) {
-        this.email = email;
-        return this;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public UserRegisteredEvent setFirstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public UserRegisteredEvent setLastName(String lastName) {
-        this.lastName = lastName;
+    public UserRegisteredEvent setUserPayload(UserPayload userPayload) {
+        this.userPayload = userPayload;
         return this;
     }
 
     @Override
     public String toString() {
-        return "UserRegisteredEvent{" +
-                "id=" + id +
-                ", role='" + role + '\'' +
-                ", email='" + email + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("userPayload", userPayload)
+                .toString();
     }
 }

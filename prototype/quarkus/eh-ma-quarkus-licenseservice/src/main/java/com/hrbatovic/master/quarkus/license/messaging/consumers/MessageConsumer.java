@@ -37,7 +37,7 @@ public class MessageConsumer {
     public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEvent) {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
 
-        executor.runAsync(()->{
+        executor.runAsync(() -> {
             List<OrderItemPayload> orderItems = paymentSuccessEvent.getOrder().getOrderItems();
 
             orderItems.forEach(o->generateLicense(o, paymentSuccessEvent.getOrder().getUserId(), paymentSuccessEvent.getOrder().getId()));
@@ -45,11 +45,7 @@ public class MessageConsumer {
             List<LicenseEntity> licenses = LicenseEntity.find("orderId", paymentSuccessEvent.getOrder().getId()).list();
             //TODO: error handling
 
-            LicensesGeneratedEvent licensesGeneratedEvent = new LicensesGeneratedEvent();
-            licensesGeneratedEvent.setLicenses(mapper.map(licenses));
-            licensesGeneratedEvent.setOrderId(paymentSuccessEvent.getOrder().getId());
-            licensesGeneratedEvent.setUserId(paymentSuccessEvent.getOrder().getUserId());
-            licensesGeneratedEmitter.send(licensesGeneratedEvent);
+            licensesGeneratedEmitter.send(buildLicensesGeneratedEvent(paymentSuccessEvent, licenses));
         });
 
     }
@@ -85,11 +81,11 @@ public class MessageConsumer {
 
         executor.runAsync(()->{
 
-            if(UserEntity.findById(userRegisteredEvent.getId()) != null){
+            if(UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null){
                 return;
             }
 
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.persist();
         });
@@ -100,18 +96,19 @@ public class MessageConsumer {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
 
         executor.runAsync(()->{
-            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getUserPayload().getId());
             if(userEntity == null){
                 return;
             }
 
-            mapper.update(userEntity, userUpdatedEvent);
+            mapper.update(userEntity, userUpdatedEvent.getUserPayload());
             userEntity.update();
         });
     }
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(id);
             if (userEntity == null) {
@@ -122,5 +119,13 @@ public class MessageConsumer {
         });
     }
 
-
+    private LicensesGeneratedEvent buildLicensesGeneratedEvent(PaymentSuccessEvent paymentSuccessEvent, List<LicenseEntity> licenses) {
+        return new LicensesGeneratedEvent()
+                .setSessionId(paymentSuccessEvent.getSessionId())
+                .setUserEmail(paymentSuccessEvent.getUserEmail())
+                .setUserId(paymentSuccessEvent.getUserId())
+                .setTimestamp(LocalDateTime.now())
+                .setOrderId(paymentSuccessEvent.getOrder().getId())
+                .setLicenses(mapper.map(licenses));
+    }
 }

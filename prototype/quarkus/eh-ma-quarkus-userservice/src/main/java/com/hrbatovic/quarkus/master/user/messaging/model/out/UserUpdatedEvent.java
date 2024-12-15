@@ -1,116 +1,89 @@
 package com.hrbatovic.quarkus.master.user.messaging.model.out;
 
+import com.hrbatovic.quarkus.master.user.messaging.model.common.payload.UserPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class UserUpdatedEvent implements Serializable {
-    public static class Address {
-        private String street;
-        private String city;
-        private String state;
-        private String postalCode;
-        private String country;
 
-        public Address() {
-        }
+    private UserPayload userPayload;
 
-        public String getStreet() {
-            return street;
-        }
+    //Metadata
+    private LocalDateTime timestamp;
 
-        public void setStreet(String street) {
-            this.street = street;
-        }
+    private UUID sessionId;
 
-        public String getCity() {
-            return city;
-        }
+    private UUID userId;
 
-        public void setCity(String city) {
-            this.city = city;
-        }
+    private String userEmail;
 
-        public String getState() {
-            return state;
-        }
-
-        public void setState(String state) {
-            this.state = state;
-        }
-
-        public String getPostalCode() {
-            return postalCode;
-        }
-
-        public void setPostalCode(String postalCode) {
-            this.postalCode = postalCode;
-        }
-
-        public String getCountry() {
-            return country;
-        }
-
-        public void setCountry(String country) {
-            this.country = country;
-        }
-    }
-
-    private UUID id;
-    private String firstName;
-    private String lastName;
-    private String role;
-    private String phoneNumber;
-    private UserUpdatedEvent.Address address;
+    private final String sourceService = "userservice";
 
     public UserUpdatedEvent() {
     }
 
-    public UUID getId() {
-        return id;
+    public UserPayload getUserPayload() {
+        return userPayload;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public UserUpdatedEvent setUserPayload(UserPayload userPayload) {
+        this.userPayload = userPayload;
+        return this;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public UserUpdatedEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
     }
 
-    public String getLastName() {
-        return lastName;
+    public UUID getSessionId() {
+        return sessionId;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public UserUpdatedEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
     }
 
-    public String getRole() {
-        return role;
+    public UUID getUserId() {
+        return userId;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public UserUpdatedEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
     }
 
-    public UserUpdatedEvent.Address getAddress() {
-        return address;
+    public String getUserEmail() {
+        return userEmail;
     }
 
-    public void setAddress(UserUpdatedEvent.Address address) {
-        this.address = address;
+    public UserUpdatedEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getSourceService() {
+        return sourceService;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("user", userPayload)
+                .append("timestamp", timestamp)
+                .append("sessionId", sessionId)
+                .append("userId", userId)
+                .append("userEmail", userEmail)
+                .append("sourceService", sourceService)
+                .toString();
     }
-
 }

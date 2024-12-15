@@ -6,7 +6,9 @@ import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.product.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.product.messaging.model.in.UserUpdatedEvent;
+import com.hrbatovic.quarkus.master.product.messaging.model.in.payload.UserPayload;
 import com.hrbatovic.quarkus.master.product.messaging.model.out.payload.ProductPayload;
+import io.vertx.ext.auth.User;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -50,9 +52,9 @@ public abstract class MapUtil {
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     public abstract void update(@MappingTarget ProductEntity productEntity, UpdateProductRequest updateProductRequest,  CategoryEntity categoryEntity);
 
-    public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+    public abstract UserEntity map(UserPayload userPayload);
 
-    public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
+    public abstract void update(@MappingTarget UserEntity userEntity, UserPayload userPayload);
 
     public abstract ProductPayload map(ProductEntity productEntity);
 }

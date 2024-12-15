@@ -29,11 +29,11 @@ public class MessageConsumer {
 
         executor.runAsync(()->{
 
-            if(UserEntity.findById(userRegisteredEvent.getId()) != null){
+            if(UserEntity.findById(userRegisteredEvent.getUserPayload().getId()) != null){
                 return;
             }
 
-            UserEntity userEntity = mapper.map(userRegisteredEvent);
+            UserEntity userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
             userEntity.persist();
         });
@@ -44,18 +44,19 @@ public class MessageConsumer {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
 
         executor.runAsync(()->{
-            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getId());
+            UserEntity userEntity = UserEntity.findById(userUpdatedEvent.getUserPayload().getId());
             if(userEntity == null){
                 return;
             }
 
-            mapper.update(userEntity, userUpdatedEvent);
+            mapper.update(userEntity, userUpdatedEvent.getUserPayload());
             userEntity.update();
         });
     }
 
     @Incoming("user-deleted-in")
     public void consumeUserDeleted(UUID id) {
+        System.out.println("Recieved user-deleted-in event: " + id);
         executor.runAsync(() -> {
             UserEntity userEntity = UserEntity.findById(id);
             if (userEntity == null) {

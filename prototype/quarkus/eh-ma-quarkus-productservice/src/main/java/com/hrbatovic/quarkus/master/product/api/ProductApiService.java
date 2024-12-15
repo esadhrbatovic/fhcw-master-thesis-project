@@ -11,6 +11,8 @@ import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -25,6 +27,18 @@ import java.util.stream.Collectors;
 
 @RequestScoped
 public class ProductApiService implements ProductsApi {
+
+    @Inject
+    @Claim(standard = Claims.sub)
+    String userSubClaim;
+
+    @Inject
+    @Claim(standard = Claims.email)
+    String emailClaim;
+
+    @Inject
+    @Claim("sid")
+    String sessionIdClaim;
 
     @Inject
     MapUtil mapper;
@@ -113,9 +127,10 @@ public class ProductApiService implements ProductsApi {
 
         productEntity.update();
 
-        productUpdatedEmitter.send(new ProductUpdatedEvent(mapper.map(productEntity)));
+        productUpdatedEmitter.send(buildProductUpdatedEvent(productEntity));
         return mapper.map(productEntity, categoryEntity.getName());
     }
+
 
     @Override
     public ProductResponse createProduct(CreateProductRequest createProductRequest) {
@@ -129,9 +144,10 @@ public class ProductApiService implements ProductsApi {
         ProductEntity productEntity = mapper.map(createProductRequest, category.getId());
 
         productEntity.persist();
-        productCreatedEmitter.send(new ProductCreatedEvent(mapper.map(productEntity)));
+        productCreatedEmitter.send(buildProductCreatedEvent(productEntity));
         return mapper.map(productEntity, category.getName());
     }
+
 
     @Override
     public DeleteProductResponse deleteProduct(UUID productId) {
@@ -146,6 +162,14 @@ public class ProductApiService implements ProductsApi {
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product successfully deleted.");
         return response;
+    }
+
+    private ProductUpdatedEvent buildProductUpdatedEvent(ProductEntity productEntity) {
+        return new ProductUpdatedEvent().setTimestamp(LocalDateTime.now()).setUserId(UUID.fromString(userSubClaim)).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setProduct(mapper.map(productEntity));
+    }
+
+    private ProductCreatedEvent buildProductCreatedEvent(ProductEntity productEntity) {
+        return new ProductCreatedEvent().setUserId(UUID.fromString(userSubClaim)).setTimestamp(LocalDateTime.now()).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setProduct(mapper.map(productEntity));
     }
 
 }

@@ -7,6 +7,8 @@ import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateU
 import com.hrbatovic.master.quarkus.license.model.*;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
@@ -19,6 +21,18 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
     @Inject
     MapUtil mapping;
+
+    @Inject
+    @Claim(standard = Claims.sub)
+    String userSubClaim;
+
+    @Inject
+    @Claim(standard = Claims.email)
+    String emailClaim;
+
+    @Inject
+    @Claim("sid")
+    String sessionIdClaim;
 
     @Inject
     @Channel("license-template-created-out")
@@ -38,10 +52,11 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
         licenseTemplateEntity.setCreatedAt(LocalDateTime.now());
         licenseTemplateEntity.persist();
 
-        licenseTemplateCreatedEmitter.send(new LicenseTemplateCreatedEvent().setLicenseTemplate(mapping.map(licenseTemplateEntity)));
+        licenseTemplateCreatedEmitter.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
 
         return mapping.toApi(licenseTemplateEntity);
     }
+
 
     @Override
     public DeleteLicenseTemplateResponse deleteLicenseTemplate(UUID productId) {
@@ -82,9 +97,28 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
         licenseTemplateEntity.setUpdatedAt(LocalDateTime.now());
         licenseTemplateEntity.update();
 
-        licenseTemplateUpdatedEmitter.send(new LicenseTemplateUpdatedEvent().setLicenseTemplate(mapping.map(licenseTemplateEntity)));
+        licenseTemplateUpdatedEmitter.send(buildLicenseTempalteUpdatedEvent(licenseTemplateEntity));
 
         return mapping.toApi(licenseTemplateEntity);
     }
+
+    private LicenseTemplateUpdatedEvent buildLicenseTempalteUpdatedEvent(LicenseTemplateEntity licenseTemplateEntity) {
+        return new LicenseTemplateUpdatedEvent()
+                .setTimestamp(LocalDateTime.now())
+                .setUserEmail(emailClaim)
+                .setUserId(UUID.fromString(userSubClaim))
+                .setSessionId(UUID.fromString(sessionIdClaim))
+                .setLicenseTemplate(mapping.map(licenseTemplateEntity));
+    }
+
+    private LicenseTemplateCreatedEvent buildLicenseTemplateCreatedEvent(LicenseTemplateEntity licenseTemplateEntity) {
+        return new LicenseTemplateCreatedEvent()
+                .setUserEmail(userSubClaim)
+                .setUserId(UUID.fromString(userSubClaim))
+                .setSessionId(UUID.fromString(sessionIdClaim))
+                .setTimestamp(LocalDateTime.now())
+                .setLicenseTemplate(mapping.map(licenseTemplateEntity));
+    }
+
 
 }

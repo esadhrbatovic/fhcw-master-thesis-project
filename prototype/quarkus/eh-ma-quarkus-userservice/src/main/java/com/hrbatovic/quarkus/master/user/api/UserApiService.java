@@ -74,8 +74,8 @@ public class UserApiService implements UsersApi {
 
         userEntity.persistOrUpdate();
 
-        UserUpdatedEvent userUpdatedEvent = mapper.map(updateUserProfileRequest);
-        userUpdatedEvent.setId(userEntity.getId());
+        UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent().setUserPayload(mapper.map(updateUserProfileRequest));
+        userUpdatedEvent.getUserPayload().setId(userEntity.getId());
         userUpdatedEmitter.send(userUpdatedEvent);
 
         return mapper.map(userEntity);

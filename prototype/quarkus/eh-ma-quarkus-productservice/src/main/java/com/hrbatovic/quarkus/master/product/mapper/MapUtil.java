@@ -6,6 +6,7 @@ import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.product.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.product.messaging.model.in.UserUpdatedEvent;
+import com.hrbatovic.quarkus.master.product.messaging.model.out.payload.ProductPayload;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -52,4 +53,6 @@ public abstract class MapUtil {
     public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
 
     public abstract void update(@MappingTarget UserEntity userEntity, UserUpdatedEvent userUpdatedEvent);
+
+    public abstract ProductPayload map(ProductEntity productEntity);
 }

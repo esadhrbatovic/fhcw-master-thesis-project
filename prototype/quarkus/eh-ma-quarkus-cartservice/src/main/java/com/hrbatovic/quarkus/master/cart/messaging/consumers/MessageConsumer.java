@@ -5,6 +5,8 @@ import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.cart.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.cart.messaging.model.OrderCreatedEventPayload;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductCreatedEvent;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductUpdatedEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserUpdatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,29 +27,32 @@ public class MessageConsumer {
 
 
     @Incoming("product-created-in")
-    public void onProductCreated(ProductEntity productEntity) {
-        System.out.println("Recieved product-created-in event: " + productEntity);
+    public void onProductCreated(ProductCreatedEvent productCreatedEvent) {
+        System.out.println("Recieved product-created-in event: " + productCreatedEvent);
 
         executor.runAsync(()->{
-            if(ProductEntity.findById(productEntity.getId()) != null){
+            if(ProductEntity.findById(productCreatedEvent.getProduct().getId()) != null){
                 return;
             }
 
-            productEntity.persistOrUpdate();
+            ProductEntity productEntity = mapper.map(productCreatedEvent.getProduct());
+
+            productEntity.persist();
         });
     }
 
     @Incoming("product-updated-in")
-    public void onProductUpdated(ProductEntity productEntity) {
-        System.out.println("Recieved product-updated-in event: " + productEntity);
+    public void onProductUpdated(ProductUpdatedEvent productUpdatedEvent) {
+        System.out.println("Recieved product-updated-in event: " + productUpdatedEvent);
 
         executor.runAsync(()->{
-            ProductEntity pE = ProductEntity.findById(productEntity.getId());
+            ProductEntity pE = ProductEntity.findById(productUpdatedEvent.getProduct().getId());
             if (pE == null) {
                 return;
             }
 
-            productEntity.persistOrUpdate();
+            ProductEntity productEntity = mapper.map(productUpdatedEvent.getProduct());
+            productEntity.update();
         });
     }
 

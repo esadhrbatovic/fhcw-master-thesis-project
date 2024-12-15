@@ -11,6 +11,19 @@ servers:
     description: local dev
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /users:
     get:
       summary: List all users with optional search and pagination
@@ -356,6 +369,15 @@ components:
         details:
           type: string
           example: You are not authorized to access this resource.
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
+
 
 security:
   - bearerAuth: []

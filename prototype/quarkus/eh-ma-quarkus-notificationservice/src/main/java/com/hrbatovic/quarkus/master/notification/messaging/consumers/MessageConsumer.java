@@ -2,11 +2,8 @@ package com.hrbatovic.quarkus.master.notification.messaging.consumers;
 
 import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.mapper.MapUtil;
-import com.hrbatovic.quarkus.master.notification.messaging.model.in.LicenseGeneratedEvent;
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.*;
 import com.hrbatovic.quarkus.master.notification.messaging.model.out.OrderNotificationSentEvent;
-import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserCredentialsUpdatedEvent;
-import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserRegisteredEvent;
-import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserUpdatedEvent;
 import io.quarkus.mailer.Mail;
 import io.quarkus.mailer.Mailer;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,7 +44,6 @@ public class MessageConsumer {
 
     }
 
-
     @Incoming("user-registered-in")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
         System.out.println("Recieved user-registered-in event");
@@ -65,7 +61,7 @@ public class MessageConsumer {
     public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
         UserEntity userEntity = UserEntity.findById(licenseGeneratedEvent.getUserId());
 
-        mailer.send(Mail.withText(userEntity.getEmail(), "test esad mail", "Hi there! " + licenseGeneratedEvent.getLicenses()));
+        mailer.send(Mail.withText(userEntity.getEmail(), "License delivery, order - " + licenseGeneratedEvent.getOrderId(), "Hi " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", your licenses are available: " + licenseGeneratedEvent.getLicenses().toString()));
     }
 
     @Incoming("user-updated-in")
@@ -107,6 +103,18 @@ public class MessageConsumer {
 
             mapper.update(userEntity, userCredentialsUpdatedEvent);
             userEntity.update();
+        });
+    }
+
+    @Incoming("payment-fail-in")
+    public void onPaymentFail(PaymentFailEvent paymentFailEvent) {
+        executor.runAsync(() -> {
+            UserEntity userEntity = UserEntity.findById(paymentFailEvent.getOrder().getUserId());
+            if (userEntity == null) {
+                return;
+            }
+
+            mailer.send(Mail.withText(userEntity.getEmail(), "Payment failed - order:" + paymentFailEvent.getOrder().getId(), "Hello " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", there was a problem with your payment: " + paymentFailEvent.getMessage()));
         });
     }
 

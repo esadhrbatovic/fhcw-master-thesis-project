@@ -12,6 +12,19 @@ servers:
     description: local dev
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /cart-products:
     get:
       summary: Get all products in the user's shopping cart
@@ -168,6 +181,13 @@ paths:
         - Shopping Cart
       security:
         - bearerAuth: []
+      requestBody:
+        description: Start checkout process
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StartCheckoutRequest'
       responses:
         '200':
           description: Checkout initiated successfully
@@ -259,6 +279,15 @@ components:
         - totalProducts
         - totalPrice
 
+    StartCheckoutRequest:
+      type: object
+      properties:
+        paymentMethodSelector:
+          type: string
+        paymentToken:
+          type: string
+          format: uuid
+
     AddCartProductRequest:
       type: object
       required:
@@ -337,6 +366,14 @@ components:
         details:
           type: string
           example: "Quantity must be at least 1."
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

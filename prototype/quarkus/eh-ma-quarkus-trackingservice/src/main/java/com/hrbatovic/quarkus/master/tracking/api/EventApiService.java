@@ -1,4 +1,4 @@
-package com.hrbatovic.master.tracking.api;
+package com.hrbatovic.quarkus.master.tracking.api;
 
 import com.hrbatovic.master.quarkus.tracking.api.EventsApi;
 import com.hrbatovic.master.quarkus.tracking.model.EventListResponse;

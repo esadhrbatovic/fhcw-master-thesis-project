@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /license-templates:
     get:
       summary: List all license templates
@@ -389,7 +402,6 @@ components:
         - licenseDuration
         - createdAt
         - updatedAt
-      additionalProperties: false
 
     LicenseTemplateResponse:
       allOf:
@@ -402,7 +414,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LicenseTemplate'
-      additionalProperties: false
 
     UpdateLicenseTemplateRequest:
       type: object
@@ -413,7 +424,6 @@ components:
           type: integer
           description: Duration of the license in days (0 for perpetual)
           example: 365
-      additionalProperties: false
 
     License:
       type: object
@@ -456,7 +466,6 @@ components:
         - licenseDuration
         - issuedAt
         - status
-      additionalProperties: false
 
     CreateLicenseTemplateRequest:
       type: object
@@ -473,7 +482,6 @@ components:
           type: integer
           description: Duration of the license in days (0 for perpetual)
           example: 365
-      additionalProperties: false
 
     LicenseResponse:
       allOf:
@@ -501,8 +509,6 @@ components:
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -513,7 +519,6 @@ components:
         details:
           type: string
           example: 'License duration must be a non-negative integer.'
-      additionalProperties: false
 
     DeleteLicenseTemplateResponse:
       type: object
@@ -523,7 +528,14 @@ components:
           example: "License template deleted successfully."
       required:
         - message
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

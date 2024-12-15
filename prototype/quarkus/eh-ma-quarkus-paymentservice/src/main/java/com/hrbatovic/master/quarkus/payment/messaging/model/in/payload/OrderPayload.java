@@ -1,5 +1,8 @@
 package com.hrbatovic.master.quarkus.payment.messaging.model.in.payload;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,7 +25,9 @@ public class OrderPayload implements Serializable {
 
     private LocalDateTime updatedAt;
 
-    private String paymenToken;
+    private UUID paymenToken;
+
+    private String paymentMethodSelector;
 
     private List<OrderItemPayload> orderItems;
 
@@ -92,12 +97,21 @@ public class OrderPayload implements Serializable {
         return this;
     }
 
-    public String getPaymenToken() {
+    public UUID getPaymenToken() {
         return paymenToken;
     }
 
-    public OrderPayload setPaymenToken(String paymenToken) {
+    public OrderPayload setPaymenToken(UUID paymenToken) {
         this.paymenToken = paymenToken;
+        return this;
+    }
+
+    public String getPaymentMethodSelector() {
+        return paymentMethodSelector;
+    }
+
+    public OrderPayload setPaymentMethodSelector(String paymentMethodSelector) {
+        this.paymentMethodSelector = paymentMethodSelector;
         return this;
     }
 
@@ -112,16 +126,17 @@ public class OrderPayload implements Serializable {
 
     @Override
     public String toString() {
-        return "OrderPayload{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", status='" + status + '\'' +
-                ", currency='" + currency + '\'' +
-                ", totalAmount=" + totalAmount +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", paymenToken='" + paymenToken + '\'' +
-                ", orderItems=" + orderItems +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("userId", userId)
+                .append("status", status)
+                .append("currency", currency)
+                .append("totalAmount", totalAmount)
+                .append("createdAt", createdAt)
+                .append("updatedAt", updatedAt)
+                .append("paymenToken", paymenToken)
+                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("orderItems", orderItems)
+                .toString();
     }
 }

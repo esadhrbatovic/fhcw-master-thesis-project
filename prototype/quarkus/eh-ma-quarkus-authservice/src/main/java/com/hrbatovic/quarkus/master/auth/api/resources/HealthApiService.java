@@ -1,18 +1,20 @@
 package com.hrbatovic.quarkus.master.auth.api.resources;
 
+import com.hrbatovic.master.quarkus.auth.api.HealthApi;
+import com.hrbatovic.master.quarkus.auth.model.SuccessResponse;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
+import org.eclipse.microprofile.health.spi.HealthCheckResponseProvider;
 
 
-@Path("/health")
-public class HealthApiService {
+@RequestScoped
+public class HealthApiService implements HealthApi {
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() throws Exception {
-        return "Quarkus authservice is up and running!";
+    @Override
+    public SuccessResponse healthCheck() {
+        return new SuccessResponse().message("Quarkus authservice is up and running.");
     }
-
 }

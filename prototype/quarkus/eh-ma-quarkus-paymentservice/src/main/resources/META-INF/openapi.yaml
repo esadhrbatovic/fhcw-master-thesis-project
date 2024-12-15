@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /payment-methods:
     get:
       summary: Get a list of available payment methods
@@ -263,7 +276,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaymentMethod'
-      additionalProperties: false
 
     CreatePaymentMethodRequest:
       type: object
@@ -371,7 +383,6 @@ components:
           example: "Payment method deleted successfully."
       required:
         - message
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -382,7 +393,14 @@ components:
         details:
           type: string
           example: "The name field is required."
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

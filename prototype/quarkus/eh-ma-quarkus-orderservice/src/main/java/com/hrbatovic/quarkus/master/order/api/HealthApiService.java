@@ -1,19 +1,14 @@
 package com.hrbatovic.quarkus.master.order.api;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import com.hrbatovic.master.quarkus.order.api.HealthApi;
+import com.hrbatovic.master.quarkus.order.model.SuccessResponse;
+import jakarta.enterprise.context.RequestScoped;
 
+@RequestScoped
+public class HealthApiService implements HealthApi {
 
-@Path("/health")
-public class HealthApiService {
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String hello() throws Exception {
-
-        return "Quarkus authservice is up and running!";
+    @Override
+    public SuccessResponse healthCheck() {
+        return new SuccessResponse().message("Quarkus orderservice is up and running.");
     }
-
 }

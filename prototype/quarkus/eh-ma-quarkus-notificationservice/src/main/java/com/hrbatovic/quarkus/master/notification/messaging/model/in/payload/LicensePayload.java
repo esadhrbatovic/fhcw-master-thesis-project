@@ -1,6 +1,8 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in.payload;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -91,15 +93,15 @@ public class LicensePayload implements Serializable {
 
     @Override
     public String toString() {
-        return "LicenseEntity{" +
-                "serialNumber=" + serialNumber +
-                ", productId=" + productId +
-                ", userId=" + userId +
-                ", orderId=" + orderId +
-                ", licenseDuration=" + licenseDuration +
-                ", issuedAt=" + issuedAt +
-                ", expiresAt=" + expiresAt +
-                ", active=" + active +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("serialNumber", serialNumber)
+                .append("productId", productId)
+                .append("userId", userId)
+                .append("orderId", orderId)
+                .append("licenseDuration", licenseDuration)
+                .append("issuedAt", issuedAt)
+                .append("expiresAt", expiresAt)
+                .append("active", active)
+                .toString();
     }
 }

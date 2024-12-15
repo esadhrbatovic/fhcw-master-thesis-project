@@ -39,7 +39,8 @@ public class MessageConsumer {
         }
 
         orderEntity = mapper.map(checkoutStartedEvent.getCart());
-
+        orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethodSelector());
+        orderEntity.setPaymenToken(checkoutStartedEvent.getPaymentToken());
         orderEntity.persist();
 
         OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent().setOrder(mapper.toOrderPayload(orderEntity));
@@ -102,6 +103,20 @@ public class MessageConsumer {
         });
     }
 
+    @Incoming("payment-fail-in")
+    public void onPaymentFail(PaymentFailEvent paymentFailEvent) {
+        System.out.println("Recieved payment-fail-in event: " + paymentFailEvent);
+
+        executor.runAsync(() -> {
+            OrderEntity orderEntity = OrderEntity.findById(paymentFailEvent.getOrder().getId());
+            orderEntity.setStatus(Order.StatusEnum.PAYMENT_FAILED.toString());
+            orderEntity.setStatusDetail(paymentFailEvent.getMessage());
+            orderEntity.setUpdatedAt(LocalDateTime.now());
+            orderEntity.update();
+        });
+    }
+
+
 
     @Incoming("licenses-generated-in")
     public void onLicensesGenerated(LicensesGeneratedEvent licensesGeneratedEventPayload){
@@ -129,6 +144,5 @@ public class MessageConsumer {
         });
 
     }
-
 
 }

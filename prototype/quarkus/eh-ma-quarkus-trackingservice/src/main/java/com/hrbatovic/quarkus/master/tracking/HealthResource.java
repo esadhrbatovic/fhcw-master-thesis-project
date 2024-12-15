@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.user.api;
+package com.hrbatovic.quarkus.master.tracking;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -13,7 +13,7 @@ public class HealthResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() throws Exception {
 
-        return "Quarkus userservice is up and running!";
+        return "Quarkus trackingservice is up and running!";
     }
 
 }

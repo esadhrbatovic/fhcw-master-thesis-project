@@ -5,6 +5,8 @@ import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Sort;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.math.BigDecimal;
@@ -24,6 +26,8 @@ public class OrderEntity extends PanacheMongoEntityBase {
 
     private String status;
 
+    private String statusDetail;
+
     private String currency;
 
     private BigDecimal totalAmount;
@@ -32,7 +36,9 @@ public class OrderEntity extends PanacheMongoEntityBase {
 
     private LocalDateTime updatedAt;
 
-    private String paymenToken;
+    private UUID paymenToken;
+
+    private String paymentMethod;
 
     private List<OrderItemEntity> orderItems;
 
@@ -89,95 +95,119 @@ public class OrderEntity extends PanacheMongoEntityBase {
         }
     }
 
-    public OrderEntity(UUID id) {
-        this.id = id;
-        this.status = "open";
-    }
-
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public OrderEntity setId(UUID id) {
         this.id = id;
+        return this;
     }
 
     public UUID getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public OrderEntity setUserId(UUID userId) {
         this.userId = userId;
+        return this;
     }
 
     public String getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public OrderEntity setStatus(String status) {
         this.status = status;
+        return this;
+    }
+
+    public String getStatusDetail() {
+        return statusDetail;
+    }
+
+    public OrderEntity setStatusDetail(String statusDetail) {
+        this.statusDetail = statusDetail;
+        return this;
     }
 
     public String getCurrency() {
         return currency;
     }
 
-    public void setCurrency(String currency) {
+    public OrderEntity setCurrency(String currency) {
         this.currency = currency;
+        return this;
     }
 
     public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(BigDecimal totalAmount) {
+    public OrderEntity setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
+        return this;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public OrderEntity setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+        return this;
     }
 
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public OrderEntity setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+        return this;
     }
 
-    public String getPaymenToken() {
+    public UUID getPaymenToken() {
         return paymenToken;
     }
 
-    public void setPaymenToken(String paymenToken) {
+    public OrderEntity setPaymenToken(UUID paymenToken) {
         this.paymenToken = paymenToken;
+        return this;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public OrderEntity setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+        return this;
     }
 
     public List<OrderItemEntity> getOrderItems() {
         return orderItems;
     }
 
-    public void setOrderItems(List<OrderItemEntity> orderItems) {
+    public OrderEntity setOrderItems(List<OrderItemEntity> orderItems) {
         this.orderItems = orderItems;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "OrderEntity{" +
-                "id=" + id +
-                ", userId=" + userId +
-                ", status='" + status + '\'' +
-                ", currency='" + currency + '\'' +
-                ", totalAmount=" + totalAmount +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", paymenToken='" + paymenToken + '\'' +
-                ", orderItems=" + orderItems +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("id", id)
+                .append("userId", userId)
+                .append("status", status)
+                .append("statusDetail", statusDetail)
+                .append("currency", currency)
+                .append("totalAmount", totalAmount)
+                .append("createdAt", createdAt)
+                .append("updatedAt", updatedAt)
+                .append("paymenToken", paymenToken)
+                .append("paymentMethod", paymentMethod)
+                .append("orderItems", orderItems)
+                .toString();
     }
 }

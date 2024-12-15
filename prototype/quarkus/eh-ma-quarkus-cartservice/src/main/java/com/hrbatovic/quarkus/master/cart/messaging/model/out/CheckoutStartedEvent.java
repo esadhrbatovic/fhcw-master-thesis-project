@@ -1,17 +1,42 @@
 package com.hrbatovic.quarkus.master.cart.messaging.model.out;
 
 import com.hrbatovic.quarkus.master.cart.messaging.model.out.payload.CartPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 public class CheckoutStartedEvent implements Serializable {
+
+    private UUID paymentToken;
+
+    private String paymentMethodSelector;
 
     private CartPayload cart;
 
     private LocalDateTime timestamp;
 
     public CheckoutStartedEvent() {
+    }
+
+    public UUID getPaymentToken() {
+        return paymentToken;
+    }
+
+    public CheckoutStartedEvent setPaymentToken(UUID paymentToken) {
+        this.paymentToken = paymentToken;
+        return this;
+    }
+
+    public String getPaymentMethodSelector() {
+        return paymentMethodSelector;
+    }
+
+    public CheckoutStartedEvent setPaymentMethodSelector(String paymentMethodSelector) {
+        this.paymentMethodSelector = paymentMethodSelector;
+        return this;
     }
 
     public CartPayload getCart() {
@@ -34,11 +59,11 @@ public class CheckoutStartedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "CheckoutStartedEvent{" +
-                "cartEntity=" + cart +
-                ", timestamp=" + timestamp +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("paymentToken", paymentToken)
+                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("cart", cart)
+                .append("timestamp", timestamp)
+                .toString();
     }
-
-
 }

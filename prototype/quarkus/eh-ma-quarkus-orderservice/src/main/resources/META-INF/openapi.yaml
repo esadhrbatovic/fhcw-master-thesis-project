@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /orders:
     get:
       summary: Get a list of all orders (admin only)
@@ -188,6 +201,7 @@ components:
         enum:
           - OPEN
           - PAYMENT_COMPLETED
+          - PAYMENT_FAILED
           - LICENSES_GENERATED
           - COMPLETED
         example: "Completed"
@@ -221,9 +235,20 @@ components:
           enum:
             - OPEN
             - PAYMENT_COMPLETED
+            - PAYMENT_FAILED
             - LICENSES_GENERATED
             - COMPLETED
           example: "open"
+        statusDetail:
+          type: string
+          example: "There was a problem with the payment, the chosen payment method is not available."
+        paymentMethod:
+          type: string
+          example: "eh-ma-payment-method-paypal"
+        paymentToken:
+          type: string
+          format: uuid
+          example: 789e4567-e89b-12d3-a456-426614174000
         totalAmount:
           type: number
           format: float
@@ -254,7 +279,6 @@ components:
         - createdAt
         - updatedAt
         - items
-      additionalProperties: false
 
     OrderItem:
       type: object
@@ -283,7 +307,6 @@ components:
         - quantity
         - price
         - totalPrice
-      additionalProperties: false
 
     OrderListResponse:
       type: object
@@ -307,8 +330,6 @@ components:
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -319,7 +340,15 @@ components:
         details:
           type: string
           example: "You are not authorized to access this resource."
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
+
 
 security:
   - bearerAuth: []

@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartProductPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.out.payload.OrderPayload;
+import jakarta.ws.rs.Path;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -38,7 +39,7 @@ public abstract class MapUtil {
     @Mapping(target="orderItems", source = "cartProducts")
     public abstract OrderEntity map(CartPayload cart);
 
-
+    @Mapping(target ="paymentMethodSelector", source="paymentMethod")
     public abstract OrderPayload toOrderPayload(OrderEntity orderEntity);
 
 }

@@ -1,6 +1,8 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in;
 
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.LicensePayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.List;
@@ -38,10 +40,10 @@ public class LicenseGeneratedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "LicensesGeneratedEventPayload{" +
-                "orderId=" + orderId +
-                ", userId=" + userId +
-                ", licenses=" + licenses +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("orderId", orderId)
+                .append("userId", userId)
+                .append("licenses", licenses)
+                .toString();
     }
 }

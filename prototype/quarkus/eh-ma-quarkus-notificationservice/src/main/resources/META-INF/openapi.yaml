@@ -14,6 +14,19 @@ servers:
     description: Staging server
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /notifications:
     get:
       summary: List sent notifications (admin only)
@@ -250,7 +263,6 @@ components:
         - subject
         - body
         - sent_at
-      additionalProperties: false
 
     NotificationResponse:
       allOf:
@@ -278,8 +290,6 @@ components:
             limit:
               type: integer
               example: 10
-          additionalProperties: false
-      additionalProperties: false
 
     ErrorResponse:
       type: object
@@ -290,7 +300,14 @@ components:
         details:
           type: string
           example: 'You are not authorized to access this resource.'
-      additionalProperties: false
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
 
 security:
   - bearerAuth: []

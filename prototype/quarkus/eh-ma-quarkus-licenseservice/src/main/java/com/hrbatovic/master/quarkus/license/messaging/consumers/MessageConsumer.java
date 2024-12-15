@@ -37,9 +37,7 @@ public class MessageConsumer {
     public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEvent) {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
 
-        //executor.runAsync(()->{
-            //TODO: check if licenses for order exist, else return
-
+        executor.runAsync(()->{
             List<OrderItemPayload> orderItems = paymentSuccessEvent.getOrder().getOrderItems();
 
             orderItems.forEach(o->generateLicense(o, paymentSuccessEvent.getOrder().getUserId(), paymentSuccessEvent.getOrder().getId()));
@@ -52,28 +50,33 @@ public class MessageConsumer {
             licensesGeneratedEvent.setOrderId(paymentSuccessEvent.getOrder().getId());
             licensesGeneratedEvent.setUserId(paymentSuccessEvent.getOrder().getUserId());
             licensesGeneratedEmitter.send(licensesGeneratedEvent);
-        //});
+        });
 
     }
 
     private void generateLicense(OrderItemPayload orderItem, UUID userId, UUID orderId) {
-        LicenseEntity licenseEntity = new LicenseEntity();
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", orderItem.getProductId()).firstResult();
 
-        //TODO: generate quantity times
-
-        licenseEntity.setProductId(orderItem.getProductId());
-        licenseEntity.setLicenseDuration(licenseTemplateEntity.getLicenseDuration());
-        licenseEntity.setIssuedAt(LocalDateTime.now());
-        licenseEntity.setOrderId(orderId);
-        licenseEntity.setUserId(userId);
-        if (licenseEntity.getLicenseDuration() > 0) {
-            licenseEntity.setExpiresAt(LocalDateTime.now().plusDays(licenseEntity.getLicenseDuration()));
-        } else {
-            licenseEntity.setExpiresAt(null);
+        if(licenseTemplateEntity == null){
+            throw new RuntimeException("No license available for product: " + orderItem.getProductId());
         }
-        licenseEntity.setActive(true);
-        licenseEntity.persist();
+
+        for(int i = 0; i < orderItem.getQuantity(); i++){
+            LicenseEntity licenseEntity = new LicenseEntity();
+            licenseEntity.setProductId(orderItem.getProductId());
+            licenseEntity.setLicenseDuration(licenseTemplateEntity.getLicenseDuration());
+            licenseEntity.setIssuedAt(LocalDateTime.now());
+            licenseEntity.setOrderId(orderId);
+            licenseEntity.setUserId(userId);
+            if (licenseEntity.getLicenseDuration() > 0) {
+                licenseEntity.setExpiresAt(LocalDateTime.now().plusDays(licenseEntity.getLicenseDuration()));
+            } else {
+                licenseEntity.setExpiresAt(null);
+            }
+            licenseEntity.setActive(true);
+            licenseEntity.persist();
+        }
+
     }
 
     @Incoming("user-registered-in")

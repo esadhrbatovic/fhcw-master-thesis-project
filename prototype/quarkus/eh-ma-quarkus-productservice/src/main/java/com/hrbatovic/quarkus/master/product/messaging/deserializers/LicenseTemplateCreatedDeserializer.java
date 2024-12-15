@@ -1,0 +1,13 @@
+package com.hrbatovic.quarkus.master.product.messaging.deserializers;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.hrbatovic.quarkus.master.product.messaging.model.in.LicenseTemplateCreatedEvent;
+import com.hrbatovic.quarkus.master.product.messaging.model.in.UserRegisteredEvent;
+import io.quarkus.kafka.client.serialization.ObjectMapperDeserializer;
+
+public class LicenseTemplateCreatedDeserializer extends ObjectMapperDeserializer<LicenseTemplateCreatedEvent> {
+    public LicenseTemplateCreatedDeserializer() {
+        super(new TypeReference<>() {
+        });
+    }
+}

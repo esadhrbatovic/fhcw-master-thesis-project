@@ -56,12 +56,12 @@ public class CartApiService implements CartProductsApi {
     }
 
     @Override
-    public CheckoutResponse checkoutCart() {
+    public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSub));
 
-        CheckoutStartedEvent payload = new CheckoutStartedEvent().setCart(mapper.toCartPayload(cartEntity));
-        payload.setTimestamp(LocalDateTime.now());
-        checkoutStartedEmmiter.send(payload);
+        CheckoutStartedEvent checkoutStartedEvent = new CheckoutStartedEvent().setPaymentMethodSelector(startCheckoutRequest.getPaymentMethodSelector()).setPaymentToken(startCheckoutRequest.getPaymentToken()).setCart(mapper.toCartPayload(cartEntity));
+        checkoutStartedEvent.setTimestamp(LocalDateTime.now());
+        checkoutStartedEmmiter.send(checkoutStartedEvent);
 
         return new CheckoutResponse()
                 .message("Checkout started successfully.")

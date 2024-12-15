@@ -1,8 +1,11 @@
 package com.hrbatovic.quarkus.master.order.messaging.model.out;
 
 import com.hrbatovic.quarkus.master.order.messaging.model.out.payload.OrderPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 public class OrderCreatedEvent implements Serializable {
 
@@ -22,8 +25,8 @@ public class OrderCreatedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return "OrderCreatedEvent{" +
-                "order=" + order +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("order", order)
+                .toString();
     }
 }

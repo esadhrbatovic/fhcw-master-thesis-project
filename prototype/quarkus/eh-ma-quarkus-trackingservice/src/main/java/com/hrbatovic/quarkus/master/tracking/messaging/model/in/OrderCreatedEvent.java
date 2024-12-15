@@ -1,0 +1,31 @@
+package com.hrbatovic.quarkus.master.tracking.messaging.model.in;
+
+import com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload.OrderPayload;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import java.io.Serializable;
+
+public class OrderCreatedEvent implements Serializable {
+
+    OrderPayload order;
+
+    public OrderCreatedEvent() {
+    }
+
+    public OrderPayload getOrder() {
+        return order;
+    }
+
+    public OrderCreatedEvent setOrder(OrderPayload order) {
+        this.order = order;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+                .append("order", order)
+                .toString();
+    }
+}

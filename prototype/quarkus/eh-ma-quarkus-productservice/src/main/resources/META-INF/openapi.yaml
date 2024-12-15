@@ -12,6 +12,19 @@ servers:
     description: local dev
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /products:
     get:
       summary: List all products with optional search and pagination
@@ -518,6 +531,15 @@ components:
         details:
           type: string
           example: "Price must be a positive number."
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Access token expiry time in seconds
+          example: "Credentials updated successfuly"
+
 
 security:
   - bearerAuth: []

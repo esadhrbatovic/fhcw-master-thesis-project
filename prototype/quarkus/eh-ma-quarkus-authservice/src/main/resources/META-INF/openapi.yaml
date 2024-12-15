@@ -8,6 +8,20 @@ servers:
   - url: localhost:8081
     description: local dev
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
   /auth/register:
     post:
       summary: Register a new user

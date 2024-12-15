@@ -5,7 +5,7 @@ import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.UUID;
 
-
+//TODO remove this base class
 public class AuthBaseEntity extends PanacheMongoEntityBase {
     @BsonId
     public UUID id;

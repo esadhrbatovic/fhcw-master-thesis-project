@@ -13,7 +13,8 @@ public class UserEntity extends PanacheMongoEntityBase {
     public UUID id;
     private String role;
     private String email;
-
+    private String firstName;
+    private String lastName;
 
     public UserEntity() {
     }
@@ -22,24 +23,45 @@ public class UserEntity extends PanacheMongoEntityBase {
         return id;
     }
 
-    public void setId(UUID id) {
+    public UserEntity setId(UUID id) {
         this.id = id;
+        return this;
     }
 
     public String getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public UserEntity setRole(String role) {
         this.role = role;
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public UserEntity setEmail(String email) {
         this.email = email;
+        return this;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public UserEntity setFirstName(String firstName) {
+        this.firstName = firstName;
+        return this;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public UserEntity setLastName(String lastName) {
+        this.lastName = lastName;
+        return this;
     }
 
     @Override
@@ -48,6 +70,8 @@ public class UserEntity extends PanacheMongoEntityBase {
                 "id=" + id +
                 ", role='" + role + '\'' +
                 ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
                 '}';
     }
 }

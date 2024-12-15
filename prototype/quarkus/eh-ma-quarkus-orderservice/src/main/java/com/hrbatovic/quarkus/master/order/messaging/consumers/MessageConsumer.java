@@ -2,7 +2,6 @@ package com.hrbatovic.quarkus.master.order.messaging.consumers;
 
 import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
-import com.hrbatovic.quarkus.master.order.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.order.messaging.model.*;
@@ -54,47 +53,6 @@ public class MessageConsumer {
         OrderCreatedEventPayload orderCreatedEventPayload = new OrderCreatedEventPayload();
         orderCreatedEventPayload.setOrderEntity(orderEntity);
         orderCreatedEmitter.send(orderCreatedEventPayload);
-    }
-
-    @Incoming("product-created-in")
-    public void onProductCreated(ProductEntity productEntity) {
-        System.out.println("Recieved product-created-in event: " + productEntity);
-
-        executor.runAsync(()->{
-            if(ProductEntity.findById(productEntity.getId()) != null){
-                return;
-            }
-
-            productEntity.persistOrUpdate();
-        });
-    }
-
-    @Incoming("product-updated-in")
-    public void onProductUpdated(ProductEntity productEntity) {
-        System.out.println("Recieved product-updated-in event: " + productEntity);
-
-        executor.runAsync(()->{
-            ProductEntity pE = ProductEntity.findById(productEntity.getId());
-            if (pE == null) {
-                return;
-            }
-
-            productEntity.persistOrUpdate();
-        });
-    }
-
-    @Incoming("product-deleted-in")
-    public void onProductDeleted(UUID id) {
-        System.out.println("Recieved product-deleted-in event: " + id);
-
-        executor.runAsync(()->{
-            ProductEntity pE = ProductEntity.findById(id);
-            if (pE == null) {
-                return;
-            }
-
-            pE.delete();
-        });
     }
 
     @Incoming("user-registered-in")

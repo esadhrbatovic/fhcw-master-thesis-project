@@ -6,7 +6,7 @@ import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.cart.mapper.MapUtil;
-import com.hrbatovic.quarkus.master.cart.messaging.model.CheckoutStartedEventPayload;
+import com.hrbatovic.quarkus.master.cart.messaging.model.out.CheckoutStartedEvent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
@@ -33,7 +33,7 @@ public class CartApiService implements CartProductsApi {
 
     @Inject
     @Channel("checkout-started-out")
-    Emitter<CheckoutStartedEventPayload> checkoutStartedEmmiter;
+    Emitter<CheckoutStartedEvent> checkoutStartedEmmiter;
 
     @Override
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
@@ -59,8 +59,7 @@ public class CartApiService implements CartProductsApi {
     public CheckoutResponse checkoutCart() {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSub));
 
-        CheckoutStartedEventPayload payload = new CheckoutStartedEventPayload();
-        payload.setCartEntity(cartEntity);
+        CheckoutStartedEvent payload = new CheckoutStartedEvent().setCart(mapper.toCartPayload(cartEntity));
         payload.setTimestamp(LocalDateTime.now());
         checkoutStartedEmmiter.send(payload);
 

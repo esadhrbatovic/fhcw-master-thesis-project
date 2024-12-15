@@ -5,8 +5,10 @@ import com.hrbatovic.master.quarkus.order.model.OrderItem;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderItemEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
-import com.hrbatovic.quarkus.master.order.messaging.model.CartProductEntity;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartPayload;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartProductPayload;
+import com.hrbatovic.quarkus.master.order.messaging.model.out.payload.OrderPayload;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,9 +16,6 @@ import java.util.List;
 
 @Mapper(componentModel = "cdi")
 public abstract class MapUtil {
-
-
-    public abstract List<OrderItemEntity> toOrderItemEntityList(List<CartProductEntity> cartProducts);
 
     public abstract List<Order> toOrderList(List<OrderEntity> orderEntityList);
 
@@ -28,4 +27,18 @@ public abstract class MapUtil {
     public abstract OrderItem map(OrderItemEntity orderItemEntity);
 
     public abstract UserEntity map(UserRegisteredEvent userRegisteredEvent);
+
+    public abstract List<OrderItemEntity> toOrderItemEntityList(List<CartProductPayload> cartProducts);
+
+    @Mapping(target="status", constant = "OPEN")
+    @Mapping(target="currency", constant = "EUR")
+    @Mapping(target="totalAmount", source = "totalPrice")
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target="updatedAt", ignore = true)
+    @Mapping(target="orderItems", source = "cartProducts")
+    public abstract OrderEntity map(CartPayload cart);
+
+
+    public abstract OrderPayload toOrderPayload(OrderEntity orderEntity);
+
 }

@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.order;
+package com.hrbatovic.quarkus.master.order.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

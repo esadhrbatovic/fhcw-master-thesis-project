@@ -1,14 +1,16 @@
-package com.hrbatovic.quarkus.master.notification.messaging.model;
+package com.hrbatovic.quarkus.master.notification.messaging.model.in;
+
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.LicensePayload;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
-public class LicensesGeneratedEventPayload implements Serializable {
+public class LicenseGeneratedEvent implements Serializable {
     private UUID orderId;
     private UUID userId;
 
-    private List<LicenseEntity> licenses;
+    private List<LicensePayload> licenses;
 
     public UUID getOrderId() {
         return orderId;
@@ -26,11 +28,11 @@ public class LicensesGeneratedEventPayload implements Serializable {
         this.userId = userId;
     }
 
-    public List<LicenseEntity> getLicenses() {
+    public List<LicensePayload> getLicenses() {
         return licenses;
     }
 
-    public void setLicenses(List<LicenseEntity> licenses) {
+    public void setLicenses(List<LicensePayload> licenses) {
         this.licenses = licenses;
     }
 

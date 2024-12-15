@@ -1,13 +1,10 @@
-package com.hrbatovic.quarkus.master.cart.messaging.model;
-
-import io.quarkus.runtime.annotations.RegisterForReflection;
+package com.hrbatovic.master.quarkus.payment.messaging.model.in.payload;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@RegisterForReflection
-public class OrderItemEntity implements Serializable {
+public class OrderItemPayload implements Serializable {
 
     private UUID productId;
 
@@ -23,45 +20,50 @@ public class OrderItemEntity implements Serializable {
         return productId;
     }
 
-    public void setProductId(UUID productId) {
+    public OrderItemPayload setProductId(UUID productId) {
         this.productId = productId;
+        return this;
     }
 
     public String getProductTitle() {
         return productTitle;
     }
 
-    public void setProductTitle(String productTitle) {
+    public OrderItemPayload setProductTitle(String productTitle) {
         this.productTitle = productTitle;
+        return this;
     }
 
     public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public OrderItemPayload setQuantity(Integer quantity) {
         this.quantity = quantity;
+        return this;
     }
 
     public BigDecimal getProductPrice() {
         return productPrice;
     }
 
-    public void setProductPrice(BigDecimal productPrice) {
+    public OrderItemPayload setProductPrice(BigDecimal productPrice) {
         this.productPrice = productPrice;
+        return this;
     }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
-    public void setTotalPrice(BigDecimal totalPrice) {
+    public OrderItemPayload setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
+        return this;
     }
 
     @Override
     public String toString() {
-        return "OrderItemEntity{" +
+        return "OrderItemPayload{" +
                 "productId=" + productId +
                 ", productTitle='" + productTitle + '\'' +
                 ", quantity=" + quantity +

@@ -4,9 +4,8 @@ import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
-import com.hrbatovic.quarkus.master.order.messaging.model.*;
-import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
-import com.hrbatovic.quarkus.master.order.messaging.model.in.UserUpdatedEvent;
+import com.hrbatovic.quarkus.master.order.messaging.model.in.*;
+import com.hrbatovic.quarkus.master.order.messaging.model.out.OrderCreatedEvent;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -28,31 +27,24 @@ public class MessageConsumer {
 
     @Inject
     @Channel("order-created-out")
-    Emitter<OrderCreatedEventPayload> orderCreatedEmitter;
+    Emitter<OrderCreatedEvent> orderCreatedEmitter;
 
     @Incoming("checkout-started-in")
-    public void onCheckoutStarted(CheckoutStartedEventPayload checkoutStartedEventPayload){
-        System.out.println("Recieved checkout-started-in event: " + checkoutStartedEventPayload);
+    public void onCheckoutStarted(CheckoutStartedEvent checkoutStartedEvent){
+        System.out.println("Recieved checkout-started-in event: " + checkoutStartedEvent);
 
-        OrderEntity orderEntity = OrderEntity.findById(checkoutStartedEventPayload.getCartEntity().getId());
+        OrderEntity orderEntity = OrderEntity.findById(checkoutStartedEvent.getCart().getId());
         if(orderEntity != null) {
-            return; //order already created
+            return;
         }
 
-        orderEntity = new OrderEntity(checkoutStartedEventPayload.getCartEntity().getId());
-        orderEntity.setOrderItems(mapper.toOrderItemEntityList(checkoutStartedEventPayload.getCartEntity().getCartProducts()));
-        orderEntity.setCurrency("EUR");
-        orderEntity.setCreatedAt(LocalDateTime.now());
-        orderEntity.setUserId(checkoutStartedEventPayload.getCartEntity().getUserId());
-        orderEntity.setStatus(Order.StatusEnum.OPEN.toString());
-        orderEntity.setTotalAmount(checkoutStartedEventPayload.getCartEntity().getTotalPrice());
-        orderEntity.setPaymenToken(checkoutStartedEventPayload.getPaymentToken());
+        orderEntity = mapper.map(checkoutStartedEvent.getCart());
 
         orderEntity.persist();
 
-        OrderCreatedEventPayload orderCreatedEventPayload = new OrderCreatedEventPayload();
-        orderCreatedEventPayload.setOrderEntity(orderEntity);
-        orderCreatedEmitter.send(orderCreatedEventPayload);
+        OrderCreatedEvent orderCreatedEvent = new OrderCreatedEvent().setOrder(mapper.toOrderPayload(orderEntity));
+
+        orderCreatedEmitter.send(orderCreatedEvent);
     }
 
     @Incoming("user-registered-in")
@@ -99,11 +91,11 @@ public class MessageConsumer {
 
 
     @Incoming("payment-success-in")
-    public void onPaymentSuccess(PaymentSuccessEventPayload paymentSuccessEventPayload) {
+    public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEventPayload) {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEventPayload);
 
         executor.runAsync(() -> {
-            OrderEntity orderEntity = paymentSuccessEventPayload.getOrderEntity();
+            OrderEntity orderEntity = OrderEntity.findById(paymentSuccessEventPayload.getOrder().getId());
             orderEntity.setStatus(Order.StatusEnum.PAYMENT_COMPLETED.toString());
             orderEntity.setUpdatedAt(LocalDateTime.now());
             orderEntity.update();
@@ -112,7 +104,7 @@ public class MessageConsumer {
 
 
     @Incoming("licenses-generated-in")
-    public void onLicensesGenerated(LicensesGeneratedEventPayload licensesGeneratedEventPayload){
+    public void onLicensesGenerated(LicensesGeneratedEvent licensesGeneratedEventPayload){
         System.out.println("Recieved licenses-generated-in event: " + licensesGeneratedEventPayload);
 
         executor.runAsync(() -> {
@@ -126,7 +118,7 @@ public class MessageConsumer {
 
 
     @Incoming("order-notification-sent-in")
-    public void onOrderNotificationSent(OrderNotificationSentEventPayload orderNotificationSentEventPayload){
+    public void onOrderNotificationSent(OrderNotificationSentEvent orderNotificationSentEventPayload){
         System.out.println("Recieved order-notification-sent-in event: " + orderNotificationSentEventPayload);
 
         executor.runAsync(() -> {

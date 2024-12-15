@@ -4,7 +4,7 @@ import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.cart.mapper.MapUtil;
-import com.hrbatovic.quarkus.master.cart.messaging.model.OrderCreatedEventPayload;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.OrderCreatedEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductCreatedEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductUpdatedEvent;
 import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserRegisteredEvent;
@@ -71,11 +71,11 @@ public class MessageConsumer {
     }
 
     @Incoming("order-created-in")
-    public void onOrderCreated(OrderCreatedEventPayload orderCreatedEvent) {
+    public void onOrderCreated(OrderCreatedEvent orderCreatedEvent) {
         System.out.println("Recieved order-created-in event: " + orderCreatedEvent);
 
         executor.runAsync(()->{
-            CartEntity cartEntity = CartEntity.findById(orderCreatedEvent.getOrderEntity().getId());
+            CartEntity cartEntity = CartEntity.findById(orderCreatedEvent.getOrder().getId());
             if(cartEntity == null){
                 return;
             }

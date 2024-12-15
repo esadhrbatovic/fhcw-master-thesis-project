@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.notification.messaging.model;
+package com.hrbatovic.quarkus.master.notification.messaging.model.in.payload;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @RegisterForReflection
-public class LicenseEntity implements Serializable {
+public class LicensePayload implements Serializable {
 
     private UUID serialNumber;
 

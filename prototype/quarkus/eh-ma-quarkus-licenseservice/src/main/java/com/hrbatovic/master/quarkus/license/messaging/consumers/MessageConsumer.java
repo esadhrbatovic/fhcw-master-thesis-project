@@ -4,11 +4,11 @@ import com.hrbatovic.master.quarkus.license.db.entities.LicenseEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.UserEntity;
 import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
-import com.hrbatovic.master.quarkus.license.messaging.model.LicensesGeneratedEventPayload;
-import com.hrbatovic.master.quarkus.license.messaging.model.OrderItemEntity;
-import com.hrbatovic.master.quarkus.license.messaging.model.PaymentSuccessEventPayload;
+import com.hrbatovic.master.quarkus.license.messaging.model.out.LicensesGeneratedEvent;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.PaymentSuccessEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.in.UserUpdatedEvent;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.OrderItemPayload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -31,38 +31,38 @@ public class MessageConsumer {
 
     @Inject
     @Channel("licenses-generated-out")
-    Emitter<LicensesGeneratedEventPayload> licensesGeneratedEmitter;
+    Emitter<LicensesGeneratedEvent> licensesGeneratedEmitter;
 
     @Incoming("payment-success-in")
-    public void onPaymentSuccess(PaymentSuccessEventPayload paymentSuccessEventPayload) {
-        System.out.println("Recieved payment-success-in event: " + paymentSuccessEventPayload);
+    public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEvent) {
+        System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
 
         //executor.runAsync(()->{
             //TODO: check if licenses for order exist, else return
 
-            List<OrderItemEntity> orderItemEntities = paymentSuccessEventPayload.getOrderEntity().getOrderItems();
+            List<OrderItemPayload> orderItems = paymentSuccessEvent.getOrder().getOrderItems();
 
-            orderItemEntities.forEach(o->generateLicense(o, paymentSuccessEventPayload.getOrderEntity().getUserId(), paymentSuccessEventPayload.getOrderEntity().getId()));
+            orderItems.forEach(o->generateLicense(o, paymentSuccessEvent.getOrder().getUserId(), paymentSuccessEvent.getOrder().getId()));
 
-            List<LicenseEntity> licenses = LicenseEntity.find("orderId", paymentSuccessEventPayload.getOrderEntity().getId()).list();
+            List<LicenseEntity> licenses = LicenseEntity.find("orderId", paymentSuccessEvent.getOrder().getId()).list();
             //TODO: error handling
 
-            LicensesGeneratedEventPayload licensesGeneratedEventPayload = new LicensesGeneratedEventPayload();
-            licensesGeneratedEventPayload.setLicenses(licenses);
-            licensesGeneratedEventPayload.setOrderId(paymentSuccessEventPayload.getOrderEntity().getId());
-            licensesGeneratedEventPayload.setUserId(paymentSuccessEventPayload.getOrderEntity().getUserId());
-            licensesGeneratedEmitter.send(licensesGeneratedEventPayload);
+            LicensesGeneratedEvent licensesGeneratedEvent = new LicensesGeneratedEvent();
+            licensesGeneratedEvent.setLicenses(mapper.map(licenses));
+            licensesGeneratedEvent.setOrderId(paymentSuccessEvent.getOrder().getId());
+            licensesGeneratedEvent.setUserId(paymentSuccessEvent.getOrder().getUserId());
+            licensesGeneratedEmitter.send(licensesGeneratedEvent);
         //});
 
     }
 
-    private void generateLicense(OrderItemEntity orderItemEntity, UUID userId, UUID orderId) {
+    private void generateLicense(OrderItemPayload orderItem, UUID userId, UUID orderId) {
         LicenseEntity licenseEntity = new LicenseEntity();
-        LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", orderItemEntity.getProductId()).firstResult();
+        LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", orderItem.getProductId()).firstResult();
 
         //TODO: generate quantity times
 
-        licenseEntity.setProductId(orderItemEntity.getProductId());
+        licenseEntity.setProductId(orderItem.getProductId());
         licenseEntity.setLicenseDuration(licenseTemplateEntity.getLicenseDuration());
         licenseEntity.setIssuedAt(LocalDateTime.now());
         licenseEntity.setOrderId(orderId);

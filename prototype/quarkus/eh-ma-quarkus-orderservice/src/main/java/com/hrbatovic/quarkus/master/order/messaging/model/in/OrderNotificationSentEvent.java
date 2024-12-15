@@ -1,12 +1,12 @@
-package com.hrbatovic.quarkus.master.order.messaging.model;
+package com.hrbatovic.quarkus.master.order.messaging.model.in;
 
 import java.io.Serializable;
 import java.util.UUID;
 
-public class OrderNotificationSentEventPayload implements Serializable {
+public class OrderNotificationSentEvent implements Serializable {
     private UUID orderId;
 
-    public OrderNotificationSentEventPayload() {
+    public OrderNotificationSentEvent() {
     }
 
     public UUID getOrderId() {

@@ -1,21 +1,18 @@
 package com.hrbatovic.quarkus.master.order.api;
 
 import com.hrbatovic.master.quarkus.order.api.UsersApi;
-import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponse;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponsePagination;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequestScoped
 public class UserApiService implements UsersApi {
@@ -28,7 +25,7 @@ public class UserApiService implements UsersApi {
     public OrderListResponse getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
         validateUserId(userId);
 
-        PanacheQuery<OrderEntity> query = OrderEntity.buildUserQuery(userId, status, sort);
+        PanacheQuery<OrderEntity> query = OrderEntity.queryUserOrders(userId, status, sort);
 
         Page pagination = Page.of(
                 (page != null && page > 0) ? page - 1 : 0,

@@ -49,7 +49,6 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
         LicenseTemplateEntity licenseTemplateEntity = mapping.toTemplateEntity(createLicenseTemplateRequest);
-        licenseTemplateEntity.setCreatedAt(LocalDateTime.now());
         licenseTemplateEntity.persist();
 
         licenseTemplateCreatedEmitter.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
@@ -94,7 +93,6 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
         //TODO: error handling
 
         mapping.patch(updateLicenseTemplateRequest, licenseTemplateEntity);
-        licenseTemplateEntity.setUpdatedAt(LocalDateTime.now());
         licenseTemplateEntity.update();
 
         licenseTemplateUpdatedEmitter.send(buildLicenseTempalteUpdatedEvent(licenseTemplateEntity));
@@ -119,6 +117,5 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
                 .setTimestamp(LocalDateTime.now())
                 .setLicenseTemplate(mapping.map(licenseTemplateEntity));
     }
-
 
 }

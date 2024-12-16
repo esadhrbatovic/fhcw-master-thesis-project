@@ -1,6 +1,5 @@
 package com.hrbatovic.quarkus.master.product.messaging.consumers;
 
-import com.hrbatovic.master.quarkus.product.model.Product;
 import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.product.mapper.MapUtil;

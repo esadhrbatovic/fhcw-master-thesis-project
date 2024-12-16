@@ -17,7 +17,7 @@ public class MetadataEntity extends PanacheMongoEntityBase {
 
     private String userMail;
 
-    private UUID sesionId;
+    private UUID sessionId;
 
     private String sourceService;
 
@@ -59,12 +59,12 @@ public class MetadataEntity extends PanacheMongoEntityBase {
         return this;
     }
 
-    public UUID getSesionId() {
-        return sesionId;
+    public UUID getSessionId() {
+        return sessionId;
     }
 
-    public MetadataEntity setSesionId(UUID sesionId) {
-        this.sesionId = sesionId;
+    public MetadataEntity setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
         return this;
     }
 
@@ -93,7 +93,7 @@ public class MetadataEntity extends PanacheMongoEntityBase {
                 .append("productId", productId)
                 .append("orderId", orderId)
                 .append("userMail", userMail)
-                .append("sesionId", sesionId)
+                .append("sessionId", sessionId)
                 .append("sourceService", sourceService)
                 .append("timestamp", timestamp)
                 .toString();

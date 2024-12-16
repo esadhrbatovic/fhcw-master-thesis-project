@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: |
     API specification for the UserService of the e-shop application.
-    Manages user data and personal information, including email, password, name, address, and phone number.
+    Manages user data and personal information, including email, name, address, and phone number.
 
 servers:
   - url: localhost:8082
@@ -365,18 +365,14 @@ components:
       properties:
         error:
           type: string
-          example: Unauthorized access.
         details:
           type: string
-          example: You are not authorized to access this resource.
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
 
 
 security:

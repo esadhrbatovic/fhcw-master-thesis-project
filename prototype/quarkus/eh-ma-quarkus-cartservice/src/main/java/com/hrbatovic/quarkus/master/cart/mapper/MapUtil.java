@@ -36,6 +36,7 @@ public abstract class MapUtil {
 
     @Mapping(target = "products", source="cartProducts")
     @Mapping(target = "totalProducts", source="totalItems")
+    @Mapping(target="removeProductsItem", ignore = true)
     public abstract CartResponse map(CartEntity cartEntity);
 
     public abstract UserEntity map(UserPayload userPayload);

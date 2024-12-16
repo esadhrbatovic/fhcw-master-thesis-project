@@ -20,7 +20,6 @@ public class LicensePayload implements Serializable {
 
     private LocalDateTime expiresAt;
 
-    private boolean active;
 
     public LicensePayload() {
     }
@@ -85,15 +84,6 @@ public class LicensePayload implements Serializable {
 
     public LicensePayload setExpiresAt(LocalDateTime expiresAt) {
         this.expiresAt = expiresAt;
-        return this;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public LicensePayload setActive(boolean active) {
-        this.active = active;
         return this;
     }
 }

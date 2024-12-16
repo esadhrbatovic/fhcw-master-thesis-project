@@ -110,12 +110,12 @@ public class MessageConsumer {
     public void onPaymentFail(PaymentFailEvent paymentFailEvent) {
         System.out.println("Recieved payment-fail-in event: " + paymentFailEvent);
         executor.runAsync(() -> {
-            UserEntity userEntity = UserEntity.findById(paymentFailEvent.getOrder().getUserId());
+            UserEntity userEntity = UserEntity.findById(paymentFailEvent.getPaymentPayload().getUserId());
             if (userEntity == null) {
                 return;
             }
 
-            mailer.send(Mail.withText(userEntity.getEmail(), "Payment failed - order:" + paymentFailEvent.getOrder().getId(), "Hello " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", there was a problem with your payment: " + paymentFailEvent.getMessage()));
+            mailer.send(Mail.withText(userEntity.getEmail(), "Payment failed - order:" + paymentFailEvent.getPaymentPayload().getOrderId(), "Hello " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", there was a problem with your payment: " + paymentFailEvent.getMessage()));
         });
     }
 

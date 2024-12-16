@@ -26,9 +26,9 @@ public class OrderPayload implements Serializable {
 
     private LocalDateTime updatedAt;
 
-    private UUID paymenToken;
+    private UUID paymentToken;
 
-    private String paymentMethodSelector;
+    private String paymentMethod;
 
     private List<OrderItemPayload> orderItems;
 
@@ -98,21 +98,21 @@ public class OrderPayload implements Serializable {
         return this;
     }
 
-    public UUID getPaymenToken() {
-        return paymenToken;
+    public UUID getPaymentToken() {
+        return paymentToken;
     }
 
-    public OrderPayload setPaymenToken(UUID paymenToken) {
-        this.paymenToken = paymenToken;
+    public OrderPayload setPaymentToken(UUID paymentToken) {
+        this.paymentToken = paymentToken;
         return this;
     }
 
-    public String getPaymentMethodSelector() {
-        return paymentMethodSelector;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public OrderPayload setPaymentMethodSelector(String paymentMethodSelector) {
-        this.paymentMethodSelector = paymentMethodSelector;
+    public OrderPayload setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
         return this;
     }
 
@@ -135,8 +135,8 @@ public class OrderPayload implements Serializable {
                 .append("totalAmount", totalAmount)
                 .append("createdAt", createdAt)
                 .append("updatedAt", updatedAt)
-                .append("paymenToken", paymenToken)
-                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("paymentToken", paymentToken)
+                .append("paymentMethod", paymentMethod)
                 .append("orderItems", orderItems)
                 .toString();
     }

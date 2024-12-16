@@ -282,7 +282,7 @@ components:
     StartCheckoutRequest:
       type: object
       properties:
-        paymentMethodSelector:
+        paymentMethod:
           type: string
         paymentToken:
           type: string

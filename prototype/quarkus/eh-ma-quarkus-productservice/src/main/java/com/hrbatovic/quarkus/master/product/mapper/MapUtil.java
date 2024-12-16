@@ -21,9 +21,11 @@ public abstract class MapUtil {
     public abstract List<Product> map(List<ProductEntity> productEntityList, @Context Map<UUID, String> categoryMap);
 
     @Mapping(target = "category", ignore = true)
+    @Mapping(target = "removeTagsItem", ignore = true)
     public abstract Product map(ProductEntity productEntity, @Context Map<UUID, String> categoryMap);
 
     @Mapping(target = "category", source = "categoryName")
+    @Mapping(target = "removeTagsItem", ignore = true)
     public abstract ProductResponse map(ProductEntity productEntity, String categoryName);
 
     @AfterMapping

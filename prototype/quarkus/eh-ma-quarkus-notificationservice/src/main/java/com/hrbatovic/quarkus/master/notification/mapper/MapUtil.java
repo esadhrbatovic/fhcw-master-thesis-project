@@ -4,6 +4,7 @@ import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.UserPayload;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "cdi")
@@ -13,5 +14,8 @@ public abstract class MapUtil {
 
     public abstract void update(@MappingTarget UserEntity userEntity, UserPayload userPayload);
 
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
     public abstract void update(@MappingTarget UserEntity userEntity, UserCredentialsUpdatedEvent userCredentialsUpdatedEvent);
 }

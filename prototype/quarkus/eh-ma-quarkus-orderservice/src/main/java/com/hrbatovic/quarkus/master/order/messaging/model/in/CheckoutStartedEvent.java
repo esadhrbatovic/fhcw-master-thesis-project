@@ -14,7 +14,7 @@ public class CheckoutStartedEvent implements Serializable {
 
     private UUID paymentToken;
 
-    private String paymentMethodSelector;
+    private String paymentMethod;
 
     //Metadata
     private LocalDateTime timestamp;
@@ -35,8 +35,8 @@ public class CheckoutStartedEvent implements Serializable {
         return paymentToken;
     }
 
-    public String getPaymentMethodSelector() {
-        return paymentMethodSelector;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
     public LocalDateTime getTimestamp() {
@@ -64,7 +64,7 @@ public class CheckoutStartedEvent implements Serializable {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("cart", cart)
                 .append("paymentToken", paymentToken)
-                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("paymentMethod", paymentMethod)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)

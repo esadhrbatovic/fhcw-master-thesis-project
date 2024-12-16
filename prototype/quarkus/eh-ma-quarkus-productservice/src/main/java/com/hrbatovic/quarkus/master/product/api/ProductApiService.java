@@ -23,8 +23,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-//TODO rework product and categories relationship, optimize join
-
 @RequestScoped
 public class ProductApiService implements ProductsApi {
 
@@ -57,11 +55,10 @@ public class ProductApiService implements ProductsApi {
 
     @Override
     public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
-        PanacheQuery<ProductEntity> query = ProductEntity.findProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
+        PanacheQuery<ProductEntity> query = ProductEntity.queryProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
 
         List<ProductEntity> productEntityList = query.list();
 
-        //TODO: optimize
         List<UUID> categoryIds = productEntityList.stream()
                 .map(ProductEntity::getCategoryId)
                 .distinct()
@@ -74,8 +71,8 @@ public class ProductApiService implements ProductsApi {
                         CategoryEntity::getName
                 ));
 
-        ProductListResponse response = new ProductListResponse();
-        response.setProducts(mapper.map(productEntityList, categoryMap));
+        ProductListResponse productListResponse = new ProductListResponse();
+        productListResponse.setProducts(mapper.map(productEntityList, categoryMap));
 
         long totalItems = query.count();
         int totalPages = query.pageCount();
@@ -85,9 +82,9 @@ public class ProductApiService implements ProductsApi {
         pagination.setLimit(limit != null ? limit : 10);
         pagination.setTotalItems((int) totalItems);
         pagination.setTotalPages(totalPages);
-        response.setPagination(pagination);
+        productListResponse.setPagination(pagination);
 
-        return response;
+        return productListResponse;
     }
 
     @Override

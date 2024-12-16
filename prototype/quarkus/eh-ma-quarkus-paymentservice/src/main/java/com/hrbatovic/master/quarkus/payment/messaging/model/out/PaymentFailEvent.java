@@ -1,6 +1,6 @@
 package com.hrbatovic.master.quarkus.payment.messaging.model.out;
 
-import com.hrbatovic.master.quarkus.payment.messaging.model.in.payload.OrderPayload;
+import com.hrbatovic.master.quarkus.payment.messaging.model.out.payload.PaymentPayload;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class PaymentFailEvent implements Serializable {
 
-    private OrderPayload order;
+    private PaymentPayload paymentPayload;
 
     private String message;
 
@@ -25,12 +25,12 @@ public class PaymentFailEvent implements Serializable {
 
     private final String sourceService = "paymentservice";
 
-    public OrderPayload getOrder() {
-        return order;
+    public PaymentPayload getPaymentPayload() {
+        return paymentPayload;
     }
 
-    public PaymentFailEvent setOrder(OrderPayload order) {
-        this.order = order;
+    public PaymentFailEvent setPaymentPayload(PaymentPayload paymentPayload) {
+        this.paymentPayload = paymentPayload;
         return this;
     }
 
@@ -86,7 +86,7 @@ public class PaymentFailEvent implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("order", order)
+                .append("paymentPayload", paymentPayload)
                 .append("message", message)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)

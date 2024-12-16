@@ -36,7 +36,7 @@ public class OrderEntity extends PanacheMongoEntityBase {
 
     private LocalDateTime updatedAt;
 
-    private UUID paymenToken;
+    private UUID paymentToken;
 
     private String paymentMethod;
 
@@ -46,7 +46,7 @@ public class OrderEntity extends PanacheMongoEntityBase {
     }
 
 
-    public static PanacheQuery<OrderEntity> buildUserQuery(UUID userId, String status, String sort) {
+    public static PanacheQuery<OrderEntity> queryUserOrders(UUID userId, String status, String sort) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -66,7 +66,7 @@ public class OrderEntity extends PanacheMongoEntityBase {
                 : find(fullQuery, params);
     }
 
-    public static PanacheQuery<OrderEntity> buildQuery(String status, String sort) {
+    public static PanacheQuery<OrderEntity> queryOrders(String status, String sort) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -86,13 +86,13 @@ public class OrderEntity extends PanacheMongoEntityBase {
     private static Sort resolveSortOrder(String sort) {
         if (sort == null || sort.isEmpty()) return null;
 
-        switch (sort) {
-            case "dateAsc": return Sort.ascending("createdAt");
-            case "dateDesc": return Sort.descending("createdAt");
-            case "amountAsc": return Sort.ascending("totalAmount");
-            case "amountDesc": return Sort.descending("totalAmount");
-            default: return null;
-        }
+        return switch (sort) {
+            case "dateAsc" -> Sort.ascending("createdAt");
+            case "dateDesc" -> Sort.descending("createdAt");
+            case "amountAsc" -> Sort.ascending("totalAmount");
+            case "amountDesc" -> Sort.descending("totalAmount");
+            default -> null;
+        };
     }
 
     public UUID getId() {
@@ -167,12 +167,12 @@ public class OrderEntity extends PanacheMongoEntityBase {
         return this;
     }
 
-    public UUID getPaymenToken() {
-        return paymenToken;
+    public UUID getPaymentToken() {
+        return paymentToken;
     }
 
-    public OrderEntity setPaymenToken(UUID paymenToken) {
-        this.paymenToken = paymenToken;
+    public OrderEntity setPaymentToken(UUID paymentToken) {
+        this.paymentToken = paymentToken;
         return this;
     }
 
@@ -205,7 +205,7 @@ public class OrderEntity extends PanacheMongoEntityBase {
                 .append("totalAmount", totalAmount)
                 .append("createdAt", createdAt)
                 .append("updatedAt", updatedAt)
-                .append("paymenToken", paymenToken)
+                .append("paymentToken", paymentToken)
                 .append("paymentMethod", paymentMethod)
                 .append("orderItems", orderItems)
                 .toString();

@@ -16,8 +16,9 @@ import java.util.List;
 @Mapper(componentModel = "cdi")
 public abstract class MapUtil {
 
-
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", ignore = true)
     public abstract LicenseTemplateEntity toTemplateEntity(CreateLicenseTemplateRequest createLicenseTemplateRequest);
 
     public abstract LicenseTemplateResponse toApi(LicenseTemplateEntity licenseTemplateEntity);
@@ -25,6 +26,9 @@ public abstract class MapUtil {
     public abstract List<LicenseTemplate> toApiList(List<LicenseTemplateEntity> licenseTemplateEntities);
 
     @Mapping(target="id", ignore = true)
+    @Mapping(target="productId", ignore = true)
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "createdAt", ignore = true)
     public abstract void patch(UpdateLicenseTemplateRequest updateLicenseTemplateRequest, @MappingTarget LicenseTemplateEntity licenseTemplateEntity);
 
     public abstract LicenseResponse toApi(LicenseEntity licenseEntity);
@@ -36,5 +40,7 @@ public abstract class MapUtil {
     public abstract List<LicensePayload> map(List<LicenseEntity> licenses);
 
     public abstract LicenseTemplatePayload map(LicenseTemplateEntity licenseTemplateEntity);
+
+    public abstract List<License> toApiLicenseList(List<LicenseEntity> licenseEntities);
 }
 

@@ -22,7 +22,7 @@ public class CategoryEntity extends PanacheMongoEntityBase {
     @NotNull
     private String name;
 
-    public static PanacheQuery<CategoryEntity> findCategories(int page, int limit, String search) {
+    public static PanacheQuery<CategoryEntity> queryCategories(int page, int limit, String search) {
         String query = (search != null && !search.isEmpty())
                 ? "{ 'name': { '$regex': :search, '$options': 'i' } }"
                 : "{}";

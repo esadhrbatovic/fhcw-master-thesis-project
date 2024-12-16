@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public class CheckoutStartedEvent implements Serializable {
 
-    private UUID paymentToken;
-
-    private String paymentMethodSelector;
-
     private CartPayload cart;
+
+    private String paymentMethod;
+
+    private UUID paymentToken;
 
     //Metadata
     private LocalDateTime timestamp;
@@ -36,12 +36,12 @@ public class CheckoutStartedEvent implements Serializable {
         return this;
     }
 
-    public String getPaymentMethodSelector() {
-        return paymentMethodSelector;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public CheckoutStartedEvent setPaymentMethodSelector(String paymentMethodSelector) {
-        this.paymentMethodSelector = paymentMethodSelector;
+    public CheckoutStartedEvent setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
         return this;
     }
 
@@ -98,7 +98,7 @@ public class CheckoutStartedEvent implements Serializable {
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("paymentToken", paymentToken)
-                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("paymentMethod", paymentMethod)
                 .append("cart", cart)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)

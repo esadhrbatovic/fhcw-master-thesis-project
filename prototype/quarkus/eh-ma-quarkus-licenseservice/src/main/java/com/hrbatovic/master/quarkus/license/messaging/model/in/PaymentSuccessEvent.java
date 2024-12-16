@@ -1,6 +1,6 @@
 package com.hrbatovic.master.quarkus.license.messaging.model.in;
 
-import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.OrderPayload;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.PaymentPayload;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,7 +10,8 @@ import java.util.UUID;
 
 public class PaymentSuccessEvent implements Serializable {
 
-    private OrderPayload order;
+
+    private PaymentPayload paymentPayload;
 
     //Metadata
     private LocalDateTime timestamp;
@@ -23,8 +24,9 @@ public class PaymentSuccessEvent implements Serializable {
 
     private String sourceService;
 
-    public OrderPayload getOrder() {
-        return order;
+
+    public PaymentPayload getPaymentPayload() {
+        return paymentPayload;
     }
 
     public LocalDateTime getTimestamp() {
@@ -50,7 +52,7 @@ public class PaymentSuccessEvent implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("order", order)
+                .append("paymentPayload", paymentPayload)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)

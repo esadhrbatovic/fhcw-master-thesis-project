@@ -6,9 +6,7 @@ import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
-import jakarta.validation.constraints.NotNull;
 import org.bson.codecs.pojo.annotations.BsonId;
-import org.bson.codecs.pojo.annotations.BsonProperty;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -47,7 +45,7 @@ public class ProductEntity extends PanacheMongoEntityBase {
         this.id = UUID.randomUUID();
     }
 
-    public static PanacheQuery<ProductEntity> findProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public static PanacheQuery<ProductEntity> queryProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         StringBuilder queryBuilder = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
 

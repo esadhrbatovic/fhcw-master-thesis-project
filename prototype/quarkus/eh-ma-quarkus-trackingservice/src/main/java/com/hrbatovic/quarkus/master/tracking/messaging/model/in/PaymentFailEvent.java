@@ -1,6 +1,6 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in;
 
-import com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload.OrderPayload;
+import com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload.PaymentPayload;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class PaymentFailEvent implements Serializable {
 
-    private OrderPayload order;
+    private PaymentPayload paymentPayload;
 
     private String message;
 
@@ -25,58 +25,28 @@ public class PaymentFailEvent implements Serializable {
 
     private String sourceService;
 
-    public OrderPayload getOrder() {
-        return order;
-    }
-
-    public PaymentFailEvent setOrder(OrderPayload order) {
-        this.order = order;
-        return this;
+    public PaymentPayload getPaymentPayload() {
+        return paymentPayload;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public PaymentFailEvent setMessage(String message) {
-        this.message = message;
-        return this;
-    }
-
     public LocalDateTime getTimestamp() {
         return timestamp;
-    }
-
-    public PaymentFailEvent setTimestamp(LocalDateTime timestamp) {
-        this.timestamp = timestamp;
-        return this;
     }
 
     public UUID getSessionId() {
         return sessionId;
     }
 
-    public PaymentFailEvent setSessionId(UUID sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
-
     public UUID getUserId() {
         return userId;
     }
 
-    public PaymentFailEvent setUserId(UUID userId) {
-        this.userId = userId;
-        return this;
-    }
-
     public String getUserEmail() {
         return userEmail;
-    }
-
-    public PaymentFailEvent setUserEmail(String userEmail) {
-        this.userEmail = userEmail;
-        return this;
     }
 
     public String getSourceService() {
@@ -86,7 +56,7 @@ public class PaymentFailEvent implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("order", order)
+                .append("paymentPayload", paymentPayload)
                 .append("message", message)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)

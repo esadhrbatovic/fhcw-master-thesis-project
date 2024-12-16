@@ -8,12 +8,10 @@ import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RequestScoped
 public class OrderApiService implements OrdersApi {
@@ -23,7 +21,7 @@ public class OrderApiService implements OrdersApi {
 
     @Override
     public OrderListResponse getAllOrders(Integer page, Integer limit, String status, String sort) {
-        PanacheQuery<OrderEntity> query = OrderEntity.buildQuery(status, sort);
+        PanacheQuery<OrderEntity> query = OrderEntity.queryOrders(status, sort);
 
         Page pagination = Page.of(
                 (page != null && page > 0) ? page - 1 : 0,

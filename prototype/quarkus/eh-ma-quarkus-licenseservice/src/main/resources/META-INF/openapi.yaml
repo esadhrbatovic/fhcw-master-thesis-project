@@ -452,13 +452,6 @@ components:
           type: string
           format: date-time
           example: '2024-10-17T09:00:00Z'
-        status:
-          type: string
-          enum:
-            - active
-            - expired
-            - revoked
-          example: 'active'
       required:
         - serialNumber
         - userId

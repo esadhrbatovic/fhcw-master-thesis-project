@@ -5,12 +5,10 @@ import com.hrbatovic.master.quarkus.order.model.OrderItem;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderItemEntity;
 import com.hrbatovic.quarkus.master.order.db.entities.UserEntity;
-import com.hrbatovic.quarkus.master.order.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.CartProductPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.in.payload.UserPayload;
 import com.hrbatovic.quarkus.master.order.messaging.model.out.payload.OrderPayload;
-import jakarta.ws.rs.Path;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -23,6 +21,7 @@ public abstract class MapUtil {
 
     @Mapping(target="orderId", source="id")
     @Mapping(target="items", source="orderItems")
+    @Mapping(target="removeItemsItem", ignore = true)
     public abstract Order map(OrderEntity orderEntity);
 
     @Mapping(target="price", source="productPrice")
@@ -38,9 +37,11 @@ public abstract class MapUtil {
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
     @Mapping(target="updatedAt", ignore = true)
     @Mapping(target="orderItems", source = "cartProducts")
+    @Mapping(target="paymentToken", ignore = true)
+    @Mapping(target="paymentMethod", ignore = true)
+    @Mapping(target="statusDetail", ignore = true)
     public abstract OrderEntity map(CartPayload cart);
 
-    @Mapping(target ="paymentMethodSelector", source="paymentMethod")
     public abstract OrderPayload toOrderPayload(OrderEntity orderEntity);
 
 }

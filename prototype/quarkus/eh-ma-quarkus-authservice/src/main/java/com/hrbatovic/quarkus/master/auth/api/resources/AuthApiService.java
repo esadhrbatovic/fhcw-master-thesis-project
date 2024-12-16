@@ -68,11 +68,7 @@ public class AuthApiService implements AuthApi {
             throw new RuntimeException("Login Failed");
         }
 
-        LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setMessage("Logged in successfully");
-        loginResponse.setToken(jwtUtil.buildJwtToken(registrationEntity));
-
-        return loginResponse;
+        return new LoginResponse().message("Logged in successfully").token(jwtUtil.buildJwtToken(registrationEntity));
     }
 
     @Override

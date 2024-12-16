@@ -4,11 +4,11 @@ import com.hrbatovic.master.quarkus.license.db.entities.LicenseEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;
 import com.hrbatovic.master.quarkus.license.db.entities.UserEntity;
 import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
+import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.PaidItemPayload;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.LicensesGeneratedEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.in.PaymentSuccessEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.in.UserRegisteredEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.in.UserUpdatedEvent;
-import com.hrbatovic.master.quarkus.license.messaging.model.in.payload.OrderItemPayload;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -38,11 +38,11 @@ public class MessageConsumer {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
 
         executor.runAsync(() -> {
-            List<OrderItemPayload> orderItems = paymentSuccessEvent.getOrder().getOrderItems();
+            List<PaidItemPayload> paidItems = paymentSuccessEvent.getPaymentPayload().getPaidItemPayloads();
 
-            orderItems.forEach(o->generateLicense(o, paymentSuccessEvent.getOrder().getUserId(), paymentSuccessEvent.getOrder().getId()));
+            paidItems.forEach(o->generateLicense(o, paymentSuccessEvent.getUserId(), paymentSuccessEvent.getPaymentPayload().getOrderId()));
 
-            List<LicenseEntity> licenses = LicenseEntity.find("orderId", paymentSuccessEvent.getOrder().getId()).list();
+            List<LicenseEntity> licenses = LicenseEntity.find("orderId", paymentSuccessEvent.getPaymentPayload().getOrderId()).list();
             //TODO: error handling
 
             licensesGeneratedEmitter.send(buildLicensesGeneratedEvent(paymentSuccessEvent, licenses));
@@ -50,16 +50,17 @@ public class MessageConsumer {
 
     }
 
-    private void generateLicense(OrderItemPayload orderItem, UUID userId, UUID orderId) {
-        LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", orderItem.getProductId()).firstResult();
+    private void generateLicense(PaidItemPayload paidItem, UUID userId, UUID orderId) {
+        LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", paidItem.getProductId()).firstResult();
 
         if(licenseTemplateEntity == null){
-            throw new RuntimeException("No license available for product: " + orderItem.getProductId());
+            throw new RuntimeException("No license available for product: " + paidItem.getProductId());
         }
 
-        for(int i = 0; i < orderItem.getQuantity(); i++){
+        for(int i = 0; i < paidItem.getQuantity(); i++){
             LicenseEntity licenseEntity = new LicenseEntity();
-            licenseEntity.setProductId(orderItem.getProductId());
+            licenseEntity.setProductId(paidItem.getProductId());
+            licenseEntity.setProductTitle(paidItem.getProductTitle());
             licenseEntity.setLicenseDuration(licenseTemplateEntity.getLicenseDuration());
             licenseEntity.setIssuedAt(LocalDateTime.now());
             licenseEntity.setOrderId(orderId);
@@ -69,7 +70,6 @@ public class MessageConsumer {
             } else {
                 licenseEntity.setExpiresAt(null);
             }
-            licenseEntity.setActive(true);
             licenseEntity.persist();
         }
 
@@ -125,7 +125,7 @@ public class MessageConsumer {
                 .setUserEmail(paymentSuccessEvent.getUserEmail())
                 .setUserId(paymentSuccessEvent.getUserId())
                 .setTimestamp(LocalDateTime.now())
-                .setOrderId(paymentSuccessEvent.getOrder().getId())
+                .setOrderId(paymentSuccessEvent.getPaymentPayload().getOrderId())
                 .setLicenses(mapper.map(licenses));
     }
 }

@@ -20,6 +20,7 @@ public abstract class MapUtil {
     public abstract List<UserProfileResponse> map(List<UserEntity> userEntityList);
 
     @Mapping(target="id", ignore = true)
+    @Mapping(target="email", ignore = true)
     public abstract UserPayload map(UpdateUserProfileRequest updateUserProfileRequest);
 
     @Mapping(target="id", ignore = true)
@@ -34,5 +35,10 @@ public abstract class MapUtil {
 
     @Mapping(target="createdAt", ignore = true)
     @Mapping(target="updatedAt", ignore = true)
+    @Mapping(target="firstName", ignore = true)
+    @Mapping(target="lastName", ignore = true)
+    @Mapping(target="role", ignore = true)
+    @Mapping(target="phoneNumber", ignore = true)
+    @Mapping(target="address", ignore = true)
     public abstract UserEntity update(@MappingTarget UserEntity userEntity, UserCredentialsUpdatedEvent userCredentialsUpdatedEvent);
 }

@@ -15,19 +15,9 @@ public class OrderPayload implements Serializable {
 
     private UUID userId;
 
-    private String status;
+    private UUID paymentToken;
 
-    private String currency;
-
-    private BigDecimal totalAmount;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    private UUID paymenToken;
-
-    private String paymentMethodSelector;
+    private String paymentMethod;
 
     private List<OrderItemPayload> orderItems;
 
@@ -47,81 +37,12 @@ public class OrderPayload implements Serializable {
         return userId;
     }
 
-    public OrderPayload setUserId(UUID userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public OrderPayload setStatus(String status) {
-        this.status = status;
-        return this;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public OrderPayload setCurrency(String currency) {
-        this.currency = currency;
-        return this;
-    }
-
-    public BigDecimal getTotalAmount() {
-        return totalAmount;
-    }
-
-    public OrderPayload setTotalAmount(BigDecimal totalAmount) {
-        this.totalAmount = totalAmount;
-        return this;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public OrderPayload setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public OrderPayload setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    public UUID getPaymenToken() {
-        return paymenToken;
-    }
-
-    public OrderPayload setPaymenToken(UUID paymenToken) {
-        this.paymenToken = paymenToken;
-        return this;
-    }
-
-    public String getPaymentMethodSelector() {
-        return paymentMethodSelector;
-    }
-
-    public OrderPayload setPaymentMethodSelector(String paymentMethodSelector) {
-        this.paymentMethodSelector = paymentMethodSelector;
-        return this;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
     public List<OrderItemPayload> getOrderItems() {
         return orderItems;
-    }
-
-    public OrderPayload setOrderItems(List<OrderItemPayload> orderItems) {
-        this.orderItems = orderItems;
-        return this;
     }
 
     @Override
@@ -129,13 +50,8 @@ public class OrderPayload implements Serializable {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
                 .append("id", id)
                 .append("userId", userId)
-                .append("status", status)
-                .append("currency", currency)
-                .append("totalAmount", totalAmount)
-                .append("createdAt", createdAt)
-                .append("updatedAt", updatedAt)
-                .append("paymenToken", paymenToken)
-                .append("paymentMethodSelector", paymentMethodSelector)
+                .append("paymentToken", paymentToken)
+                .append("paymentMethod", paymentMethod)
                 .append("orderItems", orderItems)
                 .toString();
     }

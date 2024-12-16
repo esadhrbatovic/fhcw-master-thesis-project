@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class LicenseTemplatePayload implements Serializable {
+
     private UUID id;
 
     private UUID productId;
@@ -15,7 +16,6 @@ public class LicenseTemplatePayload implements Serializable {
 
     private LocalDateTime updatedAt;
 
-    private LocalDateTime timeStamp;
 
     public LicenseTemplatePayload() {
     }
@@ -65,15 +65,6 @@ public class LicenseTemplatePayload implements Serializable {
         return this;
     }
 
-    public LocalDateTime getTimeStamp() {
-        return timeStamp;
-    }
-
-    public LicenseTemplatePayload setTimeStamp(LocalDateTime timeStamp) {
-        this.timeStamp = timeStamp;
-        return this;
-    }
-
     @Override
     public String toString() {
         return "LicenseTemplateCreatedEvent{" +
@@ -82,7 +73,6 @@ public class LicenseTemplatePayload implements Serializable {
                 ", licenseDuration=" + licenseDuration +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-                ", timeStamp=" + timeStamp +
                 '}';
     }
 

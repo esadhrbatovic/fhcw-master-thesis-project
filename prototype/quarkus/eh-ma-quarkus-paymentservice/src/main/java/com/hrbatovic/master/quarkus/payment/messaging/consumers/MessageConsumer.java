@@ -1,6 +1,5 @@
 package com.hrbatovic.master.quarkus.payment.messaging.consumers;
 
-import com.aayushatharva.brotli4j.common.annotations.Local;
 import com.hrbatovic.master.quarkus.payment.db.entities.PaymentMethodEntity;
 import com.hrbatovic.master.quarkus.payment.db.entities.UserEntity;
 import com.hrbatovic.master.quarkus.payment.mapper.MapUtil;
@@ -41,7 +40,7 @@ public class MessageConsumer {
         System.out.println("Recieved order-created-in event: " + orderCreatedEvent);
 
         executor.runAsync(()->{
-            PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.find("selector", orderCreatedEvent.getOrder().getPaymentMethodSelector()).firstResult();
+            PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.find("selector", orderCreatedEvent.getOrder().getPaymentMethod()).firstResult();
 
             //TODO: define constant for error messages
             if(paymentMethodEntity == null){
@@ -105,7 +104,7 @@ public class MessageConsumer {
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setSessionId(orderCreatedEvent.getSessionId())
-                .setOrder(mapper.map(orderCreatedEvent.getOrder()));
+                .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 
     private PaymentFailEvent buildPaymentFailEvent(OrderCreatedEvent orderCreatedEvent) {
@@ -115,7 +114,7 @@ public class MessageConsumer {
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setSessionId(orderCreatedEvent.getSessionId())
                 .setTimestamp(LocalDateTime.now())
-                .setOrder(mapper.map(orderCreatedEvent.getOrder()));
+                .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 
 }

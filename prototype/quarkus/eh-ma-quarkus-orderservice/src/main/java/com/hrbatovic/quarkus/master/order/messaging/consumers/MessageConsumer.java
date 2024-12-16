@@ -40,8 +40,8 @@ public class MessageConsumer {
             }
 
             orderEntity = mapper.map(checkoutStartedEvent.getCart());
-            orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethodSelector());
-            orderEntity.setPaymenToken(checkoutStartedEvent.getPaymentToken());
+            orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethod());
+            orderEntity.setPaymentToken(checkoutStartedEvent.getPaymentToken());
             orderEntity.persist();
 
             OrderCreatedEvent orderCreatedEvent = buildOrderCreatedEvent(checkoutStartedEvent, orderEntity);
@@ -99,7 +99,7 @@ public class MessageConsumer {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEventPayload);
 
         executor.runAsync(() -> {
-            OrderEntity orderEntity = OrderEntity.findById(paymentSuccessEventPayload.getOrder().getId());
+            OrderEntity orderEntity = OrderEntity.findById(paymentSuccessEventPayload.getPaymentPayload().getOrderId());
             orderEntity.setStatus(Order.StatusEnum.PAYMENT_COMPLETED.toString());
             orderEntity.setUpdatedAt(LocalDateTime.now());
             orderEntity.update();
@@ -111,7 +111,7 @@ public class MessageConsumer {
         System.out.println("Recieved payment-fail-in event: " + paymentFailEvent);
 
         executor.runAsync(() -> {
-            OrderEntity orderEntity = OrderEntity.findById(paymentFailEvent.getOrder().getId());
+            OrderEntity orderEntity = OrderEntity.findById(paymentFailEvent.getPaymentPayload().getOrderId());
             orderEntity.setStatus(Order.StatusEnum.PAYMENT_FAILED.toString());
             orderEntity.setStatusDetail(paymentFailEvent.getMessage());
             orderEntity.setUpdatedAt(LocalDateTime.now());
@@ -148,7 +148,12 @@ public class MessageConsumer {
     }
 
     private OrderCreatedEvent buildOrderCreatedEvent(CheckoutStartedEvent checkoutStartedEvent, OrderEntity orderEntity) {
-        return new OrderCreatedEvent().setUserId(checkoutStartedEvent.getUserId()).setUserEmail(checkoutStartedEvent.getUserEmail()).setTimestamp(LocalDateTime.now()).setSessionId(checkoutStartedEvent.getSessionId()).setOrder(mapper.toOrderPayload(orderEntity));
+        return new OrderCreatedEvent()
+                .setUserId(checkoutStartedEvent.getUserId())
+                .setUserEmail(checkoutStartedEvent.getUserEmail())
+                .setTimestamp(LocalDateTime.now())
+                .setSessionId(checkoutStartedEvent.getSessionId())
+                .setOrder(mapper.toOrderPayload(orderEntity));
     }
 
 }

@@ -40,7 +40,7 @@ public class CartApiService implements CartProductsApi {
     String sessionIdClaim;
     @Inject
     @Channel("checkout-started-out")
-    Emitter<CheckoutStartedEvent> checkoutStartedEmmiter;
+    Emitter<CheckoutStartedEvent> checkoutStartedEmitter;
 
     @Override
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
@@ -67,14 +67,12 @@ public class CartApiService implements CartProductsApi {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
 
         CheckoutStartedEvent checkoutStartedEvent = buildCheckoutStartedEvent(startCheckoutRequest, cartEntity);
-        checkoutStartedEmmiter.send(checkoutStartedEvent);
+        checkoutStartedEmitter.send(checkoutStartedEvent);
 
         return new CheckoutResponse()
                 .message("Checkout started successfully.")
                 .orderId(cartEntity.getId());
     }
-
-
 
     @Override
     public DeleteCartProductResponse deleteCartProduct(UUID productId) {
@@ -195,7 +193,14 @@ public class CartApiService implements CartProductsApi {
     }
 
     private CheckoutStartedEvent buildCheckoutStartedEvent(StartCheckoutRequest startCheckoutRequest, CartEntity cartEntity) {
-        return new CheckoutStartedEvent().setTimestamp(LocalDateTime.now()).setUserId(UUID.fromString(userSubClaim)).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setPaymentMethodSelector(startCheckoutRequest.getPaymentMethodSelector()).setPaymentToken(startCheckoutRequest.getPaymentToken()).setCart(mapper.toCartPayload(cartEntity));
+        return new CheckoutStartedEvent()
+                .setTimestamp(LocalDateTime.now())
+                .setUserId(UUID.fromString(userSubClaim))
+                .setUserEmail(emailClaim)
+                .setSessionId(UUID.fromString(sessionIdClaim))
+                .setPaymentMethod(startCheckoutRequest.getPaymentMethod())
+                .setPaymentToken(startCheckoutRequest.getPaymentToken())
+                .setCart(mapper.toCartPayload(cartEntity));
     }
 
 }

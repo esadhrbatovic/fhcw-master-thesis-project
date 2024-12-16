@@ -1,6 +1,6 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in;
 
-import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.OrderPayload;
+import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.PaymentPayload;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -8,12 +8,11 @@ import java.io.Serializable;
 
 public class PaymentFailEvent implements Serializable {
 
-    private OrderPayload order;
-
+    private PaymentPayload paymentPayload;
     private String message;
 
-    public OrderPayload getOrder() {
-        return order;
+    public PaymentPayload getPaymentPayload() {
+        return paymentPayload;
     }
 
     public String getMessage() {
@@ -23,7 +22,7 @@ public class PaymentFailEvent implements Serializable {
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("order", order)
+                .append("paymentPayload", paymentPayload)
                 .append("message", message)
                 .toString();
     }

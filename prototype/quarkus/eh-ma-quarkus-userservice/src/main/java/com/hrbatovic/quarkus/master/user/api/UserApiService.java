@@ -90,10 +90,7 @@ public class UserApiService implements UsersApi {
 
         userEntity.delete();
         userDeletedEmitter.send(id);
-
-        DeleteUserResponse deleteUserResponse = new DeleteUserResponse();
-        deleteUserResponse.setMessage("User deleted successfully");
-        return deleteUserResponse;
+        return new DeleteUserResponse().message("User deleted successfully");
     }
 
 }

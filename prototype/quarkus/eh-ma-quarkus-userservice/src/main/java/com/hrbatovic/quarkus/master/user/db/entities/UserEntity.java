@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 
 @MongoEntity(collection = "users")
 public class UserEntity extends PanacheMongoEntityBase  {
+
     @BsonId
     public UUID id;
 
@@ -30,7 +31,6 @@ public class UserEntity extends PanacheMongoEntityBase  {
     public UserEntity(){
         this.id = UUID.randomUUID();
     }
-
 
     public static PanacheQuery<UserEntity> findUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         StringBuilder queryBuilder = new StringBuilder();

@@ -26,6 +26,7 @@ public class EventApiService implements EventsApi {
     @Override
     public EventListResponse listEvents(Integer page, Integer limit, String eventType, String sourceService, UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId, LocalDateTime occurredAfter, LocalDateTime occurredBefore, String sort) {
         List<EventEntity> eventEntities = EventEntity.listAll();
+
         return new EventListResponse().events(mapper.map(eventEntities));
     }
 

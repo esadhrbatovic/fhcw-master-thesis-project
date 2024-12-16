@@ -104,6 +104,7 @@ public class MessageConsumer {
                 .setUserId(orderCreatedEvent.getUserId())
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setUserEmail(orderCreatedEvent.getUserEmail())
+                .setSessionId(orderCreatedEvent.getSessionId())
                 .setOrder(mapper.map(orderCreatedEvent.getOrder()));
     }
 

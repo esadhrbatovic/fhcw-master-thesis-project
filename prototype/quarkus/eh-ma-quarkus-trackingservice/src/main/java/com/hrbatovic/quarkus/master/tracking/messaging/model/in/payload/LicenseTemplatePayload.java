@@ -1,5 +1,8 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -76,15 +79,13 @@ public class LicenseTemplatePayload implements Serializable {
 
     @Override
     public String toString() {
-        return "LicenseTemplateCreatedEvent{" +
-                "id=" + id +
-                ", productId=" + productId +
-                ", licenseDuration=" + licenseDuration +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", timeStamp=" + timeStamp +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("id", id)
+                .append("productId", productId)
+                .append("licenseDuration", licenseDuration)
+                .append("createdAt", createdAt)
+                .append("updatedAt", updatedAt)
+                .append("timeStamp", timeStamp)
+                .toString();
     }
-
-
 }

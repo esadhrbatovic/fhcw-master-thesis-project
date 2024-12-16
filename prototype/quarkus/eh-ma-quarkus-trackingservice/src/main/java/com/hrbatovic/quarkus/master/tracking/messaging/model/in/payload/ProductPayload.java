@@ -1,5 +1,8 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -128,5 +131,23 @@ public class ProductPayload implements Serializable {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("id", id)
+                .append("title", title)
+                .append("description", description)
+                .append("categoryId", categoryId)
+                .append("price", price)
+                .append("currency", currency)
+                .append("imageUrl", imageUrl)
+                .append("licenseAvailable", licenseAvailable)
+                .append("deleted", deleted)
+                .append("tags", tags)
+                .append("createdAt", createdAt)
+                .append("updatedAt", updatedAt)
+                .toString();
     }
 }

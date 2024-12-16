@@ -1,5 +1,8 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -63,13 +66,13 @@ public class OrderItemPayload implements Serializable {
 
     @Override
     public String toString() {
-        return "OrderItemPayload{" +
-                "productId=" + productId +
-                ", productTitle='" + productTitle + '\'' +
-                ", quantity=" + quantity +
-                ", productPrice=" + productPrice +
-                ", totalPrice=" + totalPrice +
-                '}';
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("productId", productId)
+                .append("productTitle", productTitle)
+                .append("quantity", quantity)
+                .append("productPrice", productPrice)
+                .append("totalPrice", totalPrice)
+                .toString();
     }
 }
 

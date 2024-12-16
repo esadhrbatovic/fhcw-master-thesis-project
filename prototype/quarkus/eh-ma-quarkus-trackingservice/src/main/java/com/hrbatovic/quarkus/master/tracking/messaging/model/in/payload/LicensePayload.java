@@ -1,5 +1,8 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -95,5 +98,19 @@ public class LicensePayload implements Serializable {
     public LicensePayload setActive(boolean active) {
         this.active = active;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+                .append("serialNumber", serialNumber)
+                .append("productId", productId)
+                .append("userId", userId)
+                .append("orderId", orderId)
+                .append("licenseDuration", licenseDuration)
+                .append("issuedAt", issuedAt)
+                .append("expiresAt", expiresAt)
+                .append("active", active)
+                .toString();
     }
 }

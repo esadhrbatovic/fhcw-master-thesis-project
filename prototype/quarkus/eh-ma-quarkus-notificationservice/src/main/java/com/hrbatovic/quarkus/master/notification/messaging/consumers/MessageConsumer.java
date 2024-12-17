@@ -1,5 +1,6 @@
 package com.hrbatovic.quarkus.master.notification.messaging.consumers;
 
+import com.hrbatovic.quarkus.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.*;
@@ -60,7 +61,16 @@ public class MessageConsumer {
     public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
         UserEntity userEntity = UserEntity.findById(licenseGeneratedEvent.getUserId());
 
-        mailer.send(Mail.withText(userEntity.getEmail(), "License delivery, order - " + licenseGeneratedEvent.getOrderId(), "Hi " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", your licenses are available: " + licenseGeneratedEvent.getLicenses().toString()));
+        NotificationEntity notificationEntity = new NotificationEntity();
+        notificationEntity.setEmail(userEntity.getEmail());
+        notificationEntity.setSubject("License delivery, order - " + licenseGeneratedEvent.getOrderId());
+        notificationEntity.setBody("Hi " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", your licenses are available: " + licenseGeneratedEvent.getLicenses().toString());
+        notificationEntity.setSentAt(LocalDateTime.now());
+        notificationEntity.setUserId(userEntity.getId());
+        notificationEntity.setType("order-completed");
+        notificationEntity.persist();
+
+        mailer.send(Mail.withText(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody()));
     }
 
     @Incoming("user-updated-in")
@@ -115,7 +125,16 @@ public class MessageConsumer {
                 return;
             }
 
-            mailer.send(Mail.withText(userEntity.getEmail(), "Payment failed - order:" + paymentFailEvent.getPaymentPayload().getOrderId(), "Hello " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", there was a problem with your payment: " + paymentFailEvent.getMessage()));
+            NotificationEntity notificationEntity = new NotificationEntity();
+            notificationEntity.setEmail(userEntity.getEmail());
+            notificationEntity.setSubject("Payment failed - order:" + paymentFailEvent.getPaymentPayload().getOrderId());
+            notificationEntity.setBody("Hello " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", there was a problem with your payment: " + paymentFailEvent.getMessage());
+            notificationEntity.setType("payment-failed");
+            notificationEntity.setSentAt(LocalDateTime.now());
+            notificationEntity.setUserId(userEntity.getId());
+            notificationEntity.persist();
+
+            mailer.send(Mail.withText(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody()));
         });
     }
 

@@ -25,12 +25,12 @@ public class CategoryApiService implements CategoriesApi {
         if (page == null || page < 1) page = 1;
         if (limit == null || limit < 1) limit = 10;
 
-        PanacheQuery<CategoryEntity> panacheQuery = CategoryEntity.queryCategories(page, limit, search);
+        PanacheQuery<CategoryEntity> query = CategoryEntity.queryCategories(page, limit, search);
 
-        List<CategoryEntity> categoryEntities = panacheQuery.list();
+        List<CategoryEntity> categoryEntities = query.list();
 
-        long totalItems = panacheQuery.count();
-        int totalPages = panacheQuery.pageCount();
+        long totalItems = query.count();
+        int totalPages = query.pageCount();
 
         List<Category> categories = categoryEntities.stream()
                 .map(mapper::map)

@@ -1,6 +1,7 @@
 package com.hrbatovic.quarkus.master.order.messaging.model.out.payload;
 
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@RegisterForReflection
 public class OrderPayload implements Serializable {
 
     private UUID id;

@@ -42,7 +42,7 @@ public class UserApiService implements UsersApi {
     @Override
     public UserListResponse listUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
 
-        PanacheQuery<UserEntity> query = UserEntity.findUsers(page, limit, search, createdAfter, createdBefore, sort);
+        PanacheQuery<UserEntity> query = UserEntity.queryUsers(page, limit, search, createdAfter, createdBefore, sort);
 
         List<UserEntity> userEntityList = query.list();
 

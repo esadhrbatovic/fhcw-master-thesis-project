@@ -2,12 +2,14 @@ package com.hrbatovic.quarkus.master.tracking.messaging.model.in;
 
 
 import com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload.ProductPayload;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RegisterForReflection
 public class ProductUpdatedEvent {
 
     ProductPayload product;

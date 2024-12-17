@@ -32,7 +32,7 @@ public class UserEntity extends PanacheMongoEntityBase  {
         this.id = UUID.randomUUID();
     }
 
-    public static PanacheQuery<UserEntity> findUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public static PanacheQuery<UserEntity> queryUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         StringBuilder queryBuilder = new StringBuilder();
         Map<String, Object> params = new HashMap<>();
 

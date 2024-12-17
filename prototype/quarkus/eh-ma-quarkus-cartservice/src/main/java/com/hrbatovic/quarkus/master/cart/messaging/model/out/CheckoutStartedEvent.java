@@ -1,6 +1,7 @@
 package com.hrbatovic.quarkus.master.cart.messaging.model.out;
 
 import com.hrbatovic.quarkus.master.cart.messaging.model.out.payload.CartPayload;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RegisterForReflection
 public class CheckoutStartedEvent implements Serializable {
 
     private CartPayload cart;

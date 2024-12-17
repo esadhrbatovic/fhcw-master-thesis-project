@@ -1,9 +1,12 @@
 package com.hrbatovic.master.quarkus.license.messaging.model.out.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RegisterForReflection
 public class LicensePayload implements Serializable {
 
     private UUID serialNumber;

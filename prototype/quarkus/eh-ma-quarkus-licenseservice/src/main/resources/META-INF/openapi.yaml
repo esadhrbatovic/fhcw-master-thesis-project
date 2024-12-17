@@ -440,6 +440,8 @@ components:
           type: string
           format: uuid
           example: 321e4567-e89b-12d3-a456-426614174000
+        productTitle:
+          type: string
         licenseDuration:
           type: integer
           description: Duration of the license in days (0 for perpetual)

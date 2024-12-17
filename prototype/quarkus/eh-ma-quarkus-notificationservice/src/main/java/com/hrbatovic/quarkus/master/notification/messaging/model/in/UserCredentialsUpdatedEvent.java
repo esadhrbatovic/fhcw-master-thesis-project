@@ -1,8 +1,11 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.util.UUID;
 
+@RegisterForReflection
 public class UserCredentialsUpdatedEvent implements Serializable {
     UUID id;
     String email;

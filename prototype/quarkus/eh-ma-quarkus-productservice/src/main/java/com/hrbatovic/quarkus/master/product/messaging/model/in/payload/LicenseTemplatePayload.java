@@ -1,9 +1,12 @@
 package com.hrbatovic.quarkus.master.product.messaging.model.in.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RegisterForReflection
 public class LicenseTemplatePayload implements Serializable {
 
     private UUID id;

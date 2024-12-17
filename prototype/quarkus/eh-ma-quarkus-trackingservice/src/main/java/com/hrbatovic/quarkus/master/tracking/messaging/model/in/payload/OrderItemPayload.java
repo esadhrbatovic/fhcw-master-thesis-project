@@ -1,5 +1,6 @@
 package com.hrbatovic.quarkus.master.tracking.messaging.model.in.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@RegisterForReflection
 public class OrderItemPayload implements Serializable {
 
     private UUID productId;

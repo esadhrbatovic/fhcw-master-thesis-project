@@ -1,10 +1,12 @@
 package com.hrbatovic.quarkus.master.auth.messaging.model.out.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 
+@RegisterForReflection
 public class AddressPayload implements Serializable {
 
     private String street;

@@ -1,11 +1,13 @@
 package com.hrbatovic.master.quarkus.license.messaging.model.in.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.UUID;
 
+@RegisterForReflection
 public class PaidItemPayload implements Serializable {
 
     private UUID productId;

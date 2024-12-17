@@ -1,9 +1,12 @@
 package com.hrbatovic.quarkus.master.cart.messaging.model.in.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@RegisterForReflection
 public class ProductPayload implements Serializable {
     private UUID id;
 

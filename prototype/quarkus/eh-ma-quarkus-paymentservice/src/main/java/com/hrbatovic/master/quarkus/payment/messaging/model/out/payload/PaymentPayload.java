@@ -1,5 +1,6 @@
 package com.hrbatovic.master.quarkus.payment.messaging.model.out.payload;
 
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -7,6 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
+@RegisterForReflection
 public class PaymentPayload implements Serializable {
 
     private UUID userId;

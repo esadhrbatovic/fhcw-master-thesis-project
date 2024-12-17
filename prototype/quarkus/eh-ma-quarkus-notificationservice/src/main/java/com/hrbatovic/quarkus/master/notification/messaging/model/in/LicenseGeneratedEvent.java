@@ -1,6 +1,7 @@
 package com.hrbatovic.quarkus.master.notification.messaging.model.in;
 
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.LicensePayload;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@RegisterForReflection
 public class LicenseGeneratedEvent implements Serializable {
     private UUID orderId;
     private UUID userId;

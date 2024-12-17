@@ -1,6 +1,7 @@
 package com.hrbatovic.master.quarkus.payment.messaging.model.out;
 
 import com.hrbatovic.master.quarkus.payment.messaging.model.out.payload.PaymentPayload;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@RegisterForReflection
 public class PaymentFailEvent implements Serializable {
 
     private PaymentPayload paymentPayload;

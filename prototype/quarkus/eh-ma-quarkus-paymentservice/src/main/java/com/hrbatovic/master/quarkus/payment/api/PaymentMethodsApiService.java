@@ -42,6 +42,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
         return Response.ok(mapper.toApiDetail(paymentMethodEntity)).status(200).build();
     }
 
+    //TODO: hide merchant id from customers
     @Override
     public Response getPaymentMethods() {
         PaymentMethodListResponse paymentMethodListResponse = new PaymentMethodListResponse();

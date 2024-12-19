@@ -5,6 +5,7 @@ import com.hrbatovic.master.quarkus.product.model.Category;
 import com.hrbatovic.master.quarkus.product.model.CategoryListResponse;
 import com.hrbatovic.master.quarkus.product.model.Pagination;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
+import com.hrbatovic.quarkus.master.product.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
@@ -55,7 +56,7 @@ public class CategoryApiService implements CategoriesApi {
         CategoryEntity categoryEntity = CategoryEntity.findById(id);
 
         if (categoryEntity == null) {
-            throw new IllegalArgumentException("Product with ID " + id + " not found");
+            throw new EhMaException(404, "Product with ID " + id + " not found");
         }
 
         return Response.ok(mapper.map(categoryEntity)).status(200).build();

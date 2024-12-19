@@ -4,6 +4,7 @@ import com.hrbatovic.master.quarkus.product.api.ProductsApi;
 import com.hrbatovic.master.quarkus.product.model.*;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
+import com.hrbatovic.quarkus.master.product.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.product.messaging.model.out.ProductCreatedEvent;
 import com.hrbatovic.quarkus.master.product.messaging.model.out.ProductUpdatedEvent;
@@ -54,6 +55,8 @@ public class ProductApiService implements ProductsApi {
     @Channel("product-deleted-out")
     Emitter<UUID> productDeletedEmitter;
 
+
+    //TODO: handle soft deleted products, hide deleted flag from customers
     @Override
     public Response listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         PanacheQuery<ProductEntity> query = ProductEntity.queryProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
@@ -93,7 +96,7 @@ public class ProductApiService implements ProductsApi {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {
-            throw new IllegalArgumentException("Product with ID " + productId + " not found");
+            throw new EhMaException(404, "Product with ID " + productId + " not found");
         }
 
         CategoryEntity categoryEntity = CategoryEntity.findById(productEntity.getCategoryId());
@@ -107,7 +110,7 @@ public class ProductApiService implements ProductsApi {
     public Response updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         ProductEntity productEntity = ProductEntity.findById(productId);
         if (productEntity == null) {
-            throw new IllegalArgumentException("Product with ID " + productId + " not found");
+            throw new EhMaException(404, "Product with ID " + productId + " not found");
         }
 
         CategoryEntity categoryEntity = CategoryEntity.findById(productEntity.getCategoryId());
@@ -152,7 +155,7 @@ public class ProductApiService implements ProductsApi {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {
-            throw new IllegalArgumentException("Product with ID " + productId + " not found");
+            throw new EhMaException(404, "Product with ID " + productId + " not found");
         }
 
         productEntity.delete();

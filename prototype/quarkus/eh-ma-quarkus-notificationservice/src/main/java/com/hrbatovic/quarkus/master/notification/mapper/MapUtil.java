@@ -5,6 +5,7 @@ import com.hrbatovic.quarkus.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.payload.UserPayload;
+import jakarta.ws.rs.core.Response;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -24,4 +25,6 @@ public abstract class MapUtil {
     public abstract void update(@MappingTarget UserEntity userEntity, UserCredentialsUpdatedEvent userCredentialsUpdatedEvent);
 
     public abstract List<Notification> map(List<NotificationEntity> notificationEntityList);
+
+    public abstract Notification map(NotificationEntity notificationEntity);
 }

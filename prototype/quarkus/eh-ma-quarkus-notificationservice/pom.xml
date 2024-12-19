@@ -233,7 +233,7 @@
                                 <dateLibrary>custom</dateLibrary>
                                 <unhandledException>false</unhandledException>
                                 <java17>true</java17>
-                                <returnResponse>false</returnResponse>
+                                <returnResponse>true</returnResponse>
                             </configOptions>
                             <typeMappings>
                                 <typeMapping>DateTime=LocalDateTime</typeMapping>

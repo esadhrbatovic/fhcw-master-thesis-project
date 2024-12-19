@@ -10,6 +10,7 @@ import com.hrbatovic.quarkus.master.product.messaging.model.out.ProductUpdatedEv
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
@@ -54,7 +55,7 @@ public class ProductApiService implements ProductsApi {
     Emitter<UUID> productDeletedEmitter;
 
     @Override
-    public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public Response listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         PanacheQuery<ProductEntity> query = ProductEntity.queryProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
 
         List<ProductEntity> productEntityList = query.list();
@@ -84,11 +85,11 @@ public class ProductApiService implements ProductsApi {
         pagination.setTotalPages(totalPages);
         productListResponse.setPagination(pagination);
 
-        return productListResponse;
+        return Response.ok(productListResponse).status(200).build();
     }
 
     @Override
-    public ProductResponse getProductById(UUID productId) {
+    public Response getProductById(UUID productId) {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {
@@ -100,10 +101,10 @@ public class ProductApiService implements ProductsApi {
                 .map(CategoryEntity::getName)
                 .orElse("Unknown");
 
-        return mapper.map(productEntity, categoryName);
+        return Response.ok(mapper.map(productEntity, categoryName)).status(200).build();
     }
     @Override
-    public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
+    public Response updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         ProductEntity productEntity = ProductEntity.findById(productId);
         if (productEntity == null) {
             throw new IllegalArgumentException("Product with ID " + productId + " not found");
@@ -125,12 +126,12 @@ public class ProductApiService implements ProductsApi {
         productEntity.update();
 
         productUpdatedEmitter.send(buildProductUpdatedEvent(productEntity));
-        return mapper.map(productEntity, categoryEntity.getName());
+        return Response.ok(mapper.map(productEntity, categoryEntity.getName())).status(200).build();
     }
 
 
     @Override
-    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
+    public Response createProduct(CreateProductRequest createProductRequest) {
         CategoryEntity category = CategoryEntity.find("name", createProductRequest.getCategory()).firstResult();
         if (category == null) {
             category = new CategoryEntity();
@@ -142,12 +143,12 @@ public class ProductApiService implements ProductsApi {
 
         productEntity.persist();
         productCreatedEmitter.send(buildProductCreatedEvent(productEntity));
-        return mapper.map(productEntity, category.getName());
+        return Response.ok(mapper.map(productEntity, category.getName())).status(200).build();
     }
 
 
     @Override
-    public DeleteProductResponse deleteProduct(UUID productId) {
+    public Response deleteProduct(UUID productId) {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {
@@ -158,7 +159,7 @@ public class ProductApiService implements ProductsApi {
         productDeletedEmitter.send(productId);
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product successfully deleted.");
-        return response;
+        return Response.ok(response).status(200).build();
     }
 
     private ProductUpdatedEvent buildProductUpdatedEvent(ProductEntity productEntity) {

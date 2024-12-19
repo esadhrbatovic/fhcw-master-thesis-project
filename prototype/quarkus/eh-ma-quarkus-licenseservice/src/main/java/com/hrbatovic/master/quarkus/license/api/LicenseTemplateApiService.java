@@ -1,12 +1,14 @@
 package com.hrbatovic.master.quarkus.license.api;
 
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseTemplateEntity;
+import com.hrbatovic.master.quarkus.license.exceptions.EhMaException;
 import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateCreatedEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateUpdatedEvent;
 import com.hrbatovic.master.quarkus.license.model.*;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -47,57 +49,65 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     Emitter<LicenseTemplateUpdatedEvent> licenseTemplateUpdatedEmitter;
 
     @Override
-    public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
+    public Response createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
         LicenseTemplateEntity licenseTemplateEntity = mapping.toTemplateEntity(createLicenseTemplateRequest);
         licenseTemplateEntity.persist();
 
         licenseTemplateCreatedEmitter.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
 
-        return mapping.toApi(licenseTemplateEntity);
+        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
     }
 
 
     @Override
-    public DeleteLicenseTemplateResponse deleteLicenseTemplate(UUID productId) {
+    public Response deleteLicenseTemplate(UUID productId) {
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", productId).firstResult();
+
+        if(licenseTemplateEntity == null){
+            throw new EhMaException(404, "License template not found.");
+        }
 
         licenseTemplateDeletedEmitter.send(licenseTemplateEntity.getProductId());
-        //TODO: error handling
+
         licenseTemplateEntity.delete();
 
-        return new DeleteLicenseTemplateResponse().message("License template deleted successfully.");
+        return Response.ok(new DeleteLicenseTemplateResponse().message("License template deleted successfully.")).status(200).build();
     }
 
     @Override
-    public LicenseTemplateResponse getLicenseTemplateByProductId(UUID productId) {
+    public Response getLicenseTemplateByProductId(UUID productId) {
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", productId).firstResult();
-        //TODO: error handling
+        if(licenseTemplateEntity == null){
+            throw new EhMaException(404, "License template not found.");
+        }
 
-        return mapping.toApi(licenseTemplateEntity);
+        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
     }
 
     @Override
-    public LicenseTemplateListResponse listLicenseTemplates() {
+    public Response listLicenseTemplates() {
         List<LicenseTemplateEntity> licenseTemplateEntities = LicenseTemplateEntity.listAll();
 
         LicenseTemplateListResponse licenseTemplateListResponse = new LicenseTemplateListResponse();
 
         licenseTemplateListResponse.setLicenseTemplates(mapping.toApiList(licenseTemplateEntities));
 
-        return licenseTemplateListResponse;
+        return Response.ok(licenseTemplateListResponse).status(200).build();
     }
 
     @Override
-    public LicenseTemplateResponse updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
+    public Response updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", productId).firstResult();
-        //TODO: error handling
+        if(licenseTemplateEntity == null){
+            throw new EhMaException(404, "License template not found.");
+        }
 
         mapping.patch(updateLicenseTemplateRequest, licenseTemplateEntity);
         licenseTemplateEntity.update();
 
         licenseTemplateUpdatedEmitter.send(buildLicenseTempalteUpdatedEvent(licenseTemplateEntity));
 
-        return mapping.toApi(licenseTemplateEntity);
+        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
     }
 
     private LicenseTemplateUpdatedEvent buildLicenseTempalteUpdatedEvent(LicenseTemplateEntity licenseTemplateEntity) {

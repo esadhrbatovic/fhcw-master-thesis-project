@@ -5,17 +5,20 @@ import com.hrbatovic.master.quarkus.auth.model.*;
 import com.hrbatovic.quarkus.master.auth.JwtUtil;
 import com.hrbatovic.quarkus.master.auth.Hasher;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
+import com.hrbatovic.quarkus.master.auth.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @RequestScoped
@@ -54,26 +57,30 @@ public class AuthApiService implements AuthApi {
     MapUtil mapper;
 
     @Override
-    public LoginResponse login(LoginRequest loginRequest) {
+    public Response login(LoginRequest loginRequest) {
         //TODO: api validation, error handling, authorisation
 
         RegistrationEntity registrationEntity = RegistrationEntity.findByEmail(loginRequest.getCredentials().getEmail());
 
         if (registrationEntity == null) {
-            throw new RuntimeException("Login Failed");
+            throw new EhMaException(400, "Login Failed");
         }
 
         if (!passwordHasher.check(loginRequest.getCredentials().getPassword(), registrationEntity.getCredentialsEntity().getPassword())) {
 
-            throw new RuntimeException("Login Failed");
+            throw new EhMaException(400, "Login Failed");
         }
 
-        return new LoginResponse().message("Logged in successfully").token(jwtUtil.buildJwtToken(registrationEntity));
+        return Response.ok(new LoginResponse().message("Logged in successfully").token(jwtUtil.buildJwtToken(registrationEntity))).status(200).build();
     }
 
     @Override
-    public RegisterResponse register(RegisterRequest registerRequest) {
+    public Response register(RegisterRequest registerRequest) {
         //TODO: api validation, error handling, authorisation
+        RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(registerRequest.getCredentials().getEmail());
+        if(tempRegistrationEntity != null){
+            throw new EhMaException(400, "This e-mail is not available.");
+        }
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
         registrationEntity.setUserEntity(mapper.map(registerRequest.getUserData()));
@@ -96,19 +103,25 @@ public class AuthApiService implements AuthApi {
 
         userRegisteredEmitter.send(buildUserRegisteredEvent(registerRequest, registrationEntity, UUID.fromString(sessionIdString), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return new RegisterResponse().message("User registered successfully").token(jwtToken);
+        return Response.ok(new RegisterResponse().message("User registered successfully").token(jwtToken)).status(200).build();
     }
 
 
     @Override
-    public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
+    public Response updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
+        RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
+        if(tempRegistrationEntity != null){
+            throw new EhMaException(400, "This e-mail is not available.");
+        }
+
         UUID userId = UUID.fromString(userSubClaim);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
+
         if (registrationEntity == null) {
-            throw new RuntimeException("User not found");
+            throw new EhMaException(400, "User not found");
         }
         if (!passwordHasher.check(updateCredentialsRequest.getOldPassword(), registrationEntity.getCredentialsEntity().getPassword())) {
-            throw new RuntimeException("Old password is wrong");
+            throw new EhMaException(400, "Old password is wrong");
         }
 
         registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest));
@@ -120,14 +133,19 @@ public class AuthApiService implements AuthApi {
 
         userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(userId, registrationEntity, UUID.fromString(sessionIdClaim), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken);
+        return Response.ok(new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken)).status(200).build();
     }
 
     @Override
-    public SuccessResponse adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
+    public Response adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if (registrationEntity == null) {
-            throw new RuntimeException("User not found");
+            throw new EhMaException(400, "User not found");
+        }
+
+        RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
+        if(tempRegistrationEntity != null){
+            throw new EhMaException(400, "This e-mail is not available.");
         }
 
         registrationEntity.setCredentialsEntity(mapper.map(updateCredentialsRequest));
@@ -138,7 +156,7 @@ public class AuthApiService implements AuthApi {
 
         userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(UUID.fromString(userSubClaim), registrationEntity, UUID.fromString(sessionIdClaim), emailClaim));
 
-        return new SuccessResponse().message("Credentials updated successfully");
+        return Response.ok(new SuccessResponse().message("Credentials updated successfully")).status(200).build();
     }
 
     private UserRegisteredEvent buildUserRegisteredEvent(RegisterRequest registerRequest, RegistrationEntity registrationEntity, UUID sessionId, String userEmail) {

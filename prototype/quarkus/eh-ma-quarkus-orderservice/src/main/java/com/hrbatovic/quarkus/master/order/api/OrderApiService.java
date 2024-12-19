@@ -5,11 +5,13 @@ import com.hrbatovic.master.quarkus.order.model.OrderListResponse;
 import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponsePagination;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
+import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import java.util.*;
 
@@ -20,7 +22,7 @@ public class OrderApiService implements OrdersApi {
     MapUtil mapper;
 
     @Override
-    public OrderListResponse getAllOrders(Integer page, Integer limit, String status, String sort) {
+    public Response getAllOrders(Integer page, Integer limit, String status, String sort) {
         PanacheQuery<OrderEntity> query = OrderEntity.queryOrders(status, sort);
 
         Page pagination = Page.of(
@@ -30,18 +32,19 @@ public class OrderApiService implements OrdersApi {
 
         query.page(pagination);
 
-        return createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit);
+        return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
     }
 
+    //TODO: admin only
     @Override
-    public Order getOrderById(UUID orderId) {
+    public Response getOrderById(UUID orderId) {
         OrderEntity orderEntity = OrderEntity.findById(orderId);
 
         if(orderEntity == null){
-            throw new RuntimeException("Order not found");
+            throw new EhMaException(404, "Order not found");
         }
 
-        return mapper.map(orderEntity);
+        return Response.ok(mapper.map(orderEntity)).status(200).build();
     }
 
     private OrderListResponse createOrderListResponse(

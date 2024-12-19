@@ -1,10 +1,12 @@
 package com.hrbatovic.master.quarkus.payment.api;
 
 import com.hrbatovic.master.quarkus.payment.db.entities.PaymentMethodEntity;
+import com.hrbatovic.master.quarkus.payment.exceptions.EhMaException;
 import com.hrbatovic.master.quarkus.payment.mapper.MapUtil;
 import com.hrbatovic.master.quarkus.payment.model.*;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,43 +18,47 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     MapUtil mapper;
 
     @Override
-    public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
+    public Response createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
         PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
         paymentMethodEntity.persistOrUpdate();
-        return mapper.toApi(paymentMethodEntity);
+        return Response.ok(mapper.toApi(paymentMethodEntity)).status(200).build();
     }
 
     @Override
-    public DeletePaymentMethodResponse deletePaymentMethod(UUID paymentMethodId) {
+    public Response deletePaymentMethod(UUID paymentMethodId) {
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(paymentMethodId);
         paymentMethodEntity.delete();
 
-        return new DeletePaymentMethodResponse().message("Payment method deleted successfully.");
+        return Response.ok(new DeletePaymentMethodResponse().message("Payment method deleted successfully.")).status(200).build();
     }
 
     @Override
-    public PaymentMethodDetailedResponse getPaymentMethodById(UUID id) {
+    public Response getPaymentMethodById(UUID id) {
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(id);
-        //TODO: error handling
+        if(paymentMethodEntity == null){
+            throw new EhMaException(404, "Payment method not found.");
+        }
 
-        return mapper.toApiDetail(paymentMethodEntity);
+        return Response.ok(mapper.toApiDetail(paymentMethodEntity)).status(200).build();
     }
 
     @Override
-    public PaymentMethodListResponse getPaymentMethods() {
+    public Response getPaymentMethods() {
         PaymentMethodListResponse paymentMethodListResponse = new PaymentMethodListResponse();
         List<PaymentMethodEntity> paymentMethodEntities = PaymentMethodEntity.listAll();
         paymentMethodListResponse.setPaymentMethods(mapper.toApiList(paymentMethodEntities));
-        return paymentMethodListResponse;
+        return Response.ok(paymentMethodListResponse).status(200).build();
     }
 
     @Override
-    public PaymentMethodDetailedResponse updatePaymentMethod(UUID paymentMethodId, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
+    public Response updatePaymentMethod(UUID paymentMethodId, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(paymentMethodId);
-        //TODO : error handling
+        if(paymentMethodEntity == null){
+            throw new EhMaException(404, "Payment method not found.");
+        }
 
         mapper.patch(updatePaymentMethodRequest, paymentMethodEntity);
         paymentMethodEntity.persistOrUpdate();
-        return mapper.toApiDetail(paymentMethodEntity);
+        return Response.ok(mapper.toApiDetail(paymentMethodEntity)).status(200).build();
     }
 }

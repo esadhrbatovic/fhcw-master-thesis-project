@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.UUID;
@@ -21,7 +22,7 @@ public class CategoryApiService implements CategoriesApi {
     MapUtil mapper;
 
     @Override
-    public CategoryListResponse listCategories(Integer page, Integer limit, String search) {
+    public Response listCategories(Integer page, Integer limit, String search) {
         if (page == null || page < 1) page = 1;
         if (limit == null || limit < 1) limit = 10;
 
@@ -46,17 +47,17 @@ public class CategoryApiService implements CategoriesApi {
         pagination.setTotalPages(totalPages);
         response.setPagination(pagination);
 
-        return response;
+        return Response.ok(response).status(200).build();
     }
 
     @Override
-    public Category getCategoryById(UUID id) {
+    public Response getCategoryById(UUID id) {
         CategoryEntity categoryEntity = CategoryEntity.findById(id);
 
         if (categoryEntity == null) {
             throw new IllegalArgumentException("Product with ID " + id + " not found");
         }
 
-        return mapper.map(categoryEntity);
+        return Response.ok(mapper.map(categoryEntity)).status(200).build();
     }
 }

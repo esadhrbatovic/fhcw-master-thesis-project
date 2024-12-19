@@ -3,10 +3,15 @@ package com.hrbatovic.quarkus.master.user.api;
 import com.hrbatovic.master.quarkus.user.api.UsersApi;
 import com.hrbatovic.master.quarkus.user.model.*;
 import com.hrbatovic.quarkus.master.user.db.entities.UserEntity;
+import com.hrbatovic.quarkus.master.user.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.user.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.user.messaging.model.out.UserUpdatedEvent;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 import jakarta.inject.Inject;
@@ -29,18 +34,30 @@ public class UserApiService implements UsersApi {
     @Inject
     MapUtil mapper;
 
+    @Inject
+    @Claim(standard = Claims.groups)
+    List<String> groupsClaim;
+
+    @Inject
+    @Claim(standard = Claims.sub)
+    String userSubClaim;
+
     @Override
-    public UserProfileResponse getUser(UUID id) {
+    public Response getUser(UUID id) {
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
-            throw new RuntimeException("user not found");
+            throw new EhMaException(404, "User not found");
         }
 
-        return mapper.map(userEntity);
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") && id != UUID.fromString(userSubClaim)){
+            throw new EhMaException(400, "You are not allowed to view other user's account.");
+        }
+
+        return Response.ok(mapper.map(userEntity)).status(200).build();
     }
 
     @Override
-    public UserListResponse listUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public Response listUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
 
         PanacheQuery<UserEntity> query = UserEntity.queryUsers(page, limit, search, createdAfter, createdBefore, sort);
 
@@ -60,14 +77,23 @@ public class UserApiService implements UsersApi {
 
         userListResponse.setPagination(pagination);
 
-        return userListResponse;
+        return Response.ok(userListResponse).status(200).build();
     }
 
     @Override
-    public UserProfileResponse updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
+    public Response updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null ){
-            throw new RuntimeException("User not found");
+            throw new EhMaException(404, "User not found");
+        }
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
+            if(id != UUID.fromString(userSubClaim)){
+                throw new EhMaException(400, "You are not allowed to edit other user's data.");
+            }
+
+            if(StringUtils.isNotEmpty(updateUserProfileRequest.getRole())){
+                throw new EhMaException(400, "You are not allowed change your role.");
+            }
         }
 
         mapper.update(userEntity, updateUserProfileRequest);
@@ -78,19 +104,23 @@ public class UserApiService implements UsersApi {
         userUpdatedEvent.getUserPayload().setId(userEntity.getId());
         userUpdatedEmitter.send(userUpdatedEvent);
 
-        return mapper.map(userEntity);
+        return Response.ok(mapper.map(userEntity)).status(200).build();
     }
 
     @Override
-    public DeleteUserResponse deleteUser(UUID id) {
+    public Response deleteUser(UUID id) {
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
-            throw new RuntimeException("User not found");
+            throw new EhMaException(404, "User not found");
+        }
+
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") && id != UUID.fromString(userSubClaim)){
+            throw new EhMaException(400, "You are not allowed to delete other user's account.");
         }
 
         userEntity.delete();
         userDeletedEmitter.send(id);
-        return new DeleteUserResponse().message("User deleted successfully");
+        return Response.ok(new DeleteUserResponse().message("User deleted successfully")).status(200).build();
     }
 
 }

@@ -4,6 +4,7 @@ import com.hrbatovic.master.quarkus.order.api.UsersApi;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponse;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponsePagination;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
+import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
@@ -11,6 +12,9 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import org.apache.commons.lang3.StringUtils;
+import org.eclipse.microprofile.jwt.Claim;
+import org.eclipse.microprofile.jwt.Claims;
 
 import java.util.*;
 
@@ -20,10 +24,24 @@ public class UserApiService implements UsersApi {
     @Inject
     MapUtil mapper;
 
+    @Inject
+    @Claim(standard = Claims.groups)
+    List<String> groupsClaim;
+
+    @Inject
+    @Claim(standard = Claims.sub)
+    String userSubClaim;
 
     @Override
-    public OrderListResponse getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
+    public Response getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
         validateUserId(userId);
+
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
+            if(userId != UUID.fromString(userSubClaim)){
+                throw new EhMaException(400, "You are not allowed to view other user's orders.");
+            }
+        }
+
 
         PanacheQuery<OrderEntity> query = OrderEntity.queryUserOrders(userId, status, sort);
 
@@ -33,12 +51,12 @@ public class UserApiService implements UsersApi {
         );
         query.page(pagination);
 
-        return createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit);
+        return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
     }
 
     private void validateUserId(UUID userId) {
         if (userId == null) {
-            throw new WebApplicationException("User ID is required.", Response.Status.BAD_REQUEST);
+            throw new EhMaException(400, "User ID is required.");
         }
     }
 

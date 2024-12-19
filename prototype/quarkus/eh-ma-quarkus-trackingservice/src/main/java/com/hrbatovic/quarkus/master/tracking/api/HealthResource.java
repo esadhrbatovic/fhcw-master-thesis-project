@@ -1,4 +1,4 @@
-package com.hrbatovic.quarkus.master.tracking;
+package com.hrbatovic.quarkus.master.tracking.api;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

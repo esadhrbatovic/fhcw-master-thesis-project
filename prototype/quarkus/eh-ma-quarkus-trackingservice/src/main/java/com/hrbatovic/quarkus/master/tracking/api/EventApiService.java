@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.tracking.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,16 +22,16 @@ public class EventApiService implements EventsApi {
     MapUtil mapper;
 
     @Override
-    public Event getEventById(UUID eventId) {
+    public Response getEventById(UUID eventId) {
         EventEntity eventEntity = EventEntity.findById(eventId);
         if (eventEntity == null) {
             throw new RuntimeException("Event not found for ID: " + eventId);
         }
-        return mapper.map(eventEntity);
+        return Response.ok(mapper.map(eventEntity)).status(200).build();
     }
 
     @Override
-    public EventListResponse listEvents(
+    public Response listEvents(
             Integer page, Integer limit, String eventType, String sourceService,
             UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId,
             LocalDateTime occurredAfter, LocalDateTime occurredBefore, String sort
@@ -51,8 +52,8 @@ public class EventApiService implements EventsApi {
                 .totalItems((int) totalItems)
                 .totalPages(totalPages);
 
-        return new EventListResponse()
+        return Response.ok(new EventListResponse()
                 .events(mapper.map(eventEntities))
-                .pagination(pagination);
+                .pagination(pagination)).status(200).build();
     }
 }

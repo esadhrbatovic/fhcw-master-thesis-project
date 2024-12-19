@@ -5,6 +5,7 @@ import com.hrbatovic.master.quarkus.cart.model.*;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
+import com.hrbatovic.quarkus.master.cart.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.cart.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.cart.messaging.model.out.CheckoutStartedEvent;
 import jakarta.enterprise.context.RequestScoped;
@@ -38,12 +39,13 @@ public class CartApiService implements CartProductsApi {
     @Inject
     @Claim("sid")
     String sessionIdClaim;
+
     @Inject
     @Channel("checkout-started-out")
     Emitter<CheckoutStartedEvent> checkoutStartedEmitter;
 
     @Override
-    public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
+    public Response addProductToCart(AddCartProductRequest addCartProductRequest) {
         UUID userId = UUID.fromString(userSubClaim);
         ProductEntity productEntity = findProductById(addCartProductRequest.getProductId());
 
@@ -55,54 +57,61 @@ public class CartApiService implements CartProductsApi {
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return new CartProductResponse()
+        return Response.ok(new CartProductResponse()
                 .message(updatedCartItem.getQuantity() > addCartProductRequest.getQuantity()
                         ? "Product quantity updated in cart."
                         : "Product added to cart.")
-                .product(mapper.map(updatedCartItem));
+                .product(mapper.map(updatedCartItem))).status(200).build();
     }
 
     @Override
-    public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
+    public Response checkoutCart(StartCheckoutRequest startCheckoutRequest) {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
+
+        if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
+            throw new EhMaException(400, "The cart is empty");
+        }
 
         CheckoutStartedEvent checkoutStartedEvent = buildCheckoutStartedEvent(startCheckoutRequest, cartEntity);
         checkoutStartedEmitter.send(checkoutStartedEvent);
 
-        return new CheckoutResponse()
+        return Response.ok(new CheckoutResponse()
                 .message("Checkout started successfully.")
-                .orderId(cartEntity.getId());
+                .orderId(cartEntity.getId())).status(200).build();
     }
 
     @Override
-    public DeleteCartProductResponse deleteCartProduct(UUID productId) {
+    public Response deleteCartProduct(UUID productId) {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         removeCartProduct(cartEntity, productId);
 
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return new DeleteCartProductResponse().message("Cart item successfully deleted.");
+        return Response.ok(new DeleteCartProductResponse().message("Cart item successfully deleted.")).status(200).build();
     }
 
     @Override
-    public EmptyCartResponse emptyCart() {
+    public Response emptyCart() {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
+        if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
+            throw new EhMaException(400, "The cart is already empty");
+        }
         cartEntity.delete();
 
-        return new EmptyCartResponse().message("Cart has been successfully emptied.");
+        return Response.ok(new EmptyCartResponse().message("Cart has been successfully emptied.")).status(200).build();
     }
 
     @Override
-    public CartResponse getCartProducts() {
+    public Response getCartProducts() {
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
-        return mapper.map(cartEntity);
+        return Response.ok(mapper.map(cartEntity)).status(200).build();
     }
 
     @Override
-    public CartProductResponse updateCartProduct(UUID productId, UpdateCartProductRequest request) {
+    public Response updateCartProduct(UUID productId, UpdateCartProductRequest request) {
         if (request.getQuantity() == null || request.getQuantity() < 1) {
-            throw new WebApplicationException("Invalid quantity. Quantity must be at least 1.", Response.Status.BAD_REQUEST);
+            throw new EhMaException(400, "Invalid quantity. Quantity must be at least 1.");
         }
 
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
@@ -111,15 +120,15 @@ public class CartApiService implements CartProductsApi {
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return new CartProductResponse()
+        return Response.ok(new CartProductResponse()
                 .message("Cart product updated successfully.")
-                .product(mapper.map(cartProduct));
+                .product(mapper.map(cartProduct))).status(200).build();
     }
 
     public CartEntity findCartByUserId(UUID userId) {
         CartEntity cartEntity = CartEntity.findByUserId(userId);
         if(cartEntity == null){
-            throw new WebApplicationException("Cart not found.", Response.Status.NOT_FOUND);
+            throw new EhMaException(404, "Cart not found.");
         }
 
         return cartEntity;
@@ -129,7 +138,7 @@ public class CartApiService implements CartProductsApi {
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if(productEntity == null){
-            throw new WebApplicationException("Product not found.", Response.Status.NOT_FOUND);
+            throw new EhMaException(404, "Product not found.");
         }
 
         return productEntity;
@@ -154,7 +163,7 @@ public class CartApiService implements CartProductsApi {
     public void removeCartProduct(CartEntity cartEntity, UUID productId) {
         boolean removed = cartEntity.getCartProducts().removeIf(item -> item.getProductId().equals(productId));
         if (!removed) {
-            throw new WebApplicationException("Product not found in cart.", Response.Status.NOT_FOUND);
+            throw new EhMaException(404, "Product not found in cart.");
         }
     }
 
@@ -167,7 +176,7 @@ public class CartApiService implements CartProductsApi {
                     cartProduct.setTotalPrice(cartProduct.getProductPrice().multiply(BigDecimal.valueOf(quantity)));
                     return cartProduct;
                 })
-                .orElseThrow(() -> new WebApplicationException("Cart product not found.", Response.Status.NOT_FOUND));
+                .orElseThrow(() -> new EhMaException(404, "Cart product not found."));
     }
 
     public void recalculateCartTotals(CartEntity cartEntity) {

@@ -3,6 +3,7 @@ package com.hrbatovic.quarkus.master.order.api;
 import com.hrbatovic.master.quarkus.order.api.UsersApi;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponse;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponsePagination;
+import com.hrbatovic.quarkus.master.order.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
@@ -32,7 +33,7 @@ public class UserApiService implements UsersApi {
 
     @Override
     public Response getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
-        validateUserId(userId);
+        ApiInputValidator.validateUserId(userId);
 
         if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
             if(userId != UUID.fromString(userSubClaim)){
@@ -50,12 +51,6 @@ public class UserApiService implements UsersApi {
         query.page(pagination);
 
         return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
-    }
-
-    private void validateUserId(UUID userId) {
-        if (userId == null) {
-            throw new EhMaException(400, "User ID is required.");
-        }
     }
 
     private OrderListResponse createOrderListResponse(

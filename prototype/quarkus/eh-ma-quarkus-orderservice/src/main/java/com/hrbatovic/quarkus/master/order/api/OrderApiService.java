@@ -4,6 +4,7 @@ import com.hrbatovic.master.quarkus.order.api.OrdersApi;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponse;
 import com.hrbatovic.master.quarkus.order.model.Order;
 import com.hrbatovic.master.quarkus.order.model.OrderListResponsePagination;
+import com.hrbatovic.quarkus.master.order.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.order.db.entities.OrderEntity;
 import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
@@ -38,6 +39,8 @@ public class OrderApiService implements OrdersApi {
     //TODO: admin only
     @Override
     public Response getOrderById(UUID orderId) {
+        ApiInputValidator.validateOrderId(orderId);
+
         OrderEntity orderEntity = OrderEntity.findById(orderId);
 
         if(orderEntity == null){

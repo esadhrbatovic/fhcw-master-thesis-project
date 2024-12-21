@@ -19,7 +19,6 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.*;
 
-//TODO: user operations seperate from admin operations because role can only be changed and viewed by admins
 @RequestScoped
 public class UserApiService implements UsersApi {
 
@@ -44,6 +43,7 @@ public class UserApiService implements UsersApi {
 
     @Override
     public Response getUser(UUID id) {
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
             throw new EhMaException(404, "User not found");
@@ -82,11 +82,16 @@ public class UserApiService implements UsersApi {
 
     @Override
     public Response updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
+        ApiInputValidator.validateUpdateUser(updateUserProfileRequest);
+        if(groupsClaim.contains("admin") && StringUtils.isEmpty(updateUserProfileRequest.getRole())){
+            throw new EhMaException(400, "You need to provde the user's role.");
+        }
+
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null ){
             throw new EhMaException(404, "User not found");
         }
-        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin")){
             if(id != UUID.fromString(userSubClaim)){
                 throw new EhMaException(400, "You are not allowed to edit other user's data.");
             }
@@ -109,6 +114,7 @@ public class UserApiService implements UsersApi {
 
     @Override
     public Response deleteUser(UUID id) {
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
             throw new EhMaException(404, "User not found");

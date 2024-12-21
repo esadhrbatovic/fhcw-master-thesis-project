@@ -4,6 +4,7 @@ import com.hrbatovic.master.quarkus.tracking.api.EventsApi;
 import com.hrbatovic.master.quarkus.tracking.model.Event;
 import com.hrbatovic.master.quarkus.tracking.model.EventListResponse;
 import com.hrbatovic.master.quarkus.tracking.model.EventListResponsePagination;
+import com.hrbatovic.quarkus.master.tracking.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.tracking.db.entities.EventEntity;
 import com.hrbatovic.quarkus.master.tracking.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
@@ -23,6 +24,8 @@ public class EventApiService implements EventsApi {
 
     @Override
     public Response getEventById(UUID eventId) {
+        ApiInputValidator.validateEventId(eventId);
+
         EventEntity eventEntity = EventEntity.findById(eventId);
         if (eventEntity == null) {
             throw new RuntimeException("Event not found for ID: " + eventId);

@@ -2,6 +2,7 @@ package com.hrbatovic.quarkus.master.cart.api;
 
 import com.hrbatovic.master.quarkus.cart.api.CartProductsApi;
 import com.hrbatovic.master.quarkus.cart.model.*;
+import com.hrbatovic.quarkus.master.cart.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.CartProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
@@ -12,6 +13,7 @@ import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -46,6 +48,9 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public Response addProductToCart(AddCartProductRequest addCartProductRequest) {
+        ApiInputValidator.validateAddProductToCart(addCartProductRequest);
+        ApiInputValidator.validateQuantity(addCartProductRequest.getQuantity());
+
         UUID userId = UUID.fromString(userSubClaim);
         ProductEntity productEntity = findProductById(addCartProductRequest.getProductId());
 
@@ -66,6 +71,7 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public Response checkoutCart(StartCheckoutRequest startCheckoutRequest) {
+        ApiInputValidator.validateCheckoutCart(startCheckoutRequest);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
 
         if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
@@ -82,6 +88,7 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     public Response deleteCartProduct(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         removeCartProduct(cartEntity, productId);
 
@@ -109,13 +116,14 @@ public class CartApiService implements CartProductsApi {
     }
 
     @Override
-    public Response updateCartProduct(UUID productId, UpdateCartProductRequest request) {
-        if (request.getQuantity() == null || request.getQuantity() < 1) {
-            throw new EhMaException(400, "Invalid quantity. Quantity must be at least 1.");
-        }
+    public Response updateCartProduct(UUID productId, UpdateCartProductRequest updateCartProductRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateCartProduct(updateCartProductRequest);
+        ApiInputValidator.validateQuantity(updateCartProductRequest.getQuantity());
+
 
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
-        CartProductEntity cartProduct = updateCartProductQuantity(cartEntity, productId, request.getQuantity());
+        CartProductEntity cartProduct = updateCartProductQuantity(cartEntity, productId, updateCartProductRequest.getQuantity());
 
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();

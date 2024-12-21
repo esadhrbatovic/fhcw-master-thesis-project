@@ -5,6 +5,7 @@ import com.hrbatovic.master.quarkus.notification.model.Notification;
 import com.hrbatovic.master.quarkus.notification.model.NotificationListResponse;
 import com.hrbatovic.master.quarkus.notification.model.NotificationListResponsePagination;
 import com.hrbatovic.master.quarkus.notification.model.NotificationResponse;
+import com.hrbatovic.quarkus.master.notification.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.quarkus.master.notification.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.notification.mapper.MapUtil;
@@ -25,6 +26,8 @@ public class NotificationApiService implements NotificationsApi {
 
     @Override
     public Response getNotificationById(UUID notificationId) {
+        ApiInputValidator.validateNotificationId(notificationId);
+
         NotificationEntity notificationEntity = NotificationEntity.findById(notificationId);
         if(notificationEntity == null){
             throw new EhMaException(404, "Notification not found");

@@ -1,5 +1,6 @@
 package com.hrbatovic.master.quarkus.license.api;
 
+import com.hrbatovic.master.quarkus.license.api.validators.ApiInputValidator;
 import com.hrbatovic.master.quarkus.license.db.entities.LicenseEntity;
 import com.hrbatovic.master.quarkus.license.exceptions.EhMaException;
 import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
@@ -31,14 +32,16 @@ public class LicenseApiService implements LicensesApi {
 
     @Override
     public Response getLicenseBySerialNumber(UUID serialNumber) {
+        ApiInputValidator.validateSerialNumber(serialNumber);
+
         LicenseEntity licenseEntity = LicenseEntity.findById(serialNumber);
 
         if (licenseEntity == null) {
             throw new EhMaException(404, "License not found for requested serial number");
         }
 
-        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
-            if(licenseEntity.getUserId() != UUID.fromString(userSubClaim)){
+        if (groupsClaim.contains("customer") && !groupsClaim.contains("admin")) {
+            if (licenseEntity.getUserId() != UUID.fromString(userSubClaim)) {
                 /**
                  *  Here i say the license is not found.
                  *  I don't want to communicate to the user, that he can't view another user's license number, because that would

@@ -26,6 +26,9 @@ public abstract class MapUtil {
 
     public abstract List<PaymentMethod> toApiList(List<PaymentMethodEntity> paymentMethodEntities);
 
+    @Mapping(target="merchantId", ignore = true)
+    public abstract List<PaymentMethod> toApiListNotAdmin(List<PaymentMethodEntity> paymentMethodEntities);
+
     @Mapping(target="id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
@@ -38,4 +41,5 @@ public abstract class MapUtil {
     @Mapping(target = "orderId", source = "id")
     @Mapping(target = "paidItemPayloads", source = "orderItems")
     public abstract PaymentPayload map(OrderPayload orderEntity);
+
 }

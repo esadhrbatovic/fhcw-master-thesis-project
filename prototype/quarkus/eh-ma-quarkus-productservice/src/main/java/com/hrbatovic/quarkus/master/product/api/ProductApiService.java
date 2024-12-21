@@ -2,6 +2,7 @@ package com.hrbatovic.quarkus.master.product.api;
 
 import com.hrbatovic.master.quarkus.product.api.ProductsApi;
 import com.hrbatovic.master.quarkus.product.model.*;
+import com.hrbatovic.quarkus.master.product.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.product.exceptions.EhMaException;
@@ -93,6 +94,7 @@ public class ProductApiService implements ProductsApi {
 
     @Override
     public Response getProductById(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {
@@ -106,8 +108,12 @@ public class ProductApiService implements ProductsApi {
 
         return Response.ok(mapper.map(productEntity, categoryName)).status(200).build();
     }
+
     @Override
     public Response updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateProduct(updateProductRequest);
+
         ProductEntity productEntity = ProductEntity.findById(productId);
         if (productEntity == null) {
             throw new EhMaException(404, "Product with ID " + productId + " not found");
@@ -115,7 +121,7 @@ public class ProductApiService implements ProductsApi {
 
         CategoryEntity categoryEntity = CategoryEntity.findById(productEntity.getCategoryId());
 
-        if(StringUtils.isNotEmpty(updateProductRequest.getCategory()) && !StringUtils.equals(updateProductRequest.getCategory(), categoryEntity.getName())){
+        if (StringUtils.isNotEmpty(updateProductRequest.getCategory()) && !StringUtils.equals(updateProductRequest.getCategory(), categoryEntity.getName())) {
             categoryEntity = CategoryEntity.find("name", updateProductRequest.getCategory()).firstResult();
             if (categoryEntity == null) {
                 categoryEntity = new CategoryEntity();
@@ -135,6 +141,7 @@ public class ProductApiService implements ProductsApi {
 
     @Override
     public Response createProduct(CreateProductRequest createProductRequest) {
+        ApiInputValidator.validateCreateProdocut(createProductRequest);
         CategoryEntity category = CategoryEntity.find("name", createProductRequest.getCategory()).firstResult();
         if (category == null) {
             category = new CategoryEntity();
@@ -152,6 +159,7 @@ public class ProductApiService implements ProductsApi {
 
     @Override
     public Response deleteProduct(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
 
         if (productEntity == null) {

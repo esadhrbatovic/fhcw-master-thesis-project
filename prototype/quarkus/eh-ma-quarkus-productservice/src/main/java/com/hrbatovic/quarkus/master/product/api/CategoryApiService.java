@@ -4,6 +4,7 @@ import com.hrbatovic.master.quarkus.product.api.CategoriesApi;
 import com.hrbatovic.master.quarkus.product.model.Category;
 import com.hrbatovic.master.quarkus.product.model.CategoryListResponse;
 import com.hrbatovic.master.quarkus.product.model.Pagination;
+import com.hrbatovic.quarkus.master.product.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
@@ -53,6 +54,8 @@ public class CategoryApiService implements CategoriesApi {
 
     @Override
     public Response getCategoryById(UUID id) {
+        ApiInputValidator.validateCategoryId(id);
+
         CategoryEntity categoryEntity = CategoryEntity.findById(id);
 
         if (categoryEntity == null) {

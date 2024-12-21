@@ -2,6 +2,7 @@ package com.hrbatovic.quarkus.master.auth.api.resources;
 
 import com.hrbatovic.master.quarkus.auth.api.AuthApi;
 import com.hrbatovic.master.quarkus.auth.model.*;
+import com.hrbatovic.quarkus.master.auth.ApiInputValidator;
 import com.hrbatovic.quarkus.master.auth.JwtUtil;
 import com.hrbatovic.quarkus.master.auth.Hasher;
 import com.hrbatovic.quarkus.master.auth.db.entities.RegistrationEntity;
@@ -9,6 +10,7 @@ import com.hrbatovic.quarkus.master.auth.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
+import io.vertx.codegen.type.ApiTypeInfo;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -58,7 +60,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public Response login(LoginRequest loginRequest) {
-        //TODO: api validation, error handling, authorisation
+        ApiInputValidator.validateLogin(loginRequest);
 
         RegistrationEntity registrationEntity = RegistrationEntity.findByEmail(loginRequest.getCredentials().getEmail());
 
@@ -76,7 +78,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public Response register(RegisterRequest registerRequest) {
-        //TODO: api validation, error handling, authorisation
+        ApiInputValidator.validateRegistration(registerRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(registerRequest.getCredentials().getEmail());
         if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
@@ -109,6 +111,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public Response updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
+        ApiInputValidator.validateUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
         if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
@@ -138,6 +141,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public Response adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
+        ApiInputValidator.validateAdminUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if (registrationEntity == null) {
             throw new EhMaException(400, "User not found");

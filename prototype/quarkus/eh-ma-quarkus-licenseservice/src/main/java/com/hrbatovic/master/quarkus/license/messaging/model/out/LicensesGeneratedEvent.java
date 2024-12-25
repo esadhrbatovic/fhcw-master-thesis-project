@@ -26,6 +26,8 @@ public class LicensesGeneratedEvent implements Serializable {
 
     private final String sourceService = "licenseservice";
 
+    private UUID requestCorrelationId;
+
     public UUID getOrderId() {
         return orderId;
     }
@@ -84,9 +86,18 @@ public class LicensesGeneratedEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public LicensesGeneratedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this)
                 .append("orderId", orderId)
                 .append("licenses", licenses)
                 .append("timestamp", timestamp)
@@ -94,6 +105,7 @@ public class LicensesGeneratedEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

@@ -25,6 +25,8 @@ public class UserCredentialsUpdatedEvent implements Serializable {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
     public UUID getId() {
         return id;
     }
@@ -53,6 +55,50 @@ public class UserCredentialsUpdatedEvent implements Serializable {
         return sourceService;
     }
 
+    public UserCredentialsUpdatedEvent setId(UUID id) {
+        this.id = id;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setEmail(String email) {
+        this.email = email;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
+    }
+
+    public UserCredentialsUpdatedEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public UserCredentialsUpdatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -63,6 +109,7 @@ public class UserCredentialsUpdatedEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

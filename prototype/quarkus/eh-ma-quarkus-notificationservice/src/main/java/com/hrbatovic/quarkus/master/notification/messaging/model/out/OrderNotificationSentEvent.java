@@ -24,6 +24,8 @@ public class OrderNotificationSentEvent implements Serializable {
 
     private final String sourceService = "notificationservice";
 
+    private UUID requestCorrelationId;
+
     public UUID getOrderId() {
         return orderId;
     }
@@ -73,15 +75,25 @@ public class OrderNotificationSentEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public OrderNotificationSentEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this)
                 .append("orderId", orderId)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

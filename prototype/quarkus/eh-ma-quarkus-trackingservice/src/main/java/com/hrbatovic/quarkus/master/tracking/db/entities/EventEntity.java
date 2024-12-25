@@ -26,7 +26,7 @@ public class EventEntity extends PanacheMongoEntityBase {
 
     public static PanacheQuery<EventEntity> queryEvents(
             Integer page, Integer limit, String eventType, String sourceService, UUID userId, String userEmail,
-            UUID sessionId, UUID productId, UUID orderId, LocalDateTime occurredAfter, LocalDateTime occurredBefore, String sort
+            UUID sessionId, UUID productId, UUID orderId, LocalDateTime occurredAfter, LocalDateTime occurredBefore, UUID requestCorrelationId, String sort
     ) {
         Map<String, Object> params = new HashMap<>();
         StringBuilder queryBuilder = new StringBuilder();
@@ -67,6 +67,10 @@ public class EventEntity extends PanacheMongoEntityBase {
         if (occurredBefore != null) {
             conditions.add("{ 'metadata.timestamp': { '$lte': :occurredBefore } }");
             params.put("occurredBefore", occurredBefore);
+        }
+        if (requestCorrelationId != null) {
+            conditions.add("{ 'metadata.requestCorrelationId': :requestCorrelationId }");
+            params.put("requestCorrelationId", requestCorrelationId);
         }
 
         if (!conditions.isEmpty()) {

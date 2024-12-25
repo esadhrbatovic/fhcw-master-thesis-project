@@ -24,6 +24,8 @@ public class ProductUpdatedEvent {
 
     private final String sourceService = "productservice";
 
+    private UUID requestCorrelationId;
+
     public ProductPayload getProduct() {
         return product;
     }
@@ -73,6 +75,15 @@ public class ProductUpdatedEvent {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public ProductUpdatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -82,6 +93,7 @@ public class ProductUpdatedEvent {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

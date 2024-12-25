@@ -17,6 +17,7 @@ public abstract class MapUtil {
 
     public abstract UserEntity map(UserPayload userPayload);
 
+    @Mapping(target = "email", ignore = true)
     public abstract void update(@MappingTarget UserEntity userEntity, UserPayload userPayload);
 
     @Mapping(target = "role", ignore = true)

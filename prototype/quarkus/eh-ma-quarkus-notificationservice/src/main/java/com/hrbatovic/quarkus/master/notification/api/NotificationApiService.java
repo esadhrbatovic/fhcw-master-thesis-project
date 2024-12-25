@@ -10,6 +10,7 @@ import com.hrbatovic.quarkus.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.quarkus.master.notification.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.notification.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -25,6 +26,7 @@ public class NotificationApiService implements NotificationsApi {
     MapUtil mapper;
 
     @Override
+    @RolesAllowed({"admin"})
     public Response getNotificationById(UUID notificationId) {
         ApiInputValidator.validateNotificationId(notificationId);
 
@@ -37,6 +39,7 @@ public class NotificationApiService implements NotificationsApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response listNotifications(Integer page, Integer limit, String email, UUID userId, String type, LocalDateTime sentAfter, LocalDateTime sentBefore, String sort) {
         PanacheQuery<NotificationEntity> query = NotificationEntity.queryNotifications(page, limit, email, userId, type, sentAfter, sentBefore, sort);
 

@@ -27,6 +27,8 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /products:
     get:
+      security:
+        - bearerAuth: []
       summary: List all products with optional search and pagination
       operationId: listProducts
       tags:
@@ -54,9 +56,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     post:
-      summary: Create a new product
+      summary: ADMIN ONLY - Create a new product
       operationId: createProduct
       tags:
         - Product Management
@@ -88,9 +102,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /products/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get a product by ID
       operationId: getProductById
       tags:
@@ -104,6 +126,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProductResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found - Product does not exist
           content:
@@ -112,7 +146,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update a product
+      summary: ADMIN ONLY - Update a product
       operationId: updateProduct
       tags:
         - Product Management
@@ -154,7 +188,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Delete a product
+      summary: ADMIN ONLY - Delete a product
       operationId: deleteProduct
       tags:
         - Product Management
@@ -175,6 +209,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found - Product does not exist
           content:
@@ -184,6 +224,8 @@ paths:
 
   /categories/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get a category by ID
       operationId: getCategoryById
       tags:
@@ -204,6 +246,18 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Not Found - Category does not exist
           content:
@@ -213,6 +267,8 @@ paths:
 
   /categories:
     get:
+      security:
+        - bearerAuth: []
       summary: List all categories with optional search and pagination
       operationId: listCategories
       tags:
@@ -230,6 +286,18 @@ paths:
                 $ref: '#/components/schemas/CategoryListResponse'
         '400':
           description: Bad Request - Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
           content:
             application/json:
               schema:
@@ -527,22 +595,14 @@ components:
       properties:
         error:
           type: string
-          example: "Invalid input data."
         details:
           type: string
-          example: "Price must be a positive number."
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: Product Management

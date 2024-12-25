@@ -144,6 +144,7 @@ public class MessageConsumer {
                 .setUserEmail(licenseGeneratedEvent.getUserEmail())
                 .setSessionId(licenseGeneratedEvent.getSessionId())
                 .setUserId(licenseGeneratedEvent.getUserId())
+                .setRequestCorrelationId(licenseGeneratedEvent.getRequestCorrelationId())
                 .setOrderId(licenseGeneratedEvent.getOrderId());
     }
 }

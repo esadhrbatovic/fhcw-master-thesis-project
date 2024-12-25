@@ -11,6 +11,7 @@ import com.hrbatovic.quarkus.master.auth.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.quarkus.master.auth.messaging.model.out.UserRegisteredEvent;
 import io.vertx.codegen.type.ApiTypeInfo;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -110,10 +111,11 @@ public class AuthApiService implements AuthApi {
 
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
         ApiInputValidator.validateUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
-        if(tempRegistrationEntity != null){
+        if(tempRegistrationEntity == null){
             throw new EhMaException(400, "This e-mail is not available.");
         }
 
@@ -140,6 +142,7 @@ public class AuthApiService implements AuthApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
         ApiInputValidator.validateAdminUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
@@ -171,6 +174,7 @@ public class AuthApiService implements AuthApi {
         userRegisteredEvent.setUserId(registrationEntity.getUserEntity().id);
         userRegisteredEvent.setUserEmail(userEmail);
         userRegisteredEvent.setSessionId(sessionId);
+        userRegisteredEvent.setRequestCorrelationId(UUID.randomUUID());
         return userRegisteredEvent;
     }
 
@@ -182,6 +186,7 @@ public class AuthApiService implements AuthApi {
         userCredentialsUpdatedEvent.setId(userId);
         userCredentialsUpdatedEvent.setSessionId(sessionId);
         userCredentialsUpdatedEvent.setEmail(registrationEntity.getCredentialsEntity().getEmail());
+        userCredentialsUpdatedEvent.setRequestCorrelationId(UUID.randomUUID());
         return userCredentialsUpdatedEvent;
     }
 

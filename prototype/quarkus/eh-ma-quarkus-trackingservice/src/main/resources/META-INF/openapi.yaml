@@ -8,21 +8,31 @@ info:
     Provides admin endpoints to list and filter recorded events.
 
 servers:
-  - url: https://trackingservice.yourshop.com
-    description: Production server
-  - url: https://trackingservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8089
+    description: local dev
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /events:
     get:
-      summary: List recorded events (admin only)
+      summary: ADMIN ONLY - List recorded events
       operationId: listEvents
       tags:
         - Events
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
@@ -35,6 +45,7 @@ paths:
         - $ref: '#/components/parameters/OrderIdQueryParam'
         - $ref: '#/components/parameters/OccurredAfterQueryParam'
         - $ref: '#/components/parameters/OccurredBeforeQueryParam'
+        - $ref: '#/components/parameters/RequestCorrelationIdQueryParam'
         - $ref: '#/components/parameters/SortQueryParam'
       responses:
         '200':
@@ -58,13 +69,12 @@ paths:
 
   /events/{eventId}:
     get:
-      summary: Get details of a specific event (admin only)
+      summary: ADMIN ONLY - Get details of a specific event
       operationId: getEventById
       tags:
         - Events
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/EventIdPathParam'
       responses:
@@ -99,11 +109,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     EventIdPathParam:
@@ -224,6 +229,16 @@ components:
         format: date-time
         example: '2023-10-31T23:59:59Z'
 
+    RequestCorrelationIdQueryParam:
+      name: requestCorrelationId
+      in: query
+      description: Filter events by request correlation ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
     SortQueryParam:
       name: sort
       in: query
@@ -277,6 +292,10 @@ components:
               type: string
               description: Name of the service that generated the event
               example: 'OrderService'
+            requestCorrelationId:
+              type: string
+              format: uuid
+              example: '789e4567-e89b-12d3-a456-426614174000'
             timestamp:
               type: string
               format: date-time
@@ -312,13 +331,14 @@ components:
       properties:
         error:
           type: string
-          example: 'Unauthorized access.'
         details:
           type: string
-          example: 'You are not authorized to access this resource.'
 
-security:
-  - bearerAuth: []
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
 
 tags:
   - name: Events

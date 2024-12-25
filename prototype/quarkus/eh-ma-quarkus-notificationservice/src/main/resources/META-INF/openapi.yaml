@@ -8,10 +8,8 @@ info:
     Provides admin endpoints to list and filter notifications that have been sent.
 
 servers:
-  - url: https://notificationservice.yourshop.com
-    description: Production server
-  - url: https://notificationservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8088
+    description: local dev
 
 paths:
   /health:
@@ -29,13 +27,12 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /notifications:
     get:
-      summary: List sent notifications (admin only)
+      summary: ADMIN ONLY - List sent notifications
       operationId: listNotifications
       tags:
         - Notifications
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
@@ -67,13 +64,12 @@ paths:
 
   /notifications/{notificationId}:
     get:
-      summary: Get details of a specific notification (admin only)
+      summary: ADMIN ONLY - Get details of a specific notification
       operationId: getNotificationById
       tags:
         - Notifications
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/NotificationIdPathParam'
       responses:
@@ -108,11 +104,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     NotificationIdPathParam:
@@ -275,21 +266,14 @@ components:
       properties:
         error:
           type: string
-          example: 'Unauthorized access.'
         details:
           type: string
-          example: 'You are not authorized to access this resource.'
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: Notifications

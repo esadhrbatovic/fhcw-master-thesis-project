@@ -8,6 +8,7 @@ import com.hrbatovic.quarkus.master.tracking.api.validators.ApiInputValidator;
 import com.hrbatovic.quarkus.master.tracking.db.entities.EventEntity;
 import com.hrbatovic.quarkus.master.tracking.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -23,6 +24,7 @@ public class EventApiService implements EventsApi {
     MapUtil mapper;
 
     @Override
+    @RolesAllowed({"admin"})
     public Response getEventById(UUID eventId) {
         ApiInputValidator.validateEventId(eventId);
 
@@ -34,14 +36,15 @@ public class EventApiService implements EventsApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response listEvents(
             Integer page, Integer limit, String eventType, String sourceService,
             UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId,
-            LocalDateTime occurredAfter, LocalDateTime occurredBefore, String sort
+            LocalDateTime occurredAfter, LocalDateTime occurredBefore, UUID requestCorrelationId,String sort
     ) {
 
         PanacheQuery<EventEntity> query = EventEntity.queryEvents(
-                page, limit, eventType, sourceService, userId, userEmail, sessionId, productId, orderId, occurredAfter, occurredBefore, sort
+                page, limit, eventType, sourceService, userId, userEmail, sessionId, productId, orderId, occurredAfter, occurredBefore, requestCorrelationId, sort
         );
 
         List<EventEntity> eventEntities = query.list();

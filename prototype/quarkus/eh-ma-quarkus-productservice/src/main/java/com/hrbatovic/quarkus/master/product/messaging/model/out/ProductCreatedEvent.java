@@ -24,6 +24,8 @@ public class ProductCreatedEvent implements Serializable {
 
     private final String sourceService = "productservice";
 
+    private UUID requestCorrelationId;
+
     public ProductPayload getProduct() {
         return product;
     }
@@ -73,15 +75,25 @@ public class ProductCreatedEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public ProductCreatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this)
                 .append("product", product)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

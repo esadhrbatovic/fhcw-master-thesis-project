@@ -66,7 +66,8 @@ public class MessageConsumer {
                 return;
             }
 
-            pE.delete();
+            pE.setDeleted(true);
+            pE.update();
         });
     }
 

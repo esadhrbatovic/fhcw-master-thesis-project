@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.quarkus.master.product.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -24,6 +25,7 @@ public class CategoryApiService implements CategoriesApi {
     MapUtil mapper;
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response listCategories(Integer page, Integer limit, String search) {
         if (page == null || page < 1) page = 1;
         if (limit == null || limit < 1) limit = 10;
@@ -53,6 +55,7 @@ public class CategoryApiService implements CategoriesApi {
     }
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response getCategoryById(UUID id) {
         ApiInputValidator.validateCategoryId(id);
 

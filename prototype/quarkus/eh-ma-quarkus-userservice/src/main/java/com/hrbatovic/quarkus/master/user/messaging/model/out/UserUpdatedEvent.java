@@ -25,6 +25,8 @@ public class UserUpdatedEvent implements Serializable {
 
     private final String sourceService = "userservice";
 
+    private UUID requestCorrelationId;
+
     public UserUpdatedEvent() {
     }
 
@@ -77,15 +79,25 @@ public class UserUpdatedEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public UserUpdatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("user", userPayload)
+                .append("userPayload", userPayload)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

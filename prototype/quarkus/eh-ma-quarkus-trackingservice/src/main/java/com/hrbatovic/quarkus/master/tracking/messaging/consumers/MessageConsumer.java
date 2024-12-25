@@ -5,6 +5,7 @@ import com.hrbatovic.quarkus.master.tracking.db.entities.MetadataEntity;
 import com.hrbatovic.quarkus.master.tracking.messaging.model.in.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.xml.bind.annotation.XmlElementDecl;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.eclipse.microprofile.reactive.messaging.Incoming;
 
@@ -29,6 +30,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(userUpdatedEvent.getUserEmail());
             metadataEntity.setSessionId(userUpdatedEvent.getSessionId());
             metadataEntity.setSourceService(userUpdatedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(userUpdatedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId();
             //metadataEntity.setProductId();
             eventEntity.setMetadata(metadataEntity);
@@ -49,6 +51,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(userRegisteredEvent.getUserEmail());
             metadataEntity.setSessionId(userRegisteredEvent.getSessionId());
             metadataEntity.setSourceService(userRegisteredEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(userRegisteredEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId();
             //metadataEntity.setProductId();
             eventEntity.setMetadata(metadataEntity);
@@ -90,6 +93,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(userCredentialsUpdatedEvent.getUserEmail());
             metadataEntity.setSessionId(userCredentialsUpdatedEvent.getSessionId());
             metadataEntity.setSourceService(userCredentialsUpdatedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(userCredentialsUpdatedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId();
             //metadataEntity.setProductId();
             eventEntity.setMetadata(metadataEntity);
@@ -112,6 +116,7 @@ public class MessageConsumer {
             metadataEntity.setSourceService(productCreatedEvent.getSourceService());
             //metadataEntity.setOrderId();
             metadataEntity.setProductId(productCreatedEvent.getProduct().getId());
+            metadataEntity.setRequestCorrelationId(productCreatedEvent.getRequestCorrelationId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();
         });
@@ -130,6 +135,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(productUpdatedEvent.getUserEmail());
             metadataEntity.setSessionId(productUpdatedEvent.getSessionId());
             metadataEntity.setSourceService(productUpdatedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(productUpdatedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId();
             metadataEntity.setProductId(productUpdatedEvent.getProduct().getId());
             eventEntity.setMetadata(metadataEntity);
@@ -170,6 +176,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(checkoutStartedEvent.getUserEmail());
             metadataEntity.setSessionId(checkoutStartedEvent.getSessionId());
             metadataEntity.setSourceService(checkoutStartedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(checkoutStartedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId(checkoutStartedEvent.getCart().getId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
@@ -191,6 +198,7 @@ public class MessageConsumer {
             metadataEntity.setSessionId(orderCreatedEvent.getSessionId());
             metadataEntity.setSourceService(orderCreatedEvent.getSourceService());
             metadataEntity.setOrderId(orderCreatedEvent.getOrder().getId());
+            metadataEntity.setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();
@@ -211,6 +219,7 @@ public class MessageConsumer {
             metadataEntity.setSessionId(paymentSuccessEvent.getSessionId());
             metadataEntity.setSourceService(paymentSuccessEvent.getSourceService());
             metadataEntity.setOrderId(paymentSuccessEvent.getPaymentPayload().getOrderId());
+            metadataEntity.setRequestCorrelationId(paymentSuccessEvent.getRequestCorrelationId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();
@@ -232,6 +241,7 @@ public class MessageConsumer {
             metadataEntity.setSessionId(paymentFailEvent.getSessionId());
             metadataEntity.setSourceService(paymentFailEvent.getSourceService());
             metadataEntity.setOrderId(paymentFailEvent.getPaymentPayload().getOrderId());
+            metadataEntity.setRequestCorrelationId(paymentFailEvent.getRequestCorrelationId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();
@@ -252,6 +262,7 @@ public class MessageConsumer {
             metadataEntity.setSessionId(licensesGeneratedEvent.getSessionId());
             metadataEntity.setSourceService(licensesGeneratedEvent.getSourceService());
             metadataEntity.setOrderId(licensesGeneratedEvent.getOrderId());
+            metadataEntity.setRequestCorrelationId(licensesGeneratedEvent.getRequestCorrelationId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();
@@ -271,6 +282,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(licenseTemplateCreatedEvent.getUserEmail());
             metadataEntity.setSessionId(licenseTemplateCreatedEvent.getSessionId());
             metadataEntity.setSourceService(licenseTemplateCreatedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(licenseTemplateCreatedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId(licenseTemplateCreatedEvent.get());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
@@ -291,6 +303,7 @@ public class MessageConsumer {
             metadataEntity.setUserMail(licenseTemplateUpdatedEvent.getUserEmail());
             metadataEntity.setSessionId(licenseTemplateUpdatedEvent.getSessionId());
             metadataEntity.setSourceService(licenseTemplateUpdatedEvent.getSourceService());
+            metadataEntity.setRequestCorrelationId(licenseTemplateUpdatedEvent.getRequestCorrelationId());
             //metadataEntity.setOrderId(licenseTemplateCreatedEvent.get());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
@@ -332,6 +345,7 @@ public class MessageConsumer {
             metadataEntity.setSessionId(orderNotificationSentEvent.getSessionId());
             metadataEntity.setSourceService(orderNotificationSentEvent.getSourceService());
             metadataEntity.setOrderId(orderNotificationSentEvent.getOrderId());
+            metadataEntity.setRequestCorrelationId(orderNotificationSentEvent.getRequestCorrelationId());
             //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
             eventEntity.setMetadata(metadataEntity);
             eventEntity.persist();

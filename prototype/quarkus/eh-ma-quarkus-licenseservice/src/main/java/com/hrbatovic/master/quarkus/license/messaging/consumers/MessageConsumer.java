@@ -126,6 +126,7 @@ public class MessageConsumer {
                 .setUserId(paymentSuccessEvent.getUserId())
                 .setTimestamp(LocalDateTime.now())
                 .setOrderId(paymentSuccessEvent.getPaymentPayload().getOrderId())
+                .setRequestCorrelationId(paymentSuccessEvent.getRequestCorrelationId())
                 .setLicenses(mapper.map(licenses));
     }
 }

@@ -29,6 +29,8 @@ public class CheckoutStartedEvent implements Serializable {
 
     private final String sourceService = "cartservice";
 
+    private UUID requestCorrelationId;
+
     public UUID getPaymentToken() {
         return paymentToken;
     }
@@ -96,17 +98,27 @@ public class CheckoutStartedEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public CheckoutStartedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("paymentToken", paymentToken)
-                .append("paymentMethod", paymentMethod)
                 .append("cart", cart)
+                .append("paymentMethod", paymentMethod)
+                .append("paymentToken", paymentToken)
                 .append("timestamp", timestamp)
                 .append("sessionId", sessionId)
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

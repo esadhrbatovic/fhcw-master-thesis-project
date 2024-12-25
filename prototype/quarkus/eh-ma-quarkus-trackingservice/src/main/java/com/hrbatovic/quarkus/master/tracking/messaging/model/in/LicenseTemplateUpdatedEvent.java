@@ -26,6 +26,8 @@ public class LicenseTemplateUpdatedEvent implements Serializable {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
     public LicenseTemplatePayload getLicenseTemplate() {
         return licenseTemplate;
     }
@@ -75,6 +77,20 @@ public class LicenseTemplateUpdatedEvent implements Serializable {
         return sourceService;
     }
 
+    public LicenseTemplateUpdatedEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public LicenseTemplateUpdatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -84,6 +100,7 @@ public class LicenseTemplateUpdatedEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

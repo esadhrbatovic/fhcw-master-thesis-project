@@ -5,6 +5,7 @@ import com.hrbatovic.master.quarkus.payment.db.entities.PaymentMethodEntity;
 import com.hrbatovic.master.quarkus.payment.exceptions.EhMaException;
 import com.hrbatovic.master.quarkus.payment.mapper.MapUtil;
 import com.hrbatovic.master.quarkus.payment.model.*;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -12,6 +13,7 @@ import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @RequestScoped
@@ -22,9 +24,10 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
 
     @Inject
     @Claim(standard = Claims.groups)
-    List<String> groupsClaim;
+    Set<String> groupsClaim;
 
     @Override
+    @RolesAllowed({"admin"})
     public Response createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
         ApiInputValidator.validateCreatePaymentMethod(createPaymentMethodRequest);
 
@@ -34,6 +37,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response deletePaymentMethod(UUID paymentMethodId) {
         ApiInputValidator.validatePaymentMethodId(paymentMethodId);
 
@@ -44,6 +48,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response getPaymentMethodById(UUID id) {
         ApiInputValidator.validatePaymentMethodId(id);
 
@@ -56,6 +61,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     }
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response getPaymentMethods() {
         PaymentMethodListResponse paymentMethodListResponse = new PaymentMethodListResponse();
         List<PaymentMethodEntity> paymentMethodEntities = PaymentMethodEntity.listAll();
@@ -69,6 +75,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response updatePaymentMethod(UUID paymentMethodId, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
         ApiInputValidator.validatePaymentMethodId(paymentMethodId);
         ApiInputValidator.validateUpdatePaymentMethod(updatePaymentMethodRequest);

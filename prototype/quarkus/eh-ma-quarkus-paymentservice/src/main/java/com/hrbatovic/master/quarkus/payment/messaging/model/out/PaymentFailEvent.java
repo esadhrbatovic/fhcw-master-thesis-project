@@ -27,6 +27,8 @@ public class PaymentFailEvent implements Serializable {
 
     private final String sourceService = "paymentservice";
 
+    private UUID requestCorrelationId;
+
     public PaymentPayload getPaymentPayload() {
         return paymentPayload;
     }
@@ -85,9 +87,18 @@ public class PaymentFailEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public PaymentFailEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+        return new ToStringBuilder(this)
                 .append("paymentPayload", paymentPayload)
                 .append("message", message)
                 .append("timestamp", timestamp)
@@ -95,6 +106,7 @@ public class PaymentFailEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

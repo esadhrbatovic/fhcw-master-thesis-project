@@ -153,6 +153,7 @@ public class MessageConsumer {
                 .setUserEmail(checkoutStartedEvent.getUserEmail())
                 .setTimestamp(LocalDateTime.now())
                 .setSessionId(checkoutStartedEvent.getSessionId())
+                .setRequestCorrelationId(checkoutStartedEvent.getRequestCorrelationId())
                 .setOrder(mapper.toOrderPayload(orderEntity));
     }
 

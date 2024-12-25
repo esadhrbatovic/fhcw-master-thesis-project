@@ -14,19 +14,43 @@ import org.mapstruct.*;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class MapUtil {
 
-    public abstract List<Product> map(List<ProductEntity> productEntityList, @Context Map<UUID, String> categoryMap);
-
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "removeTagsItem", ignore = true)
-    public abstract Product map(ProductEntity productEntity, @Context Map<UUID, String> categoryMap);
+    public abstract Product mapAdmin(ProductEntity productEntity, @Context Map<UUID, String> categoryMap);
+
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "removeTagsItem", ignore = true)
+    public abstract Product mapNonAdmin(ProductEntity productEntity, @Context Map<UUID, String> categoryMap);
+
+    public List<Product> mapAdminList(List<ProductEntity> productEntityList, @Context Map<UUID, String> categoryMap) {
+        return productEntityList.stream()
+                .map(productEntity -> mapAdmin(productEntity, categoryMap))
+                .collect(Collectors.toList());
+    }
+
+    public List<Product> mapNonAdminList(List<ProductEntity> productEntityList, @Context Map<UUID, String> categoryMap) {
+        return productEntityList.stream()
+                .map(productEntity -> mapNonAdmin(productEntity, categoryMap))
+                .collect(Collectors.toList());
+    }
+    @Mapping(target = "category", source = "categoryName")
+    @Mapping(target = "removeTagsItem", ignore = true)
+    public abstract ProductResponse mapAdmin(ProductEntity productEntity, String categoryName);
 
     @Mapping(target = "category", source = "categoryName")
     @Mapping(target = "removeTagsItem", ignore = true)
-    public abstract ProductResponse map(ProductEntity productEntity, String categoryName);
+    @Mapping(target = "deleted", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    public abstract ProductResponse mapNonAdmin(ProductEntity productEntity, String categoryName);
 
     @AfterMapping
     protected void setCategoryFromMap(@MappingTarget Product product, ProductEntity productEntity, @Context Map<UUID, String> categoryMap) {

@@ -7,6 +7,7 @@ import com.hrbatovic.master.quarkus.license.mapper.MapUtil;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateCreatedEvent;
 import com.hrbatovic.master.quarkus.license.messaging.model.out.LicenseTemplateUpdatedEvent;
 import com.hrbatovic.master.quarkus.license.model.*;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -51,6 +52,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     Emitter<LicenseTemplateUpdatedEvent> licenseTemplateUpdatedEmitter;
 
     @Override
+    @RolesAllowed({"admin"})
     public Response createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
         ApiInputValidator.calidateCreateLicense(createLicenseTemplateRequest);
 
@@ -64,6 +66,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
 
     @Override
+    @RolesAllowed({"admin"})
     public Response deleteLicenseTemplate(UUID productId) {
         ApiInputValidator.validateProductId(productId);
 
@@ -81,6 +84,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response getLicenseTemplateByProductId(UUID productId) {
         ApiInputValidator.validateProductId(productId);
 
@@ -93,6 +97,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response listLicenseTemplates() {
         List<LicenseTemplateEntity> licenseTemplateEntities = LicenseTemplateEntity.listAll();
 
@@ -104,6 +109,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
         ApiInputValidator.validateProductId(productId);
         ApiInputValidator.validateUpdateLicense(updateLicenseTemplateRequest);

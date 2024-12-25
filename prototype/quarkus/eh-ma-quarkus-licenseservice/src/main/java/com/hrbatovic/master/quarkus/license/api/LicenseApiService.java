@@ -8,6 +8,7 @@ import com.hrbatovic.master.quarkus.license.model.LicenseListResponse;
 import com.hrbatovic.master.quarkus.license.model.LicenseListResponsePagination;
 import com.hrbatovic.master.quarkus.license.model.LicenseResponse;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -21,7 +22,7 @@ public class LicenseApiService implements LicensesApi {
 
     @Inject
     @Claim(standard = Claims.groups)
-    List<String> groupsClaim;
+    Set<String> groupsClaim;
 
     @Inject
     @Claim(standard = Claims.sub)
@@ -31,6 +32,7 @@ public class LicenseApiService implements LicensesApi {
     MapUtil mapper;
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response getLicenseBySerialNumber(UUID serialNumber) {
         ApiInputValidator.validateSerialNumber(serialNumber);
 
@@ -41,7 +43,7 @@ public class LicenseApiService implements LicensesApi {
         }
 
         if (groupsClaim.contains("customer") && !groupsClaim.contains("admin")) {
-            if (licenseEntity.getUserId() != UUID.fromString(userSubClaim)) {
+            if (!licenseEntity.getUserId().equals(UUID.fromString(userSubClaim))) {
                 /**
                  *  Here i say the license is not found.
                  *  I don't want to communicate to the user, that he can't view another user's license number, because that would
@@ -56,6 +58,7 @@ public class LicenseApiService implements LicensesApi {
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response listLicenses(Integer page, Integer limit, UUID userId, UUID productId, String sort) {
         PanacheQuery<LicenseEntity> query = LicenseEntity.queryLicenses(userId, productId, sort, page, limit);
 

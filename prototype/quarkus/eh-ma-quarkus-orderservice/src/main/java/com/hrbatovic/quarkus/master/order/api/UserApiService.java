@@ -9,6 +9,7 @@ import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -25,18 +26,19 @@ public class UserApiService implements UsersApi {
 
     @Inject
     @Claim(standard = Claims.groups)
-    List<String> groupsClaim;
+    Set<String> groupsClaim;
 
     @Inject
     @Claim(standard = Claims.sub)
     String userSubClaim;
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
         ApiInputValidator.validateUserId(userId);
 
         if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
-            if(userId != UUID.fromString(userSubClaim)){
+            if(!userId.equals(UUID.fromString(userSubClaim))){
                 throw new EhMaException(400, "You are not allowed to view other user's orders.");
             }
         }

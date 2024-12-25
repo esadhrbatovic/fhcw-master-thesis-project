@@ -8,10 +8,8 @@ info:
     Provides admin endpoints to manage license templates and view generated licenses.
 
 servers:
-  - url: https://licenseservice.yourshop.com
-    description: Production server
-  - url: https://licenseservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8087
+    description: local dev
 
 paths:
   /health:
@@ -27,15 +25,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+
   /license-templates:
     get:
-      summary: List all license templates
+      summary: ADMIN ONLY - List all license templates
       operationId: listLicenseTemplates
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       responses:
         '200':
           description: License templates retrieved successfully
@@ -56,13 +54,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create a new license template (admin only)
+      summary: ADMIN ONLY - Create a new license template
       operationId: createLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       requestBody:
         description: License template data to create
         required: true
@@ -98,13 +95,12 @@ paths:
 
   /license-templates/{productId}:
     get:
-      summary: Get license template by product ID
+      summary: ADMIN ONLY - Get license template by product ID
       operationId: getLicenseTemplateByProductId
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/ProductIdPathParam'
       responses:
@@ -134,13 +130,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Create or update license template for a product
+      summary: ADMIN ONLY - Create or update license template for a product
       operationId: updateLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/ProductIdPathParam'
       requestBody:
@@ -184,13 +179,12 @@ paths:
 
 
     delete:
-      summary: Delete a license template (admin only)
+      summary: ADMIN ONLY - Delete a license template
       operationId: deleteLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/ProductIdPathParam'
       responses:
@@ -221,13 +215,12 @@ paths:
 
   /licenses:
     get:
-      summary: List all generated licenses
+      summary: ADMIN ONLY - List all generated licenses
       operationId: listLicenses
       tags:
         - Licenses
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
@@ -262,7 +255,6 @@ paths:
         - Licenses
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/SerialNumberPathParam'
       responses:
@@ -297,11 +289,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     ProductIdPathParam:
@@ -520,20 +507,12 @@ components:
       properties:
         message:
           type: string
-          example: "License template deleted successfully."
-      required:
-        - message
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: License Templates

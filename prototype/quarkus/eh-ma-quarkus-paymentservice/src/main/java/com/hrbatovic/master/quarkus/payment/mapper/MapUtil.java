@@ -10,7 +10,9 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "cdi")
 public abstract class MapUtil {
@@ -24,10 +26,35 @@ public abstract class MapUtil {
 
     public abstract PaymentMethodDetailedResponse toApiDetail(PaymentMethodEntity paymentMethodEntity);
 
-    public abstract List<PaymentMethod> toApiList(List<PaymentMethodEntity> paymentMethodEntities);
+    public List<PaymentMethod> toApiList(List<PaymentMethodEntity> paymentMethodEntities) {
+        if (paymentMethodEntities == null) {
+            return null;
+        }
 
-    @Mapping(target="merchantId", ignore = true)
-    public abstract List<PaymentMethod> toApiListNotAdmin(List<PaymentMethodEntity> paymentMethodEntities);
+        List<PaymentMethod> list = new ArrayList<>(paymentMethodEntities.size());
+        for (PaymentMethodEntity entity : paymentMethodEntities) {
+            list.add(toApiPaymentMethod(entity));
+        }
+        return list;
+    }
+
+    public abstract PaymentMethod toApiPaymentMethod(PaymentMethodEntity paymentMethodEntity);
+
+
+    public List<PaymentMethod> toApiListNotAdmin(List<PaymentMethodEntity> paymentMethodEntities) {
+        if (paymentMethodEntities == null) {
+            return null;
+        }
+
+        List<PaymentMethod> list = new ArrayList<>(paymentMethodEntities.size());
+        for (PaymentMethodEntity entity : paymentMethodEntities) {
+            list.add(toApiNotAdmin(entity));
+        }
+        return list;
+    }
+
+    @Mapping(target = "merchantId", ignore = true)
+    protected abstract PaymentMethod toApiNotAdmin(PaymentMethodEntity paymentMethodEntity);
 
     @Mapping(target="id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

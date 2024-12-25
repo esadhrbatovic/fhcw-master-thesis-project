@@ -8,10 +8,9 @@ info:
     Exposes endpoints to view orders and order details.
 
 servers:
-  - url: https://orderservice.yourshop.com
-    description: Production server
-  - url: https://orderservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8085
+    description: local dev
+
 
 paths:
   /health:
@@ -29,13 +28,12 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /orders:
     get:
-      summary: Get a list of all orders (admin only)
+      summary: ADMIN ONLY - Get a list of all orders (admin only)
       operationId: getAllOrders
       tags:
         - Orders
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
@@ -63,7 +61,7 @@ paths:
 
   /orders/{orderId}:
     get:
-      summary: Get details of a specific order
+      summary: ADMIN ONLY - Get details of a specific order
       operationId: getOrderById
       tags:
         - Orders
@@ -143,11 +141,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     OrderIdPathParam:
@@ -336,22 +329,14 @@ components:
       properties:
         error:
           type: string
-          example: "Unauthorized access."
         details:
           type: string
-          example: "You are not authorized to access this resource."
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: Orders

@@ -21,6 +21,8 @@ public class MetadataEntity extends PanacheMongoEntityBase {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
     private LocalDateTime timestamp;
 
     public UUID getUserId() {
@@ -86,15 +88,25 @@ public class MetadataEntity extends PanacheMongoEntityBase {
         return this;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public MetadataEntity setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
+        return new ToStringBuilder(this)
                 .append("userId", userId)
                 .append("productId", productId)
                 .append("orderId", orderId)
                 .append("userMail", userMail)
                 .append("sessionId", sessionId)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .append("timestamp", timestamp)
                 .toString();
     }

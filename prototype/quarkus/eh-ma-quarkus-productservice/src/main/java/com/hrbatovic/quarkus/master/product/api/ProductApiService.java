@@ -1,5 +1,6 @@
 package com.hrbatovic.quarkus.master.product.api;
 
+import com.aayushatharva.brotli4j.common.annotations.Local;
 import com.hrbatovic.master.quarkus.product.api.ProductsApi;
 import com.hrbatovic.master.quarkus.product.model.*;
 import com.hrbatovic.quarkus.master.product.api.validators.ApiInputValidator;
@@ -10,6 +11,7 @@ import com.hrbatovic.quarkus.master.product.mapper.MapUtil;
 import com.hrbatovic.quarkus.master.product.messaging.model.out.ProductCreatedEvent;
 import com.hrbatovic.quarkus.master.product.messaging.model.out.ProductUpdatedEvent;
 import io.quarkus.mongodb.panache.PanacheQuery;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -20,10 +22,7 @@ import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RequestScoped
@@ -42,6 +41,10 @@ public class ProductApiService implements ProductsApi {
     String sessionIdClaim;
 
     @Inject
+    @Claim(standard = Claims.groups)
+    Set<String> groupsClaim;
+
+    @Inject
     MapUtil mapper;
 
     @Inject
@@ -56,13 +59,15 @@ public class ProductApiService implements ProductsApi {
     @Channel("product-deleted-out")
     Emitter<UUID> productDeletedEmitter;
 
-
-    //TODO: handle soft deleted products, hide deleted flag from customers
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         PanacheQuery<ProductEntity> query = ProductEntity.queryProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
 
         List<ProductEntity> productEntityList = query.list();
+        if(groupsClaim.contains("customer") && !groupsClaim.contains("admin")){
+            productEntityList = productEntityList.stream().filter(p->!p.isDeleted()).toList();
+        }
 
         List<UUID> categoryIds = productEntityList.stream()
                 .map(ProductEntity::getCategoryId)
@@ -77,7 +82,11 @@ public class ProductApiService implements ProductsApi {
                 ));
 
         ProductListResponse productListResponse = new ProductListResponse();
-        productListResponse.setProducts(mapper.map(productEntityList, categoryMap));
+        if(groupsClaim.contains("admin") && !groupsClaim.contains("customer")){
+            productListResponse.setProducts(mapper.mapAdminList(productEntityList, categoryMap));
+        }else if(groupsClaim.contains("customer") && !groupsClaim.contains("admin")){
+            productListResponse.setProducts(mapper.mapNonAdminList(productEntityList, categoryMap));
+        }
 
         long totalItems = query.count();
         int totalPages = query.pageCount();
@@ -93,6 +102,7 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Response getProductById(UUID productId) {
         ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
@@ -105,11 +115,18 @@ public class ProductApiService implements ProductsApi {
         String categoryName = Optional.ofNullable(categoryEntity)
                 .map(CategoryEntity::getName)
                 .orElse("Unknown");
+        ProductResponse productResponse = new ProductResponse();
+        if(groupsClaim.contains("admin") && !groupsClaim.contains("customer")){
+            productResponse = mapper.mapAdmin(productEntity, categoryName);
+        }else if(groupsClaim.contains("customer") && !groupsClaim.contains("admin")){
+            productResponse = mapper.mapNonAdmin(productEntity, categoryName);
+        }
 
-        return Response.ok(mapper.map(productEntity, categoryName)).status(200).build();
+        return Response.ok(productResponse).status(200).build();
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public Response updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         ApiInputValidator.validateProductId(productId);
         ApiInputValidator.validateUpdateProduct(updateProductRequest);
@@ -135,11 +152,12 @@ public class ProductApiService implements ProductsApi {
         productEntity.update();
 
         productUpdatedEmitter.send(buildProductUpdatedEvent(productEntity));
-        return Response.ok(mapper.map(productEntity, categoryEntity.getName())).status(200).build();
+        return Response.ok(mapper.mapAdmin(productEntity, categoryEntity.getName())).status(200).build();
     }
 
 
     @Override
+    @RolesAllowed({"admin"})
     public Response createProduct(CreateProductRequest createProductRequest) {
         ApiInputValidator.validateCreateProdocut(createProductRequest);
         CategoryEntity category = CategoryEntity.find("name", createProductRequest.getCategory()).firstResult();
@@ -153,11 +171,11 @@ public class ProductApiService implements ProductsApi {
 
         productEntity.persist();
         productCreatedEmitter.send(buildProductCreatedEvent(productEntity));
-        return Response.ok(mapper.map(productEntity, category.getName())).status(200).build();
+        return Response.ok(mapper.mapAdmin(productEntity, category.getName())).status(200).build();
     }
 
-
     @Override
+    @RolesAllowed({"admin"})
     public Response deleteProduct(UUID productId) {
         ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
@@ -166,7 +184,9 @@ public class ProductApiService implements ProductsApi {
             throw new EhMaException(404, "Product with ID " + productId + " not found");
         }
 
-        productEntity.delete();
+        productEntity.setDeleted(true);
+        productEntity.setUpdatedAt(LocalDateTime.now());
+        productEntity.update();
         productDeletedEmitter.send(productId);
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product successfully deleted.");
@@ -174,11 +194,23 @@ public class ProductApiService implements ProductsApi {
     }
 
     private ProductUpdatedEvent buildProductUpdatedEvent(ProductEntity productEntity) {
-        return new ProductUpdatedEvent().setTimestamp(LocalDateTime.now()).setUserId(UUID.fromString(userSubClaim)).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setProduct(mapper.map(productEntity));
+        return new ProductUpdatedEvent()
+                .setTimestamp(LocalDateTime.now())
+                .setUserId(UUID.fromString(userSubClaim))
+                .setUserEmail(emailClaim)
+                .setSessionId(UUID.fromString(sessionIdClaim))
+                .setProduct(mapper.map(productEntity))
+                .setRequestCorrelationId(UUID.randomUUID());
     }
 
     private ProductCreatedEvent buildProductCreatedEvent(ProductEntity productEntity) {
-        return new ProductCreatedEvent().setUserId(UUID.fromString(userSubClaim)).setTimestamp(LocalDateTime.now()).setUserEmail(emailClaim).setSessionId(UUID.fromString(sessionIdClaim)).setProduct(mapper.map(productEntity));
+        return new ProductCreatedEvent()
+                .setUserId(UUID.fromString(userSubClaim))
+                .setTimestamp(LocalDateTime.now())
+                .setUserEmail(emailClaim)
+                .setSessionId(UUID.fromString(sessionIdClaim))
+                .setProduct(mapper.map(productEntity))
+                .setRequestCorrelationId(UUID.randomUUID());
     }
 
 }

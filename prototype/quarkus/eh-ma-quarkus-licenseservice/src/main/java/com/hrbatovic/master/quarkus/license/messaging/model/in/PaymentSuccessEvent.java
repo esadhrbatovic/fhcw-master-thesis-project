@@ -25,6 +25,8 @@ public class PaymentSuccessEvent implements Serializable {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
 
     public PaymentPayload getPaymentPayload() {
         return paymentPayload;
@@ -50,6 +52,10 @@ public class PaymentSuccessEvent implements Serializable {
         return sourceService;
     }
 
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -59,6 +65,7 @@ public class PaymentSuccessEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

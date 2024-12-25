@@ -26,12 +26,12 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /users:
     get:
-      summary: List all users with optional search and pagination
+      security:
+        - bearerAuth: []
+      summary: ADMIN ONLY - List all users with optional search and pagination
       operationId: listUsers
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
@@ -58,15 +58,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get a user's profile
       operationId: getUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       responses:
@@ -96,12 +102,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
+      security:
+        - bearerAuth: []
       summary: Update a user's profile
       operationId: updateUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       requestBody:
@@ -144,12 +150,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete a user
       operationId: deleteUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       responses:
@@ -373,10 +379,6 @@ components:
       properties:
         message:
           type: string
-
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: User

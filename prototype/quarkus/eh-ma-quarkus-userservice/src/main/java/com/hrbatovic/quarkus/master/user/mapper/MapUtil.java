@@ -19,15 +19,20 @@ public abstract class MapUtil {
 
     public abstract List<UserProfileResponse> map(List<UserEntity> userEntityList);
 
-    @Mapping(target="id", ignore = true)
-    @Mapping(target="email", ignore = true)
-    public abstract UserPayload map(UpdateUserProfileRequest updateUserProfileRequest);
+    public abstract UserPayload mapFromEntity(UserEntity userEntity);
 
     @Mapping(target="id", ignore = true)
     @Mapping(target="email", ignore = true)
     @Mapping(target="createdAt", ignore = true)
     @Mapping(target="updatedAt", ignore = true)
     public abstract void update(@MappingTarget UserEntity userEntity, UpdateUserProfileRequest updateUserProfileRequest);
+
+    @Mapping(target="id", ignore = true)
+    @Mapping(target="email", ignore = true)
+    @Mapping(target="createdAt", ignore = true)
+    @Mapping(target="updatedAt", ignore = true)
+    @Mapping(target="role", ignore = true)
+    public abstract void updateNotAdmin(@MappingTarget UserEntity userEntity, UpdateUserProfileRequest updateUserProfileRequest);
 
     @Mapping(target="createdAt", ignore = true)
     @Mapping(target="updatedAt", ignore = true)

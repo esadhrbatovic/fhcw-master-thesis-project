@@ -104,6 +104,7 @@ public class MessageConsumer {
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setSessionId(orderCreatedEvent.getSessionId())
+                .setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId())
                 .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 
@@ -114,6 +115,7 @@ public class MessageConsumer {
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setSessionId(orderCreatedEvent.getSessionId())
                 .setTimestamp(LocalDateTime.now())
+                .setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId())
                 .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 

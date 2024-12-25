@@ -27,6 +27,8 @@ public class PaymentFailEvent implements Serializable {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
     public PaymentPayload getPaymentPayload() {
         return paymentPayload;
     }
@@ -55,6 +57,50 @@ public class PaymentFailEvent implements Serializable {
         return sourceService;
     }
 
+    public PaymentFailEvent setPaymentPayload(PaymentPayload paymentPayload) {
+        this.paymentPayload = paymentPayload;
+        return this;
+    }
+
+    public PaymentFailEvent setMessage(String message) {
+        this.message = message;
+        return this;
+    }
+
+    public PaymentFailEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public PaymentFailEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    public PaymentFailEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public PaymentFailEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
+    }
+
+    public PaymentFailEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public PaymentFailEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -65,6 +111,7 @@ public class PaymentFailEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

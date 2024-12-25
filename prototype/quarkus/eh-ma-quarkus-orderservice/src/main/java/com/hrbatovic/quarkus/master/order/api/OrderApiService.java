@@ -10,6 +10,7 @@ import com.hrbatovic.quarkus.master.order.exceptions.EhMaException;
 import com.hrbatovic.quarkus.master.order.mapper.MapUtil;
 import io.quarkus.mongodb.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.core.Response;
@@ -23,6 +24,7 @@ public class OrderApiService implements OrdersApi {
     MapUtil mapper;
 
     @Override
+    @RolesAllowed({"admin"})
     public Response getAllOrders(Integer page, Integer limit, String status, String sort) {
         PanacheQuery<OrderEntity> query = OrderEntity.queryOrders(status, sort);
 
@@ -36,8 +38,8 @@ public class OrderApiService implements OrdersApi {
         return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
     }
 
-    //TODO: admin only
     @Override
+    @RolesAllowed({"admin"})
     public Response getOrderById(UUID orderId) {
         ApiInputValidator.validateOrderId(orderId);
 

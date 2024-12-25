@@ -25,6 +25,8 @@ public class PaymentSuccessEvent implements Serializable {
 
     private String sourceService;
 
+    private UUID requestCorrelationId;
+
     public PaymentPayload getPaymentPayload() {
         return paymentPayload;
     }
@@ -49,6 +51,45 @@ public class PaymentSuccessEvent implements Serializable {
         return sourceService;
     }
 
+    public PaymentSuccessEvent setPaymentPayload(PaymentPayload paymentPayload) {
+        this.paymentPayload = paymentPayload;
+        return this;
+    }
+
+    public PaymentSuccessEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
+    }
+
+    public PaymentSuccessEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    public PaymentSuccessEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public PaymentSuccessEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
+    }
+
+    public PaymentSuccessEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
+    public UUID getRequestCorrelationId() {
+        return requestCorrelationId;
+    }
+
+    public PaymentSuccessEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
@@ -58,6 +99,7 @@ public class PaymentSuccessEvent implements Serializable {
                 .append("userId", userId)
                 .append("userEmail", userEmail)
                 .append("sourceService", sourceService)
+                .append("requestCorrelationId", requestCorrelationId)
                 .toString();
     }
 }

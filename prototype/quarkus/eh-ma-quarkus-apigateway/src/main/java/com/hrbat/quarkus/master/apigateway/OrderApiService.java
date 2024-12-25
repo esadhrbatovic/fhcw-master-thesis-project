@@ -5,6 +5,7 @@ import com.hrbat.quarkus.master.apigateway.mapper.MapUtil;
 import com.hrbat.quarkus.master.apigateway.model.Order;
 import com.hrbat.quarkus.master.apigateway.model.OrderListResponse;
 import com.hrbat.quarkus.master.apigateway.model.order.api.OrdersOrderRestClient;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -22,11 +23,13 @@ public class OrderApiService implements OrdersApi {
     OrdersOrderRestClient ordersOrderRestClient;
 
     @Override
+    @RolesAllowed({"admin"})
     public OrderListResponse getAllOrders(Integer page, Integer limit, String status, String sort) {
         return mapper.map(ordersOrderRestClient.getAllOrders(page, limit, status, sort));
     }
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public Order getOrderById(UUID orderId) {
         return mapper.map(ordersOrderRestClient.getOrderById(orderId));
     }

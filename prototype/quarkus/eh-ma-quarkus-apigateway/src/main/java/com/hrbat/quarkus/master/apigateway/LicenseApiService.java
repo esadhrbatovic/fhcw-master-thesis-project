@@ -6,6 +6,7 @@ import com.hrbat.quarkus.master.apigateway.mapper.MapUtil;
 import com.hrbat.quarkus.master.apigateway.model.*;
 import com.hrbat.quarkus.master.apigateway.model.license.api.LicenseTemplatesLicenseRestClient;
 import com.hrbat.quarkus.master.apigateway.model.license.api.LicensesLicenseRestClient;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -23,11 +24,13 @@ public class LicenseApiService implements LicensesApi {
     LicensesLicenseRestClient licensesLicenseRestClient;
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public LicenseResponse getLicenseBySerialNumber(UUID serialNumber) {
         return mapper.map(licensesLicenseRestClient.getLicenseBySerialNumber(serialNumber));
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public LicenseListResponse listLicenses(Integer page, Integer limit, UUID userId, UUID productId, String sort) {
         return mapper.map(licensesLicenseRestClient.listLicenses(page, limit, userId, productId, sort));
     }

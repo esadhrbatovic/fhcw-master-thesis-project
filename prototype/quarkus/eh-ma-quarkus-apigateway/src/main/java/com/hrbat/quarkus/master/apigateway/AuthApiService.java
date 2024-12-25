@@ -5,6 +5,7 @@ import com.hrbat.quarkus.master.apigateway.mapper.MapUtil;
 import com.hrbat.quarkus.master.apigateway.model.*;
 import com.hrbat.quarkus.master.apigateway.model.auth.api.AuthenticationAuthRestClient;
 import com.hrbat.quarkus.master.apigateway.model.auth.api.CredentialsAuthRestClient;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
@@ -26,6 +27,7 @@ public class AuthApiService implements AuthApi {
     CredentialsAuthRestClient credentialsAuthRestClient;
 
     @Override
+    @RolesAllowed({"admin"})
     public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest adminUpdateCredentialsRequest) {
         return mapper.map(credentialsAuthRestClient.adminUpdateCredentials(id, mapper.map(adminUpdateCredentialsRequest)));
     }
@@ -41,6 +43,7 @@ public class AuthApiService implements AuthApi {
     }
 
     @Override
+    @RolesAllowed({"admin", "customer"})
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest userUpdateCredentialsRequest) {
         return mapper.map(credentialsAuthRestClient.updateCredentials(mapper.map(userUpdateCredentialsRequest)));
     }

@@ -35,7 +35,7 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
-    @RolesAllowed({"admin"})
+    @RolesAllowed({"admin", "customer"})
     public ProductResponse getProductById(UUID id) {
         return mapper.map(productManagementProductRestClient.getProductById(id));
     }

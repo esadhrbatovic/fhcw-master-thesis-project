@@ -29,7 +29,7 @@ public class OrderApiService implements OrdersApi {
     }
 
     @Override
-    @RolesAllowed({"admin", "customer"})
+    @RolesAllowed({"admin"})
     public Order getOrderById(UUID orderId) {
         return mapper.map(ordersOrderRestClient.getOrderById(orderId));
     }

@@ -34,7 +34,7 @@ public class UserApiService implements UsersApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
+    public OrderListResponse getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
         ApiInputValidator.validateUserId(userId);
 
         if(groupsClaim.contains("customer") && !groupsClaim.contains("admin") ){
@@ -52,7 +52,7 @@ public class UserApiService implements UsersApi {
         );
         query.page(pagination);
 
-        return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
+        return createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit);
     }
 
     private OrderListResponse createOrderListResponse(

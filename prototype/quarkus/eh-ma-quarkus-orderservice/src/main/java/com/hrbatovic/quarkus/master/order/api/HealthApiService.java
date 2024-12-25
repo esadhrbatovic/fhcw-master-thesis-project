@@ -9,7 +9,7 @@ import jakarta.ws.rs.core.Response;
 public class HealthApiService implements HealthApi {
 
     @Override
-    public Response healthCheck() {
-        return Response.ok(new SuccessResponse().message("Quarkus orderservice is up and running.")).status(200).build();
+    public SuccessResponse healthCheck() {
+        return new SuccessResponse().message("Quarkus orderservice is up and running.");
     }
 }

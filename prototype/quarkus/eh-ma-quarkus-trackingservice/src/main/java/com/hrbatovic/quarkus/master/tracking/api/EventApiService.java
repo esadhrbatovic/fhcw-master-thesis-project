@@ -25,19 +25,19 @@ public class EventApiService implements EventsApi {
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getEventById(UUID eventId) {
+    public Event getEventById(UUID eventId) {
         ApiInputValidator.validateEventId(eventId);
 
         EventEntity eventEntity = EventEntity.findById(eventId);
         if (eventEntity == null) {
             throw new RuntimeException("Event not found for ID: " + eventId);
         }
-        return Response.ok(mapper.map(eventEntity)).status(200).build();
+        return mapper.map(eventEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response listEvents(
+    public EventListResponse listEvents(
             Integer page, Integer limit, String eventType, String sourceService,
             UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId,
             LocalDateTime occurredAfter, LocalDateTime occurredBefore, UUID requestCorrelationId,String sort
@@ -58,8 +58,8 @@ public class EventApiService implements EventsApi {
                 .totalItems((int) totalItems)
                 .totalPages(totalPages);
 
-        return Response.ok(new EventListResponse()
+        return new EventListResponse()
                 .events(mapper.map(eventEntities))
-                .pagination(pagination)).status(200).build();
+                .pagination(pagination);
     }
 }

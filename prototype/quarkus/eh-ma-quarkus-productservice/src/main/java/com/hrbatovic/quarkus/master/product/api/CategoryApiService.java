@@ -26,7 +26,7 @@ public class CategoryApiService implements CategoriesApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response listCategories(Integer page, Integer limit, String search) {
+    public CategoryListResponse listCategories(Integer page, Integer limit, String search) {
         if (page == null || page < 1) page = 1;
         if (limit == null || limit < 1) limit = 10;
 
@@ -51,12 +51,12 @@ public class CategoryApiService implements CategoriesApi {
         pagination.setTotalPages(totalPages);
         response.setPagination(pagination);
 
-        return Response.ok(response).status(200).build();
+        return response;
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getCategoryById(UUID id) {
+    public Category getCategoryById(UUID id) {
         ApiInputValidator.validateCategoryId(id);
 
         CategoryEntity categoryEntity = CategoryEntity.findById(id);
@@ -65,6 +65,6 @@ public class CategoryApiService implements CategoriesApi {
             throw new EhMaException(404, "Product with ID " + id + " not found");
         }
 
-        return Response.ok(mapper.map(categoryEntity)).status(200).build();
+        return mapper.map(categoryEntity);
     }
 }

@@ -61,7 +61,7 @@ public class ProductApiService implements ProductsApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
         PanacheQuery<ProductEntity> query = ProductEntity.queryProducts(page, limit, search, category, priceMin, priceMax, createdAfter, createdBefore, sort);
 
         List<ProductEntity> productEntityList = query.list();
@@ -98,12 +98,12 @@ public class ProductApiService implements ProductsApi {
         pagination.setTotalPages(totalPages);
         productListResponse.setPagination(pagination);
 
-        return Response.ok(productListResponse).status(200).build();
+        return productListResponse;
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getProductById(UUID productId) {
+    public ProductResponse getProductById(UUID productId) {
         ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
 
@@ -122,12 +122,12 @@ public class ProductApiService implements ProductsApi {
             productResponse = mapper.mapNonAdmin(productEntity, categoryName);
         }
 
-        return Response.ok(productResponse).status(200).build();
+        return productResponse;
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
+    public ProductResponse updateProduct(UUID productId, UpdateProductRequest updateProductRequest) {
         ApiInputValidator.validateProductId(productId);
         ApiInputValidator.validateUpdateProduct(updateProductRequest);
 
@@ -152,13 +152,13 @@ public class ProductApiService implements ProductsApi {
         productEntity.update();
 
         productUpdatedEmitter.send(buildProductUpdatedEvent(productEntity));
-        return Response.ok(mapper.mapAdmin(productEntity, categoryEntity.getName())).status(200).build();
+        return mapper.mapAdmin(productEntity, categoryEntity.getName());
     }
 
 
     @Override
     @RolesAllowed({"admin"})
-    public Response createProduct(CreateProductRequest createProductRequest) {
+    public ProductResponse createProduct(CreateProductRequest createProductRequest) {
         ApiInputValidator.validateCreateProdocut(createProductRequest);
         CategoryEntity category = CategoryEntity.find("name", createProductRequest.getCategory()).firstResult();
         if (category == null) {
@@ -171,12 +171,12 @@ public class ProductApiService implements ProductsApi {
 
         productEntity.persist();
         productCreatedEmitter.send(buildProductCreatedEvent(productEntity));
-        return Response.ok(mapper.mapAdmin(productEntity, category.getName())).status(200).build();
+        return mapper.mapAdmin(productEntity, category.getName());
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response deleteProduct(UUID productId) {
+    public DeleteProductResponse deleteProduct(UUID productId) {
         ApiInputValidator.validateProductId(productId);
         ProductEntity productEntity = ProductEntity.findById(productId);
 
@@ -190,7 +190,7 @@ public class ProductApiService implements ProductsApi {
         productDeletedEmitter.send(productId);
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product successfully deleted.");
-        return Response.ok(response).status(200).build();
+        return response;
     }
 
     private ProductUpdatedEvent buildProductUpdatedEvent(ProductEntity productEntity) {

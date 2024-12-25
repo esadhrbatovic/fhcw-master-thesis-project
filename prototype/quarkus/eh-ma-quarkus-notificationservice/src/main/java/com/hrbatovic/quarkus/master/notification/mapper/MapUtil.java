@@ -1,6 +1,7 @@
 package com.hrbatovic.quarkus.master.notification.mapper;
 
 import com.hrbatovic.master.quarkus.notification.model.Notification;
+import com.hrbatovic.master.quarkus.notification.model.NotificationResponse;
 import com.hrbatovic.quarkus.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.quarkus.master.notification.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.notification.messaging.model.in.UserCredentialsUpdatedEvent;
@@ -27,5 +28,5 @@ public abstract class MapUtil {
 
     public abstract List<Notification> map(List<NotificationEntity> notificationEntityList);
 
-    public abstract Notification map(NotificationEntity notificationEntity);
+    public abstract NotificationResponse map(NotificationEntity notificationEntity);
 }

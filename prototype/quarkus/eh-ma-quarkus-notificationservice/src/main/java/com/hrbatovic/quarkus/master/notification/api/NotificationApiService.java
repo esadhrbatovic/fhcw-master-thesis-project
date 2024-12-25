@@ -1,7 +1,6 @@
 package com.hrbatovic.quarkus.master.notification.api;
 
 import com.hrbatovic.master.quarkus.notification.api.NotificationsApi;
-import com.hrbatovic.master.quarkus.notification.model.Notification;
 import com.hrbatovic.master.quarkus.notification.model.NotificationListResponse;
 import com.hrbatovic.master.quarkus.notification.model.NotificationListResponsePagination;
 import com.hrbatovic.master.quarkus.notification.model.NotificationResponse;
@@ -13,7 +12,6 @@ import io.quarkus.mongodb.panache.PanacheQuery;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +25,7 @@ public class NotificationApiService implements NotificationsApi {
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getNotificationById(UUID notificationId) {
+    public NotificationResponse getNotificationById(UUID notificationId) {
         ApiInputValidator.validateNotificationId(notificationId);
 
         NotificationEntity notificationEntity = NotificationEntity.findById(notificationId);
@@ -35,12 +33,12 @@ public class NotificationApiService implements NotificationsApi {
             throw new EhMaException(404, "Notification not found");
         }
 
-        return Response.ok(mapper.map(notificationEntity)).status(200).build();
+        return mapper.map(notificationEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response listNotifications(Integer page, Integer limit, String email, UUID userId, String type, LocalDateTime sentAfter, LocalDateTime sentBefore, String sort) {
+    public NotificationListResponse listNotifications(Integer page, Integer limit, String email, UUID userId, String type, LocalDateTime sentAfter, LocalDateTime sentBefore, String sort) {
         PanacheQuery<NotificationEntity> query = NotificationEntity.queryNotifications(page, limit, email, userId, type, sentAfter, sentBefore, sort);
 
         List<NotificationEntity> notificationEntities = query.list();
@@ -56,7 +54,7 @@ public class NotificationApiService implements NotificationsApi {
                 .totalItems((int) totalItems)
                 .totalPages(totalPages));
 
-        return Response.ok(response).status(200).build();
+        return response;
     }
 
 }

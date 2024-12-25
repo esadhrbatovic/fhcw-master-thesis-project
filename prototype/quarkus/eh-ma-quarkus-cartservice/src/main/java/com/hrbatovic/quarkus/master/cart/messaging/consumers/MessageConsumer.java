@@ -4,11 +4,7 @@ import com.hrbatovic.quarkus.master.cart.db.entities.CartEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.ProductEntity;
 import com.hrbatovic.quarkus.master.cart.db.entities.UserEntity;
 import com.hrbatovic.quarkus.master.cart.mapper.MapUtil;
-import com.hrbatovic.quarkus.master.cart.messaging.model.in.OrderCreatedEvent;
-import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductCreatedEvent;
-import com.hrbatovic.quarkus.master.cart.messaging.model.in.ProductUpdatedEvent;
-import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserRegisteredEvent;
-import com.hrbatovic.quarkus.master.cart.messaging.model.in.UserUpdatedEvent;
+import com.hrbatovic.quarkus.master.cart.messaging.model.in.*;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.eclipse.microprofile.context.ManagedExecutor;
@@ -125,6 +121,38 @@ public class MessageConsumer {
             }
 
             userEntity.delete();
+        });
+    }
+
+    @Incoming("license-template-created-in")
+    public void onLicenseTemplateCreated(LicenseTemplateCreatedEvent licenseTemplateCreatedEvent) {
+        System.out.println("Recieved license-template-created-in event: " + licenseTemplateCreatedEvent);
+
+        executor.runAsync(()->{
+
+            ProductEntity productEntity = ProductEntity.findById(licenseTemplateCreatedEvent.getLicenseTemplate().getProductId());
+            if(productEntity == null){
+                return;
+            }
+
+            productEntity.setLicenseAvailable(true);
+            productEntity.update();
+        });
+    }
+
+    @Incoming("license-template-deleted-in")
+    public void onLicenseTemplateDeleted(UUID productId) {
+        System.out.println("Recieved license-template-deleted-in event: " + productId);
+
+        executor.runAsync(()->{
+
+            ProductEntity productEntity = ProductEntity.findById(productId);
+            if(productEntity == null){
+                return;
+            }
+
+            productEntity.setLicenseAvailable(false);
+            productEntity.update();
         });
     }
 

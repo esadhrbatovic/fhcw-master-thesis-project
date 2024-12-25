@@ -33,7 +33,7 @@ public class LicenseApiService implements LicensesApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getLicenseBySerialNumber(UUID serialNumber) {
+    public LicenseResponse getLicenseBySerialNumber(UUID serialNumber) {
         ApiInputValidator.validateSerialNumber(serialNumber);
 
         LicenseEntity licenseEntity = LicenseEntity.findById(serialNumber);
@@ -54,12 +54,12 @@ public class LicenseApiService implements LicensesApi {
         }
 
 
-        return Response.ok(mapper.toApi(licenseEntity)).status(200).build();
+        return mapper.toApi(licenseEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response listLicenses(Integer page, Integer limit, UUID userId, UUID productId, String sort) {
+    public LicenseListResponse listLicenses(Integer page, Integer limit, UUID userId, UUID productId, String sort) {
         PanacheQuery<LicenseEntity> query = LicenseEntity.queryLicenses(userId, productId, sort, page, limit);
 
         List<LicenseEntity> licenseEntities = query.list();
@@ -70,7 +70,7 @@ public class LicenseApiService implements LicensesApi {
         response.setLicenses(mapper.toApiLicenseList(licenseEntities));
         response.setPagination(createPagination(page, limit, totalItems, totalPages));
 
-        return Response.ok(response).status(200).build();
+        return response;
     }
 
     private LicenseListResponsePagination createPagination(Integer page, Integer limit, long totalItems, int totalPages) {

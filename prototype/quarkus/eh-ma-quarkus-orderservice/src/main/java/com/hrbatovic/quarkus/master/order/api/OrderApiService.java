@@ -25,7 +25,7 @@ public class OrderApiService implements OrdersApi {
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getAllOrders(Integer page, Integer limit, String status, String sort) {
+    public OrderListResponse getAllOrders(Integer page, Integer limit, String status, String sort) {
         PanacheQuery<OrderEntity> query = OrderEntity.queryOrders(status, sort);
 
         Page pagination = Page.of(
@@ -35,12 +35,12 @@ public class OrderApiService implements OrdersApi {
 
         query.page(pagination);
 
-        return Response.ok(createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit)).status(200).build();
+        return createOrderListResponse(query.list(), query.pageCount(), query.count(), page, limit);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getOrderById(UUID orderId) {
+    public Order getOrderById(UUID orderId) {
         ApiInputValidator.validateOrderId(orderId);
 
         OrderEntity orderEntity = OrderEntity.findById(orderId);
@@ -49,7 +49,7 @@ public class OrderApiService implements OrdersApi {
             throw new EhMaException(404, "Order not found");
         }
 
-        return Response.ok(mapper.map(orderEntity)).status(200).build();
+        return mapper.map(orderEntity);
     }
 
     private OrderListResponse createOrderListResponse(

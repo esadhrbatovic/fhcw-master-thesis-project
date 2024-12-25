@@ -51,7 +51,7 @@ public class CartApiService implements CartProductsApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response addProductToCart(AddCartProductRequest addCartProductRequest) {
+    public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
         ApiInputValidator.validateAddProductToCart(addCartProductRequest);
         ApiInputValidator.validateQuantity(addCartProductRequest.getQuantity());
 
@@ -74,16 +74,16 @@ public class CartApiService implements CartProductsApi {
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return Response.ok(new CartProductResponse()
+        return new CartProductResponse()
                 .message(updatedCartItem.getQuantity() > addCartProductRequest.getQuantity()
                         ? "Product quantity updated in cart."
                         : "Product added to cart.")
-                .product(mapper.map(updatedCartItem))).status(200).build();
+                .product(mapper.map(updatedCartItem));
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response checkoutCart(StartCheckoutRequest startCheckoutRequest) {
+    public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
         ApiInputValidator.validateCheckoutCart(startCheckoutRequest);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
 
@@ -114,14 +114,14 @@ public class CartApiService implements CartProductsApi {
         CheckoutStartedEvent checkoutStartedEvent = buildCheckoutStartedEvent(startCheckoutRequest, cartEntity);
         checkoutStartedEmitter.send(checkoutStartedEvent);
 
-        return Response.ok(new CheckoutResponse()
+        return new CheckoutResponse()
                 .message("Checkout started successfully.")
-                .orderId(cartEntity.getId())).status(200).build();
+                .orderId(cartEntity.getId());
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response deleteCartProduct(UUID productId) {
+    public DeleteCartProductResponse deleteCartProduct(UUID productId) {
         ApiInputValidator.validateProductId(productId);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         removeCartProduct(cartEntity, productId);
@@ -129,31 +129,31 @@ public class CartApiService implements CartProductsApi {
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return Response.ok(new DeleteCartProductResponse().message("Cart item successfully deleted.")).status(200).build();
+        return new DeleteCartProductResponse().message("Cart item successfully deleted.");
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response emptyCart() {
+    public EmptyCartResponse emptyCart() {
         CartEntity cartEntity = findCartByUserId(UUID.fromString(userSubClaim));
         if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
             throw new EhMaException(400, "The cart is already empty");
         }
         cartEntity.delete();
 
-        return Response.ok(new EmptyCartResponse().message("Cart has been successfully emptied.")).status(200).build();
+        return new EmptyCartResponse().message("Cart has been successfully emptied.");
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getCartProducts() {
+    public CartResponse getCartProducts() {
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(userSubClaim));
-        return Response.ok(mapper.map(cartEntity)).status(200).build();
+        return mapper.map(cartEntity);
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response updateCartProduct(UUID productId, UpdateCartProductRequest updateCartProductRequest) {
+    public CartProductResponse updateCartProduct(UUID productId, UpdateCartProductRequest updateCartProductRequest) {
         ApiInputValidator.validateProductId(productId);
         ApiInputValidator.validateUpdateCartProduct(updateCartProductRequest);
         ApiInputValidator.validateQuantity(updateCartProductRequest.getQuantity());
@@ -165,9 +165,9 @@ public class CartApiService implements CartProductsApi {
         recalculateCartTotals(cartEntity);
         cartEntity.persistOrUpdate();
 
-        return Response.ok(new CartProductResponse()
+        return new CartProductResponse()
                 .message("Cart product updated successfully.")
-                .product(mapper.map(cartProduct))).status(200).build();
+                .product(mapper.map(cartProduct));
     }
 
     public CartEntity findCartByUserId(UUID userId) {

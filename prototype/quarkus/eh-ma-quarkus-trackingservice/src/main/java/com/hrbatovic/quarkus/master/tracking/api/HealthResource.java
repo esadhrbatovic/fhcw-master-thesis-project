@@ -11,7 +11,7 @@ import jakarta.ws.rs.core.Response;
 public class HealthResource implements HealthApi {
 
     @Override
-    public Response healthCheck() {
-        return Response.ok(new SuccessResponse().message("Quarkus trackingservice is up and running.")).status(200).build();
+    public SuccessResponse healthCheck() {
+        return new SuccessResponse().message("Quarkus trackingservice is up and running.");
     }
 }

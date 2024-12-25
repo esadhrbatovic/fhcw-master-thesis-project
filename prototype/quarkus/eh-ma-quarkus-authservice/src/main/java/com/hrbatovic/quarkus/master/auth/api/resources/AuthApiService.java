@@ -19,9 +19,9 @@ import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.jboss.resteasy.reactive.ResponseStatus;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @RequestScoped
@@ -60,7 +60,7 @@ public class AuthApiService implements AuthApi {
     MapUtil mapper;
 
     @Override
-    public Response login(LoginRequest loginRequest) {
+    public LoginResponse login(LoginRequest loginRequest) {
         ApiInputValidator.validateLogin(loginRequest);
 
         RegistrationEntity registrationEntity = RegistrationEntity.findByEmail(loginRequest.getCredentials().getEmail());
@@ -74,11 +74,11 @@ public class AuthApiService implements AuthApi {
             throw new EhMaException(400, "Login Failed");
         }
 
-        return Response.ok(new LoginResponse().message("Logged in successfully").token(jwtUtil.buildJwtToken(registrationEntity))).status(200).build();
+        return new LoginResponse().message("Logged in successfully").token(jwtUtil.buildJwtToken(registrationEntity));
     }
 
     @Override
-    public Response register(RegisterRequest registerRequest) {
+    public RegisterResponse register(RegisterRequest registerRequest) {
         ApiInputValidator.validateRegistration(registerRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(registerRequest.getCredentials().getEmail());
         if(tempRegistrationEntity != null){
@@ -106,13 +106,13 @@ public class AuthApiService implements AuthApi {
 
         userRegisteredEmitter.send(buildUserRegisteredEvent(registerRequest, registrationEntity, UUID.fromString(sessionIdString), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return Response.ok(new RegisterResponse().message("User registered successfully").token(jwtToken)).status(200).build();
+        return new RegisterResponse().message("User registered successfully").token(jwtToken);
     }
 
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
+    public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
         ApiInputValidator.validateUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
         if(tempRegistrationEntity == null){
@@ -138,12 +138,13 @@ public class AuthApiService implements AuthApi {
 
         userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(userId, registrationEntity, UUID.fromString(sessionIdClaim), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return Response.ok(new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken)).status(200).build();
+        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken);
+
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
+    public SuccessResponse adminUpdateCredentials(UUID userId, AdminUpdateCredentialsRequest updateCredentialsRequest) {
         ApiInputValidator.validateAdminUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity registrationEntity = RegistrationEntity.findByUserid(userId);
         if (registrationEntity == null) {
@@ -163,7 +164,7 @@ public class AuthApiService implements AuthApi {
 
         userCredentialsUpdatedEmitter.send(buildUserCredentialsUpdatedEvent(UUID.fromString(userSubClaim), registrationEntity, UUID.fromString(sessionIdClaim), emailClaim));
 
-        return Response.ok(new SuccessResponse().message("Credentials updated successfully")).status(200).build();
+        return new SuccessResponse().message("Credentials updated successfully");
     }
 
     private UserRegisteredEvent buildUserRegisteredEvent(RegisterRequest registerRequest, RegistrationEntity registrationEntity, UUID sessionId, String userEmail) {

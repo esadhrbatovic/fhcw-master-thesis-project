@@ -52,7 +52,7 @@ public class UserApiService implements UsersApi {
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getUser(UUID id) {
+    public UserProfileResponse getUser(UUID id) {
         ApiInputValidator.validateUserId(id);
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
@@ -63,12 +63,12 @@ public class UserApiService implements UsersApi {
             throw new EhMaException(400, "You are not allowed to view other user's account.");
         }
 
-        return Response.ok(mapper.map(userEntity)).status(200).build();
+        return mapper.map(userEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response listUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
+    public UserListResponse listUsers(Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
 
         PanacheQuery<UserEntity> query = UserEntity.queryUsers(page, limit, search, createdAfter, createdBefore, sort);
 
@@ -88,12 +88,12 @@ public class UserApiService implements UsersApi {
 
         userListResponse.setPagination(pagination);
 
-        return Response.ok(userListResponse).status(200).build();
+        return userListResponse;
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
+    public UserProfileResponse updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
         ApiInputValidator.validateUpdateUser(updateUserProfileRequest);
         if(groupsClaim.contains("admin") && StringUtils.isEmpty(updateUserProfileRequest.getRole())){
             throw new EhMaException(400, "You need to provde the user's role.");
@@ -128,12 +128,12 @@ public class UserApiService implements UsersApi {
 
         userUpdatedEmitter.send(userUpdatedEvent);
 
-        return Response.ok(mapper.map(userEntity)).status(200).build();
+        return mapper.map(userEntity);
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response deleteUser(UUID id) {
+    public DeleteUserResponse deleteUser(UUID id) {
         ApiInputValidator.validateUserId(id);
         UserEntity userEntity = UserEntity.findById(id);
         if(userEntity == null){
@@ -146,7 +146,7 @@ public class UserApiService implements UsersApi {
 
         userEntity.delete();
         userDeletedEmitter.send(id);
-        return Response.ok(new DeleteUserResponse().message("User deleted successfully")).status(200).build();
+        return new DeleteUserResponse().message("User deleted successfully");
     }
 
 }

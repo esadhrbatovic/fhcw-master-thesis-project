@@ -28,28 +28,28 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
 
     @Override
     @RolesAllowed({"admin"})
-    public Response createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
+    public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
         ApiInputValidator.validateCreatePaymentMethod(createPaymentMethodRequest);
 
         PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
         paymentMethodEntity.persistOrUpdate();
-        return Response.ok(mapper.toApi(paymentMethodEntity)).status(200).build();
+        return mapper.toApi(paymentMethodEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response deletePaymentMethod(UUID paymentMethodId) {
+    public DeletePaymentMethodResponse deletePaymentMethod(UUID paymentMethodId) {
         ApiInputValidator.validatePaymentMethodId(paymentMethodId);
 
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(paymentMethodId);
         paymentMethodEntity.delete();
 
-        return Response.ok(new DeletePaymentMethodResponse().message("Payment method deleted successfully.")).status(200).build();
+        return new DeletePaymentMethodResponse().message("Payment method deleted successfully.");
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getPaymentMethodById(UUID id) {
+    public PaymentMethodDetailedResponse getPaymentMethodById(UUID id) {
         ApiInputValidator.validatePaymentMethodId(id);
 
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(id);
@@ -57,12 +57,12 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
             throw new EhMaException(404, "Payment method not found.");
         }
 
-        return Response.ok(mapper.toApiDetail(paymentMethodEntity)).status(200).build();
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 
     @Override
     @RolesAllowed({"admin", "customer"})
-    public Response getPaymentMethods() {
+    public PaymentMethodListResponse getPaymentMethods() {
         PaymentMethodListResponse paymentMethodListResponse = new PaymentMethodListResponse();
         List<PaymentMethodEntity> paymentMethodEntities = PaymentMethodEntity.listAll();
         if(groupsClaim.contains("admin") && !groupsClaim.contains("customer")){
@@ -71,12 +71,12 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
             paymentMethodListResponse.setPaymentMethods(mapper.toApiListNotAdmin(paymentMethodEntities));
         }
 
-        return Response.ok(paymentMethodListResponse).status(200).build();
+        return paymentMethodListResponse;
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response updatePaymentMethod(UUID paymentMethodId, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
+    public PaymentMethodDetailedResponse updatePaymentMethod(UUID paymentMethodId, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
         ApiInputValidator.validatePaymentMethodId(paymentMethodId);
         ApiInputValidator.validateUpdatePaymentMethod(updatePaymentMethodRequest);
 
@@ -87,6 +87,6 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
 
         mapper.patch(updatePaymentMethodRequest, paymentMethodEntity);
         paymentMethodEntity.persistOrUpdate();
-        return Response.ok(mapper.toApiDetail(paymentMethodEntity)).status(200).build();
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 }

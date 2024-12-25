@@ -53,7 +53,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
     @Override
     @RolesAllowed({"admin"})
-    public Response createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
+    public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
         ApiInputValidator.calidateCreateLicense(createLicenseTemplateRequest);
 
         LicenseTemplateEntity licenseTemplateEntity = mapping.toTemplateEntity(createLicenseTemplateRequest);
@@ -61,13 +61,13 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
         licenseTemplateCreatedEmitter.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
 
-        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
+        return mapping.toApi(licenseTemplateEntity);
     }
 
 
     @Override
     @RolesAllowed({"admin"})
-    public Response deleteLicenseTemplate(UUID productId) {
+    public DeleteLicenseTemplateResponse deleteLicenseTemplate(UUID productId) {
         ApiInputValidator.validateProductId(productId);
 
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", productId).firstResult();
@@ -80,12 +80,12 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
         licenseTemplateEntity.delete();
 
-        return Response.ok(new DeleteLicenseTemplateResponse().message("License template deleted successfully.")).status(200).build();
+        return new DeleteLicenseTemplateResponse().message("License template deleted successfully.");
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response getLicenseTemplateByProductId(UUID productId) {
+    public LicenseTemplateResponse getLicenseTemplateByProductId(UUID productId) {
         ApiInputValidator.validateProductId(productId);
 
         LicenseTemplateEntity licenseTemplateEntity = LicenseTemplateEntity.find("productId", productId).firstResult();
@@ -93,24 +93,24 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
             throw new EhMaException(404, "License template not found.");
         }
 
-        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
+        return mapping.toApi(licenseTemplateEntity);
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response listLicenseTemplates() {
+    public LicenseTemplateListResponse listLicenseTemplates() {
         List<LicenseTemplateEntity> licenseTemplateEntities = LicenseTemplateEntity.listAll();
 
         LicenseTemplateListResponse licenseTemplateListResponse = new LicenseTemplateListResponse();
 
         licenseTemplateListResponse.setLicenseTemplates(mapping.toApiList(licenseTemplateEntities));
 
-        return Response.ok(licenseTemplateListResponse).status(200).build();
+        return licenseTemplateListResponse;
     }
 
     @Override
     @RolesAllowed({"admin"})
-    public Response updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
+    public LicenseTemplateResponse updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
         ApiInputValidator.validateProductId(productId);
         ApiInputValidator.validateUpdateLicense(updateLicenseTemplateRequest);
 
@@ -124,7 +124,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
         licenseTemplateUpdatedEmitter.send(buildLicenseTempalteUpdatedEvent(licenseTemplateEntity));
 
-        return Response.ok(mapping.toApi(licenseTemplateEntity)).status(200).build();
+        return mapping.toApi(licenseTemplateEntity);
     }
 
     private LicenseTemplateUpdatedEvent buildLicenseTempalteUpdatedEvent(LicenseTemplateEntity licenseTemplateEntity) {

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @RegisterForReflection
 public class ProductCreatedEvent implements Serializable {
+
     ProductPayload product;
 
     //Metadata

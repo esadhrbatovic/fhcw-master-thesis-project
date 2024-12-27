@@ -23,9 +23,9 @@ public class UserRegisteredEvent implements Serializable {
 
     private String userEmail;
 
-    private UUID requestCorrelationId;
-
     private final String sourceService = "authservice";
+
+    private UUID requestCorrelationId;
 
 
     public UserPayload getUserPayload() {

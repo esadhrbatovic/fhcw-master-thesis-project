@@ -341,7 +341,7 @@
                     <p>Event Tracking & Analytics</p>
                 </li>
             </ul>
-            
+
             <h2>Use Cases & Choreographies</h2>
             <ul class="service-list">
                 <li class="service-item">
@@ -352,22 +352,42 @@
 
         </nav>
         <main>
-        <!-- introduction -->
-        <section id="introduction">
-            <h2>Introduction</h2>
-            <p>
-                Microservice architectures enable software systems to be divided into small, independently deployable modules that collaboratively address specific business challenges. Integration within these architectures can follow either orchestration or choreography approaches. Choreography-based architectures are particularly well-suited for modern cloud environments, offering advantages such as independent deployability, loose coupling, and enhanced scalability. They rely on event-driven communication and eventual consistency without a central controller, allowing systems to better manage traffic spikes and maintain functionality even if individual services fail. Additionally, this approach supports agile development by allowing teams to work concurrently and independently on different services, resulting in flexible and resilient products without single points of failure.
-            </p>
-            <p>
-                Java remains one of the most widely used programming languages, making it highly relevant for microservice architectures. Its popularity and extensive tool support make it a preferred choice for many organizations. Recently, alternative Java frameworks and runtimes like Quarkus, Micronaut, and Spring Boot have emerged, specifically designed to meet the demands of cloud-based microservices with improvements in performance optimization, resource utilization, and startup speed.
-            </p>
-            <p>
-                A key focus of this work is the comparison between JVM-based and native Java service implementations using GraalVM. GraalVM’s Ahead-Of-Time (AOT) compilation enables faster startup times and reduced memory consumption, which are essential for distributed and cloud-native systems.
-            </p>
-            <p>
-                This study evaluates which of the three leading Java frameworks—Quarkus, Micronaut, and Spring Boot—performs best in a choreography-based architecture under realistic conditions concerning startup time, performance, and resource usage. By examining necessary adjustments and existing limitations, the research aims to provide valuable insights for developers and architects. These insights will assist in making informed decisions for implementing cost-effective and high-performance cloud and serverless solutions, demonstrated through a digital goods e-shop application.
-            </p>
-        </section>
+            <!-- introduction -->
+            <section id="introduction">
+                <h2>Introduction</h2>
+                <p>
+                    Microservice architectures enable software systems to be divided into small, independently
+                    deployable modules that collaboratively address specific business challenges. Integration within
+                    these architectures can follow either orchestration or choreography approaches. Choreography-based
+                    architectures are particularly well-suited for modern cloud environments, offering advantages such
+                    as independent deployability, loose coupling, and enhanced scalability. They rely on event-driven
+                    communication and eventual consistency without a central controller, allowing systems to better
+                    manage traffic spikes and maintain functionality even if individual services fail. Additionally,
+                    this approach supports agile development by allowing teams to work concurrently and independently on
+                    different services, resulting in flexible and resilient products without single points of failure.
+                </p>
+                <p>
+                    Java remains one of the most widely used programming languages, making it highly relevant for
+                    microservice architectures. Its popularity and extensive tool support make it a preferred choice for
+                    many organizations. Recently, alternative Java frameworks and runtimes like Quarkus, Micronaut, and
+                    Spring Boot have emerged, specifically designed to meet the demands of cloud-based microservices
+                    with improvements in performance optimization, resource utilization, and startup speed.
+                </p>
+                <p>
+                    A key focus of this work is the comparison between JVM-based and native Java service implementations
+                    using GraalVM. GraalVM’s Ahead-Of-Time (AOT) compilation enables faster startup times and reduced
+                    memory consumption, which are essential for distributed and cloud-native systems.
+                </p>
+                <p>
+                    This study evaluates which of the three leading Java frameworks—Quarkus, Micronaut, and Spring
+                    Boot—performs best in a choreography-based architecture under realistic conditions concerning
+                    startup time, performance, and resource usage. By examining necessary adjustments and existing
+                    limitations, the research aims to provide valuable insights for developers and architects. These
+                    insights will assist in making informed decisions for implementing cost-effective and
+                    high-performance cloud and serverless solutions, demonstrated through a digital goods e-shop
+                    application.
+                </p>
+            </section>
 
             <h2>High Level Architecture</h2>
             <p>Below is a high-level overview of the system architecture, illustrating how the microservices interact
@@ -382,6 +402,48 @@
                 <li><a href="service-specs/authservice/openapi.html" target="_blank">API Documentation</a></li>
                 <li><a href="service-specs/authservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
+            <h3>Database Schemas</h3>
+            <table>
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 50%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Collection Name</th>
+                        <th>Schema</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Registrations Collection -->
+                    <tr>
+                        <td>registrations</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>,
+    <span class="key">userEntity</span>: <span class="key">{</span>
+        <span class="key">id</span>: <span class="value">UUID</span>,
+        <span class="key">firstName</span>: <span class="value">string</span>,
+        <span class="key">lastName</span>: <span class="value">string</span>,
+        <span class="key">role</span>: <span class="value">string</span>
+    <span class="key">}</span>,
+    <span class="key">credentialsEntity</span>: <span class="key">{</span>
+        <span class="key">email</span>: <span class="value">string</span>,
+        <span class="key">password</span>: <span class="value">string</span>
+    <span class="key">}</span>
+    <span class="key">createdAt</span>: <span class="value">Date</span>,
+    <span class="key">updatedAt</span>: <span class="value">Date</span>
+<span class="key">}</span>
+        </pre>
+                        </td>
+                        <td>Stores user registration information, including user details and credentials.</td>
+                    </tr>
+
+                </tbody>
+            </table>
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -403,14 +465,14 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">userPayload</span>: <span class="value">{</span>
+    <span class="key">userPayload</span>: <span class="key">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">firstName</span>: <span class="value">string</span>,
         <span class="key">lastName</span>: <span class="value">string</span>,
         <span class="key">role</span>: <span class="value">string</span>,
         <span class="key">email</span>: <span class="value">string</span>,
         <span class="key">phoneNumber</span>: <span class="value">string</span>,
-        <span class="key">address</span>: <span class="value">{</span>
+        <span class="key">address</span>: <span class="key">{</span>
             <span class="key">street</span>: <span class="value">string</span>,
             <span class="key">city</span>: <span class="value">string</span>,
             <span class="key">state</span>: <span class="value">string</span>,
@@ -422,7 +484,8 @@
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"authservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"authservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
         </pre>
                         </td>
@@ -450,51 +513,6 @@
                 </tbody>
             </table>
 
-            <h3>Database Schemas</h3>
-            <table>
-                <colgroup>
-                    <col style="width: 15%;">
-                    <col style="width: 50%;">
-                    <col style="width: 35%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Collection Name</th>
-                        <th>Schema</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Registrations Collection -->
-                    <tr>
-                        <td>registrations</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>,
-    <span class="key">userEntity</span>: <span class="value">{</span>
-        <span class="key">id</span>: <span class="value">UUID</span>,
-        <span class="key">firstName</span>: <span class="value">string</span>,
-        <span class="key">lastName</span>: <span class="value">string</span>,
-        <span class="key">role</span>: <span class="value">string</span>,
-        <span class="key">createdAt</span>: <span class="value">Date</span>,
-        <span class="key">updatedAt</span>: <span class="value">Date</span>
-    <span class="key">}</span>,
-    <span class="key">credentialsEntity</span>: <span class="value">{</span>
-        <span class="key">id</span>: <span class="value">UUID</span>,
-        <span class="key">email</span>: <span class="value">string</span>,
-        <span class="key">password</span>: <span class="value">string</span>,
-        <span class="key">createdAt</span>: <span class="value">Date</span>,
-        <span class="key">updatedAt</span>: <span class="value">Date</span>
-    <span class="key">}</span>
-<span class="key">}</span>
-        </pre>
-                        </td>
-                        <td>Stores user registration information, including user details and credentials.</td>
-                    </tr>
-
-                </tbody>
-            </table>
             <!-- UserService Section -->
             <h2 id="userservice">UserService</h2>
             <p>Manages user profiles, registration, and account updates.</p>
@@ -502,54 +520,6 @@
                 <li><a href="service-specs/userservice/openapi.html" target="_blank">API Documentation</a></li>
                 <li><a href="service-specs/userservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-            <h3>Outgoing Events</h3>
-            <table>
-                <colgroup>
-                    <col style="width: 15%;">
-                    <col style="width: 50%;">
-                    <col style="width: 35%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Definition</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- UserUpdatedEvent -->
-                    <tr>
-                        <td>UserUpdatedEvent</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">userPayload</span>: <span class="value">{</span>
-        <span class="key">id</span>: <span class="value">UUID</span>,
-        <span class="key">firstName</span>: <span class="value">string</span>,
-        <span class="key">lastName</span>: <span class="value">string</span>,
-        <span class="key">role</span>: <span class="value">string</span>,
-        <span class="key">email</span>: <span class="value">string</span>,
-        <span class="key">phoneNumber</span>: <span class="value">string</span>,
-        <span class="key">address</span>: <span class="value">{</span>
-            <span class="key">street</span>: <span class="value">string</span>,
-            <span class="key">city</span>: <span class="value">string</span>,
-            <span class="key">state</span>: <span class="value">string</span>,
-            <span class="key">postalCode</span>: <span class="value">string</span>,
-            <span class="key">country</span>: <span class="value">string</span>
-        <span class="key">}</span>
-    <span class="key">}</span>,
-    <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
-    <span class="key">sessionId</span>: <span class="value">UUID</span>,
-    <span class="key">userId</span>: <span class="value">UUID</span>,
-    <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"userservice"</span>
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Emitted when a user updates their profile.</td>
-                    </tr>
-                </tbody>
-            </table>
 
             <h3>Database Schemas</h3>
             <table>
@@ -578,8 +548,7 @@
     <span class="key">role</span>: <span class="value">string</span>, <!-- User's Role (e.g., "admin", "customer") -->
     <span class="key">email</span>: <span class="value">string</span>, <!-- User's Email Address -->
     <span class="key">phoneNumber</span>: <span class="value">string</span>, <!-- User's Phone Number -->
-    <span class="key">address</span>: <span class="value">{
-</span>
+    <span class="key">address</span>: <span class="key">{</span>
         <span class="key">street</span>: <span class="value">string</span>, <!-- Street Address -->
         <span class="key">city</span>: <span class="value">string</span>, <!-- City -->
         <span class="key">state</span>: <span class="value">string</span>, <!-- State -->
@@ -595,6 +564,55 @@
                     </tr>
                 </tbody>
             </table>
+            <h3>Outgoing Events</h3>
+            <table>
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 50%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Definition</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- UserUpdatedEvent -->
+                    <tr>
+                        <td>UserUpdatedEvent</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">userPayload</span>: <span class="key">{</span>
+        <span class="key">id</span>: <span class="value">UUID</span>,
+        <span class="key">firstName</span>: <span class="value">string</span>,
+        <span class="key">lastName</span>: <span class="value">string</span>,
+        <span class="key">role</span>: <span class="value">string</span>,
+        <span class="key">email</span>: <span class="value">string</span>,
+        <span class="key">phoneNumber</span>: <span class="value">string</span>,
+        <span class="key">address</span>: <span class="key">{</span>
+            <span class="key">street</span>: <span class="value">string</span>,
+            <span class="key">city</span>: <span class="value">string</span>,
+            <span class="key">state</span>: <span class="value">string</span>,
+            <span class="key">postalCode</span>: <span class="value">string</span>,
+            <span class="key">country</span>: <span class="value">string</span>
+        <span class="key">}</span>
+    <span class="key">}</span>,
+    <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
+    <span class="key">sessionId</span>: <span class="value">UUID</span>,
+    <span class="key">userId</span>: <span class="value">UUID</span>,
+    <span class="key">userEmail</span>: <span class="value">string</span>,
+    <span class="key">sourceService</span>: <span class="value">"userservice"</span>
+    <span class="key">requestCorrelationId</span>: <span class="value">"UUID"</span>
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Emitted when a user updates their profile.</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <!-- ProductService Section -->
             <h2 id="productservice">ProductService</h2>
@@ -603,6 +621,74 @@
                 <li><a href="service-specs/productservice/openapi.html" target="_blank">API Documentation</a></li>
                 <li><a href="service-specs/productservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
+
+            <h3>Database Schemas</h3>
+            <table>
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 50%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Collection Name</th>
+                        <th>Schema</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Products Collection -->
+                    <tr>
+                        <td>products</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">title</span>: <span class="value">string</span>, <!-- Product Title -->
+    <span class="key">description</span>: <span class="value">string</span>, <!-- Product Description -->
+    <span class="key">categoryId</span>: <span class="value">UUID</span>, <!-- Reference to Category -->
+    <span class="key">price</span>: <span class="value">BigDecimal</span>, <!-- Product Price -->
+    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
+    <span class="key">imageUrl</span>: <span class="value">string</span>, <!-- Image URL -->
+    <span class="key">licenseAvailable</span>: <span class="value">boolean</span>, <!-- License Availability -->
+    <span class="key">deleted</span>: <span class="value">boolean</span>, <!-- Soft Delete Flag -->
+    <span class="key">tags</span>: <span class="value">[string]</span>, <!-- Product Tags -->
+    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
+    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores product details and metadata.</td>
+                    </tr>
+                    <!-- Categories Collection -->
+                    <tr>
+                        <td>categories</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">name</span>: <span class="value">string</span>, <!-- Category Name -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores product category information.</td>
+                    </tr>
+                    <!-- Users Collection -->
+                    <tr>
+                        <td>users</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "seller") -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores user roles and related information within ProductService.</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -624,7 +710,7 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">product</span>: <span class="value">{</span>
+    <span class="key">product</span>: <span class="key">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">title</span>: <span class="value">string</span>,
         <span class="key">description</span>: <span class="value">string</span>,
@@ -643,6 +729,7 @@
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
     <span class="key">sourceService</span>: <span class="value">"productservice"</span>
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -654,7 +741,7 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">product</span>: <span class="value">{</span>
+    <span class="key">product</span>: <span class="key">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">title</span>: <span class="value">string</span>,
         <span class="key">description</span>: <span class="value">string</span>,
@@ -673,6 +760,8 @@
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
     <span class="key">sourceService</span>: <span class="value">"productservice"</span>
+    <span class="key">userId</span>: <span class="value">UUID</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -680,6 +769,14 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- CartService Section -->
+            <h2 id="cartservice">CartService</h2>
+            <p>Allows users to add items to the cart, view, modify, delete items, and proceed to checkout.</p>
+            <ul class="links">
+                <li><a href="service-specs/cartservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/cartservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
 
             <h3>Database Schemas</h3>
             <table>
@@ -696,46 +793,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Products Collection -->
-                    <tr>
-                        <td>products</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">title</span>: <span class="value">string</span>, <!-- Product Title -->
-    <span class="key">description</span>: <span class="value">string</span>, <!-- Product Description -->
-    <span class="key">categoryId</span>: <span class="value">UUID</span>, <!-- Reference to Category -->
-    <span class="key">price</span>: <span class="value">Decimal128</span>, <!-- Product Price -->
-    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
-    <span class="key">imageUrl</span>: <span class="value">string</span>, <!-- Image URL -->
-    <span class="key">licenseAvailable</span>: <span class="value">boolean</span>, <!-- License Availability -->
-    <span class="key">deleted</span>: <span class="value">boolean</span>, <!-- Soft Delete Flag -->
-    <span class="key">tags</span>: <span class="value">[string]</span>, <!-- Product Tags -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores product details and metadata.</td>
-                    </tr>
-                    <!-- Categories Collection -->
-                    <tr>
-                        <td>categories</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">name</span>: <span class="value">string</span>, <!-- Category Name -->
-    <span class="key">description</span>: <span class="value">string</span>, <!-- Category Description -->
-    <span class="key">parentCategoryId</span>: <span class="value">UUID</span>, <!-- Reference to Parent Category -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores product category information.</td>
-                    </tr>
                     <!-- Users Collection -->
                     <tr>
                         <td>users</td>
@@ -744,23 +801,55 @@
 <span class="key">{</span>
     <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "seller") -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user roles and related information within ProductService.</td>
+                        <td>Stores user roles and related information within CartService.</td>
+                    </tr>
+                    <!-- Products Collection -->
+                    <tr>
+                        <td>products</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">title</span>: <span class="value">string</span>, <!-- Product Title -->
+    <span class="key">price</span>: <span class="value">BigDecimal</span>, <!-- Product Price -->
+    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
+    <span class="key">licenseAvailable</span>: <span class="value">boolean</span>, <!-- License Availability -->
+    <span class="key">deleted</span>: <span class="value">boolean</span> <!-- Soft Delete Flag -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores product details relevant to the CartService.</td>
+                    </tr>
+                    <!-- Carts Collection -->
+                    <tr>
+                        <td>carts</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
+    <span class="key">cartProducts</span>: <span class="key">[</span>
+        <span class="key">{</span>
+            <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
+            <span class="key">productTitle</span>: <span class="value">string</span>, <!-- Product Title -->
+            <span class="key">quantity</span>: <span class="value">Integer</span>, <!-- Quantity of Product -->
+            <span class="key">productPrice</span>: <span class="value">BigDecimal</span>, <!-- Price per Unit -->
+            <span class="key">totalPrice</span>: <span class="value">BigDecimal</span> <!-- Total Price for this Item -->
+        <span class="key">}</span>
+    <span class="key">]</span>,
+    <span class="key">totalItems</span>: <span class="value">Integer</span>, <!-- Total Number of Items -->
+    <span class="key">totalPrice</span>: <span class="value">BigDecimal</span> <!-- Total Price of the Cart -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores user shopping cart details.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <!-- CartService Section -->
-            <h2 id="cartservice">CartService</h2>
-            <p>Allows users to add items to the cart, view, modify, delete items, and proceed to checkout.</p>
-            <ul class="links">
-                <li><a href="service-specs/cartservice/openapi.html" target="_blank">API Documentation</a></li>
-                <li><a href="service-specs/cartservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
-            </ul>
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -782,8 +871,6 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">paymentToken</span>: <span class="value">UUID</span>,
-    <span class="key">paymentMethodSelector</span>: <span class="value">string</span>,
     <span class="key">cart</span>: <span class="value">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">userId</span>: <span class="value">UUID</span>,
@@ -799,11 +886,14 @@
         <span class="key">totalItems</span>: <span class="value">Integer</span>,
         <span class="key">totalPrice</span>: <span class="value">BigDecimal</span>
     <span class="key">}</span>,
+    <span class="key">paymentMethod</span>: <span class="value">string</span>,
+    <span class="key">paymentToken</span>: <span class="value">UUID</span>,
     <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"cartservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"cartservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -811,6 +901,14 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- OrderService Section -->
+            <h2 id="orderservice">OrderService</h2>
+            <p>Processes orders, maintains order status, and provides order details.</p>
+            <ul class="links">
+                <li><a href="service-specs/orderservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/orderservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
 
             <h3>Database Schemas</h3>
             <table>
@@ -833,41 +931,30 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "seller") -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user roles and related information within CartService.</td>
+                        <td>Stores user roles and related information within OrderService.</td>
                     </tr>
-                    <!-- Products Collection -->
+                    <!-- Orders Collection -->
                     <tr>
-                        <td>products</td>
+                        <td>orders</td>
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">title</span>: <span class="value">string</span>, <!-- Product Title -->
-    <span class="key">price</span>: <span class="value">Decimal128</span>, <!-- Product Price -->
-    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
-    <span class="key">licenseAvailable</span>: <span class="value">boolean</span>, <!-- License Availability -->
-    <span class="key">deleted</span>: <span class="value">boolean</span> <!-- Soft Delete Flag -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores product details relevant to the CartService.</td>
-                    </tr>
-                    <!-- Carts Collection -->
-                    <tr>
-                        <td>carts</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
-    <span class="key">cartProducts</span>: <span class="value">[</span>
+    <span class="key">status</span>: <span class="value">string</span>, <!-- Order Status (e.g., "pending", "shipped") -->
+    <span class="key">statusDetail</span>: <span class="value">string</span>, <!-- Detailed Status Information -->
+    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
+    <span class="key">totalAmount</span>: <span class="value">BigDecimal</span>, <!-- Total Order Amount -->
+    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
+    <span class="key">updatedAt</span>: <span class="value">Date</span>, <!-- Last Update Timestamp -->
+    <span class="key">paymenToken</span>: <span class="value">UUID</span>, <!-- Payment Token -->
+    <span class="key">paymentMethod</span>: <span class="value">string</span>, <!-- Payment Method (e.g., "credit_card") -->
+    <span class="key">orderItems</span>: <span class="key">[</span>
         <span class="key">{</span>
             <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
             <span class="key">productTitle</span>: <span class="value">string</span>, <!-- Product Title -->
@@ -875,23 +962,16 @@
             <span class="key">productPrice</span>: <span class="value">BigDecimal</span>, <!-- Price per Unit -->
             <span class="key">totalPrice</span>: <span class="value">BigDecimal</span> <!-- Total Price for this Item -->
         <span class="key">}</span>
-    <span class="value">]</span>,
-    <span class="key">totalItems</span>: <span class="value">Integer</span>, <!-- Total Number of Items -->
-    <span class="key">totalPrice</span>: <span class="value">BigDecimal</span> <!-- Total Price of the Cart -->
+    <span class="value">]</span>
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user shopping cart details.</td>
+                        <td>Stores order details and status.</td>
                     </tr>
+
                 </tbody>
             </table>
-            <!-- OrderService Section -->
-            <h2 id="orderservice">OrderService</h2>
-            <p>Processes orders, maintains order status, and provides order details.</p>
-            <ul class="links">
-                <li><a href="service-specs/orderservice/openapi.html" target="_blank">API Documentation</a></li>
-                <li><a href="service-specs/orderservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
-            </ul>
+
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -913,11 +993,10 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">order</span>: <span class="value">{</span>
+    <span class="key">order</span>: <span class="key">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">userId</span>: <span class="value">UUID</span>,
         <span class="key">status</span>: <span class="value">string</span>,
-        <span class="key">statusDetail</span>: <span class="value">string</span>,
         <span class="key">currency</span>: <span class="value">string</span>,
         <span class="key">totalAmount</span>: <span class="value">BigDecimal</span>,
         <span class="key">createdAt</span>: <span class="value">LocalDateTime</span>,
@@ -939,6 +1018,7 @@
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
     <span class="key">sourceService</span>: <span class="value">"orderservice"</span>
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -947,6 +1027,14 @@
 
                 </tbody>
             </table>
+
+            <!-- PaymentService Section -->
+            <h2 id="paymentservice">PaymentService</h2>
+            <p>Handles payment processing, manages payment methods, and maintains transaction records.</p>
+            <ul class="links">
+                <li><a href="service-specs/paymentservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/paymentservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
 
             <h3>Database Schemas</h3>
             <table>
@@ -970,54 +1058,37 @@
                             <pre>
 <span class="key">{</span>
     <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "seller") -->
+    <span class="key">role</span>: <span class="value">string</span> <!-- User Role (e.g., "admin", "seller") -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores user roles and related information within PaymentService.</td>
+                    </tr>
+                    <!-- payment-methods Collection -->
+                    <tr>
+                        <td>payment-methods</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">selector</span>: <span class="value">string</span>, <!-- Selector for Payment Method (e.g., "credit_card") -->
+    <span class="key">name</span>: <span class="value">string</span>, <!-- Name of the Payment Method -->
+    <span class="key">description</span>: <span class="value">string</span>, <!-- Description of the Payment Method -->
+    <span class="key">active</span>: <span class="value">boolean</span>, <!-- Indicates if the Payment Method is active -->
+    <span class="key">iconUrl</span>: <span class="value">string</span>, <!-- URL to the Payment Method Icon -->
+    <span class="key">paymentGatewayUrl</span>: <span class="value">string</span>, <!-- URL of the Payment Gateway -->
+    <span class="key">merchantId</span>: <span class="value">string</span>, <!-- Merchant ID for the Payment Gateway -->
+    <span class="key">merchantSecret</span>: <span class="value">string</span>, <!-- Merchant Secret for the Payment Gateway -->
     <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
     <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user roles and related information within OrderService.</td>
+                        <td>Stores details of available payment methods.</td>
                     </tr>
-                    <!-- Orders Collection -->
-                    <tr>
-                        <td>orders</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
-    <span class="key">status</span>: <span class="value">string</span>, <!-- Order Status (e.g., "pending", "shipped") -->
-    <span class="key">statusDetail</span>: <span class="value">string</span>, <!-- Detailed Status Information -->
-    <span class="key">currency</span>: <span class="value">string</span>, <!-- Currency Code -->
-    <span class="key">totalAmount</span>: <span class="value">BigDecimal</span>, <!-- Total Order Amount -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span>, <!-- Last Update Timestamp -->
-    <span class="key">paymenToken</span>: <span class="value">UUID</span>, <!-- Payment Token -->
-    <span class="key">paymentMethod</span>: <span class="value">string</span>, <!-- Payment Method (e.g., "credit_card") -->
-    <span class="key">orderItems</span>: <span class="value">[</span>
-        <span class="key">{</span>
-            <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
-            <span class="key">productTitle</span>: <span class="value">string</span>, <!-- Product Title -->
-            <span class="key">quantity</span>: <span class="value">Integer</span>, <!-- Quantity of Product -->
-            <span class="key">productPrice</span>: <span class="value">BigDecimal</span>, <!-- Price per Unit -->
-            <span class="key">totalPrice</span>: <span class="value">BigDecimal</span> <!-- Total Price for this Item -->
-        <span class="key">}</span>
-    <span class="value">]</span>
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores order details and status.</td>
-                    </tr>
-
                 </tbody>
             </table>
-            <!-- PaymentService Section -->
-            <h2 id="paymentservice">PaymentService</h2>
-            <p>Handles payment processing, manages payment methods, and maintains transaction records.</p>
-            <ul class="links">
-                <li><a href="service-specs/paymentservice/openapi.html" target="_blank">API Documentation</a></li>
-                <li><a href="service-specs/paymentservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
-            </ul>
+
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -1109,6 +1180,14 @@
                 </tbody>
             </table>
 
+            <!-- LicenseService Section -->
+            <h2 id="licenseservice">LicenseService</h2>
+            <p>Manages digital license generation, templates, and license distribution.</p>
+            <ul class="links">
+                <li><a href="service-specs/licenseservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/licenseservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
+
             <h3>Database Schemas</h3>
             <table>
                 <colgroup>
@@ -1135,41 +1214,46 @@
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user roles and related information within PaymentService.</td>
+                        <td>Stores user roles and related information within LicenseService.</td>
                     </tr>
-                    <!-- payment-methods Collection -->
+                    <!-- licenses Collection -->
                     <tr>
-                        <td>payment-methods</td>
+                        <td>licenses</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">serialNumber</span>: <span class="value">UUID</span>, <!-- Unique License Serial Number -->
+    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
+    <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
+    <span class="key">orderId</span>: <span class="value">UUID</span>, <!-- Reference to Order -->
+    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Duration of the License in Days -->
+    <span class="key">issuedAt</span>: <span class="value">Date</span>, <!-- License Issuance Timestamp -->
+    <span class="key">expiresAt</span>: <span class="value">Date</span>, <!-- License Expiration Timestamp -->
+    <span class="key">active</span>: <span class="value">boolean</span> <!-- Indicates if the License is Active -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Stores license details issued to users.</td>
+                    </tr>
+                    <!-- license-templates Collection -->
+                    <tr>
+                        <td>license-templates</td>
                         <td>
                             <pre>
 <span class="key">{</span>
     <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">selector</span>: <span class="value">string</span>, <!-- Selector for Payment Method (e.g., "credit_card") -->
-    <span class="key">name</span>: <span class="value">string</span>, <!-- Name of the Payment Method -->
-    <span class="key">description</span>: <span class="value">string</span>, <!-- Description of the Payment Method -->
-    <span class="key">active</span>: <span class="value">boolean</span>, <!-- Indicates if the Payment Method is active -->
-    <span class="key">iconUrl</span>: <span class="value">string</span>, <!-- URL to the Payment Method Icon -->
-    <span class="key">paymentGatewayUrl</span>: <span class="value">string</span>, <!-- URL of the Payment Gateway -->
-    <span class="key">merchantId</span>: <span class="value">string</span>, <!-- Merchant ID for the Payment Gateway -->
-    <span class="key">merchantSecret</span>: <span class="value">string</span>, <!-- Merchant Secret for the Payment Gateway -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Last Update Timestamp -->
+    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
+    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Default License Duration in Days -->
+    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Template Creation Timestamp -->
+    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Template Last Update Timestamp -->
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores details of available payment methods.</td>
+                        <td>Defines templates for different license types associated with products.</td>
                     </tr>
                 </tbody>
             </table>
 
-
-            <!-- LicenseService Section -->
-            <h2 id="licenseservice">LicenseService</h2>
-            <p>Manages digital license generation, templates, and license distribution.</p>
-            <ul class="links">
-                <li><a href="service-specs/licenseservice/openapi.html" target="_blank">API Documentation</a></li>
-                <li><a href="service-specs/licenseservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
-            </ul>
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -1266,6 +1350,13 @@
             </table>
 
 
+            <!-- NotificationService Section -->
+            <h2 id="notificationservice">NotificationService</h2>
+            <p>Handles sending notifications to users regarding their orders and other relevant activities.</p>
+            <ul class="links">
+                <li><a href="service-specs/notificationservice/openapi.html" target="_blank">API Documentation</a></li>
+                <li><a href="service-specs/notificationservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
+            </ul>
 
             <h3>Database Schemas</h3>
             <table>
@@ -1289,57 +1380,17 @@
                             <pre>
 <span class="key">{</span>
     <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">role</span>: <span class="value">string</span> <!-- User Role (e.g., "admin", "seller") -->
+    <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "user") -->
+    <span class="key">email</span>: <span class="value">string</span>, <!-- User Email Address -->
+    <span class="key">firstName</span>: <span class="value">string</span>, <!-- User First Name -->
+    <span class="key">lastName</span>: <span class="value">string</span> <!-- User Last Name -->
 <span class="key">}</span>
                             </pre>
                         </td>
-                        <td>Stores user roles and related information within LicenseService.</td>
-                    </tr>
-                    <!-- licenses Collection -->
-                    <tr>
-                        <td>licenses</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">serialNumber</span>: <span class="value">UUID</span>, <!-- Unique License Serial Number -->
-    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
-    <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
-    <span class="key">orderId</span>: <span class="value">UUID</span>, <!-- Reference to Order -->
-    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Duration of the License in Days -->
-    <span class="key">issuedAt</span>: <span class="value">Date</span>, <!-- License Issuance Timestamp -->
-    <span class="key">expiresAt</span>: <span class="value">Date</span>, <!-- License Expiration Timestamp -->
-    <span class="key">active</span>: <span class="value">boolean</span> <!-- Indicates if the License is Active -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores license details issued to users.</td>
-                    </tr>
-                    <!-- license-templates Collection -->
-                    <tr>
-                        <td>license-templates</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
-    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Default License Duration in Days -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Template Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Template Last Update Timestamp -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Defines templates for different license types associated with products.</td>
+                        <td>Stores user roles and personal information within NotificationService.</td>
                     </tr>
                 </tbody>
             </table>
-
-            <!-- NotificationService Section -->
-            <h2 id="notificationservice">NotificationService</h2>
-            <p>Handles sending notifications to users regarding their orders and other relevant activities.</p>
-            <ul class="links">
-                <li><a href="service-specs/notificationservice/openapi.html" target="_blank">API Documentation</a></li>
-                <li><a href="service-specs/notificationservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
-            </ul>
             <h3>Outgoing Events</h3>
             <table>
                 <colgroup>
@@ -1375,39 +1426,6 @@
                 </tbody>
             </table>
 
-            <h3>Database Schemas</h3>
-            <table>
-                <colgroup>
-                    <col style="width: 15%;">
-                    <col style="width: 50%;">
-                    <col style="width: 35%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Collection Name</th>
-                        <th>Schema</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Users Collection -->
-                    <tr>
-                        <td>users</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "user") -->
-    <span class="key">email</span>: <span class="value">string</span>, <!-- User Email Address -->
-    <span class="key">firstName</span>: <span class="value">string</span>, <!-- User First Name -->
-    <span class="key">lastName</span>: <span class="value">string</span> <!-- User Last Name -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Stores user roles and personal information within NotificationService.</td>
-                    </tr>
-                </tbody>
-            </table>
             <!-- TrackingService Section -->
             <h2 id="trackingservice">TrackingService</h2>
             <p>Monitors and records various events within the system, providing insights and analytics on user
@@ -1416,27 +1434,6 @@
                 <li><a href="service-specs/trackingservice/openapi.html" target="_blank">API Documentation</a></li>
                 <li><a href="service-specs/trackingservice/openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
-            <h3>Outgoing Events</h3>
-            <table>
-                <colgroup>
-                    <col style="width: 15%;">
-                    <col style="width: 50%;">
-                    <col style="width: 35%;">
-                </colgroup>
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Definition</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- No Outgoing Events Defined -->
-                    <tr>
-                        <td colspan="3">No outgoing events are defined for TrackingService.</td>
-                    </tr>
-                </tbody>
-            </table>
 
             <h3>Database Schemas</h3>
             <table>
@@ -1475,6 +1472,28 @@
                             </pre>
                         </td>
                         <td>Stores tracking events generated by various services within the system.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Outgoing Events</h3>
+            <table>
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 50%;">
+                    <col style="width: 35%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Definition</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- No Outgoing Events Defined -->
+                    <tr>
+                        <td colspan="3">No outgoing events are defined for TrackingService.</td>
                     </tr>
                 </tbody>
             </table>

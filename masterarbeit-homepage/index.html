@@ -1057,7 +1057,7 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">role</span>: <span class="value">string</span> <!-- User Role (e.g., "admin", "seller") -->
 <span class="key">}</span>
                             </pre>
@@ -1070,7 +1070,7 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">selector</span>: <span class="value">string</span>, <!-- Selector for Payment Method (e.g., "credit_card") -->
     <span class="key">name</span>: <span class="value">string</span>, <!-- Name of the Payment Method -->
     <span class="key">description</span>: <span class="value">string</span>, <!-- Description of the Payment Method -->
@@ -1110,23 +1110,14 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">order</span>: <span class="value">{</span>
-        <span class="key">id</span>: <span class="value">UUID</span>,
+    <span class="key">paymentPayload</span>: <span class="key">{</span>
         <span class="key">userId</span>: <span class="value">UUID</span>,
-        <span class="key">status</span>: <span class="value">string</span>,
-        <span class="key">currency</span>: <span class="value">string</span>,
-        <span class="key">totalAmount</span>: <span class="value">BigDecimal</span>,
-        <span class="key">createdAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">paymenToken</span>: <span class="value">UUID</span>,
-        <span class="key">paymentMethodSelector</span>: <span class="value">string</span>,
-        <span class="key">orderItems</span>: <span class="value">[</span>
+        <span class="key">orderId</span>: <span class="value">UUID</span>,
+        <span class="key">paidItemPayloads</span>: <span class="key">[</span>
             <span class="key">{</span>
                 <span class="key">productId</span>: <span class="value">UUID</span>,
                 <span class="key">productTitle</span>: <span class="value">string</span>,
-                <span class="key">quantity</span>: <span class="value">Integer</span>,
-                <span class="key">productPrice</span>: <span class="value">BigDecimal</span>,
-                <span class="key">totalPrice</span>: <span class="value">BigDecimal</span>
+                <span class="key">quantity</span>: <span class="value">Integer</span>
             <span class="key">}</span>
         <span class="value">]</span>
     <span class="key">}</span>,
@@ -1134,7 +1125,8 @@
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"paymentservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"paymentservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1146,23 +1138,14 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">order</span>: <span class="value">{</span>
-        <span class="key">id</span>: <span class="value">UUID</span>,
+    <span class="key">paymentPayload</span>: <span class="key">{</span>
         <span class="key">userId</span>: <span class="value">UUID</span>,
-        <span class="key">status</span>: <span class="value">string</span>,
-        <span class="key">currency</span>: <span class="value">string</span>,
-        <span class="key">totalAmount</span>: <span class="value">BigDecimal</span>,
-        <span class="key">createdAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">paymenToken</span>: <span class="value">UUID</span>,
-        <span class="key">paymentMethodSelector</span>: <span class="value">string</span>,
-        <span class="key">orderItems</span>: <span class="value">[</span>
+        <span class="key">orderId</span>: <span class="value">UUID</span>,
+        <span class="key">paidItemPayloads</span>: <span class="key">[</span>
             <span class="key">{</span>
                 <span class="key">productId</span>: <span class="value">UUID</span>,
                 <span class="key">productTitle</span>: <span class="value">string</span>,
-                <span class="key">quantity</span>: <span class="value">Integer</span>,
-                <span class="key">productPrice</span>: <span class="value">BigDecimal</span>,
-                <span class="key">totalPrice</span>: <span class="value">BigDecimal</span>
+                <span class="key">quantity</span>: <span class="value">Integer</span>
             <span class="key">}</span>
         <span class="value">]</span>
     <span class="key">}</span>,
@@ -1171,7 +1154,8 @@
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"paymentservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"paymentservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1209,12 +1193,28 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">role</span>: <span class="value">string</span> <!-- User Role (e.g., "admin", "seller") -->
 <span class="key">}</span>
                             </pre>
                         </td>
                         <td>Stores user roles and related information within LicenseService.</td>
+                    </tr>
+                    <!-- license-templates Collection -->
+                    <tr>
+                        <td>license-templates</td>
+                        <td>
+                            <pre>
+<span class="key">{</span>
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
+    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Default License Duration in Days -->
+    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Template Creation Timestamp -->
+    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Template Last Update Timestamp -->
+<span class="key">}</span>
+                            </pre>
+                        </td>
+                        <td>Defines templates for different license types associated with products.</td>
                     </tr>
                     <!-- licenses Collection -->
                     <tr>
@@ -1224,32 +1224,16 @@
 <span class="key">{</span>
     <span class="key">serialNumber</span>: <span class="value">UUID</span>, <!-- Unique License Serial Number -->
     <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
+    <span class="key">productTitle</span>: <span class="value">string</span>, <!-- Title of Product -->
     <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
     <span class="key">orderId</span>: <span class="value">UUID</span>, <!-- Reference to Order -->
     <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Duration of the License in Days -->
     <span class="key">issuedAt</span>: <span class="value">Date</span>, <!-- License Issuance Timestamp -->
     <span class="key">expiresAt</span>: <span class="value">Date</span>, <!-- License Expiration Timestamp -->
-    <span class="key">active</span>: <span class="value">boolean</span> <!-- Indicates if the License is Active -->
 <span class="key">}</span>
                             </pre>
                         </td>
                         <td>Stores license details issued to users.</td>
-                    </tr>
-                    <!-- license-templates Collection -->
-                    <tr>
-                        <td>license-templates</td>
-                        <td>
-                            <pre>
-<span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
-    <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
-    <span class="key">licenseDuration</span>: <span class="value">Integer</span>, <!-- Default License Duration in Days -->
-    <span class="key">createdAt</span>: <span class="value">Date</span>, <!-- Template Creation Timestamp -->
-    <span class="key">updatedAt</span>: <span class="value">Date</span> <!-- Template Last Update Timestamp -->
-<span class="key">}</span>
-                            </pre>
-                        </td>
-                        <td>Defines templates for different license types associated with products.</td>
                     </tr>
                 </tbody>
             </table>
@@ -1276,7 +1260,7 @@
                             <pre>
 <span class="key">{</span>
     <span class="key">orderId</span>: <span class="value">UUID</span>,
-    <span class="key">licenses</span>: <span class="value">[</span>
+    <span class="key">licenses</span>: <span class="key">[</span>
         <span class="key">{</span>
             <span class="key">serialNumber</span>: <span class="value">UUID</span>,
             <span class="key">productId</span>: <span class="value">UUID</span>,
@@ -1284,15 +1268,15 @@
             <span class="key">orderId</span>: <span class="value">UUID</span>,
             <span class="key">licenseDuration</span>: <span class="value">Integer</span>,
             <span class="key">issuedAt</span>: <span class="value">LocalDateTime</span>,
-            <span class="key">expiresAt</span>: <span class="value">LocalDateTime</span>,
-            <span class="key">active</span>: <span class="value">boolean</span>
+            <span class="key">expiresAt</span>: <span class="value">LocalDateTime</span>
         <span class="key">}</span>
-    <span class="value">]</span>,
+    <span class="key">]</span>,
     <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1309,14 +1293,14 @@
         <span class="key">productId</span>: <span class="value">UUID</span>,
         <span class="key">licenseDuration</span>: <span class="value">Integer</span>,
         <span class="key">createdAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">timeStamp</span>: <span class="value">LocalDateTime</span>
+        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>
     <span class="key">}</span>,
     <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1328,19 +1312,19 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">licenseTemplate</span>: <span class="value">{</span>
+    <span class="key">licenseTemplate</span>: <span class="key">{</span>
         <span class="key">id</span>: <span class="value">UUID</span>,
         <span class="key">productId</span>: <span class="value">UUID</span>,
         <span class="key">licenseDuration</span>: <span class="value">Integer</span>,
         <span class="key">createdAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>,
-        <span class="key">timeStamp</span>: <span class="value">LocalDateTime</span>
+        <span class="key">updatedAt</span>: <span class="value">LocalDateTime</span>
     <span class="key">}</span>,
     <span class="key">timestamp</span>: <span class="value">LocalDateTime</span>,
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"licenseservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1379,7 +1363,7 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">role</span>: <span class="value">string</span>, <!-- User Role (e.g., "admin", "user") -->
     <span class="key">email</span>: <span class="value">string</span>, <!-- User Email Address -->
     <span class="key">firstName</span>: <span class="value">string</span>, <!-- User First Name -->
@@ -1417,7 +1401,8 @@
     <span class="key">sessionId</span>: <span class="value">UUID</span>,
     <span class="key">userId</span>: <span class="value">UUID</span>,
     <span class="key">userEmail</span>: <span class="value">string</span>,
-    <span class="key">sourceService</span>: <span class="value">"notificationservice"</span>
+    <span class="key">sourceService</span>: <span class="value">"notificationservice"</span>,
+    <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>
 <span class="key">}</span>
                             </pre>
                         </td>
@@ -1456,16 +1441,17 @@
                         <td>
                             <pre>
 <span class="key">{</span>
-    <span class="key">_id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
+    <span class="key">id</span>: <span class="value">UUID</span>, <!-- Unique Identifier -->
     <span class="key">eventType</span>: <span class="value">string</span>, <!-- Type of the Event (e.g., "login", "purchase") -->
     <span class="key">body</span>: <span class="value">string</span>, <!-- Event Payload or Details -->
-    <span class="key">metadata</span>: <span class="value">{
+    <span class="key">metadata</span>: <span class="key">{
         <span class="key">userId</span>: <span class="value">UUID</span>, <!-- Reference to User -->
         <span class="key">productId</span>: <span class="value">UUID</span>, <!-- Reference to Product -->
         <span class="key">orderId</span>: <span class="value">UUID</span>, <!-- Reference to Order -->
         <span class="key">userMail</span>: <span class="value">string</span>, <!-- User's Email Address -->
-        <span class="key">sesionId</span>: <span class="value">UUID</span>, <!-- Session Identifier -->
+        <span class="key">sessionId</span>: <span class="value">UUID</span>, <!-- Session Identifier -->
         <span class="key">sourceService</span>: <span class="value">string</span>, <!-- Originating Service (e.g., "cartservice") -->
+        <span class="key">requestCorrelationId</span>: <span class="value">UUID</span>, <!-- Reference to Order -->
         <span class="key">timestamp</span>: <span class="value">Date</span> <!-- Event Timestamp -->
     <span class="key">}</span>
 <span class="key">}</span>

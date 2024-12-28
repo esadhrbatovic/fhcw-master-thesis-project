@@ -8,32 +8,45 @@ info:
     Provides admin endpoints to list and filter recorded events.
 
 servers:
-  - url: https://trackingservice.yourshop.com
-    description: Production server
-  - url: https://trackingservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8089
+    description: local dev
 
 paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
   /events:
     get:
-      summary: List recorded events (admin only)
+      summary: ADMIN ONLY - List recorded events
       operationId: listEvents
       tags:
         - Events
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
         - $ref: '#/components/parameters/EventTypeQueryParam'
-        - $ref: '#/components/parameters/SourceServiceQueryParam'
-        - $ref: '#/components/parameters/UserIdQueryParam'
-        - $ref: '#/components/parameters/ProductIdQueryParam'
-        - $ref: '#/components/parameters/OrderIdQueryParam'
-        - $ref: '#/components/parameters/OccurredAfterQueryParam'
-        - $ref: '#/components/parameters/OccurredBeforeQueryParam'
-        - $ref: '#/components/parameters/SortQueryParam'
+        - $ref: '#/components/parameters/EventSourceServiceQueryParam'
+        - $ref: '#/components/parameters/EventUserIdQueryParam'
+        - $ref: '#/components/parameters/EventUserEmailQueryParam'
+        - $ref: '#/components/parameters/EventSessionIdQueryParam'
+        - $ref: '#/components/parameters/EventProductIdQueryParam'
+        - $ref: '#/components/parameters/EventOrderIdQueryParam'
+        - $ref: '#/components/parameters/EventOccurredAfterQueryParam'
+        - $ref: '#/components/parameters/EventOccurredBeforeQueryParam'
+        - $ref: '#/components/parameters/EventRequestCorrelationIdQueryParam'
+        - $ref: '#/components/parameters/EventSortQueryParam'
       responses:
         '200':
           description: Events retrieved successfully
@@ -54,15 +67,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /events/{event_id}:
+  /events/{eventId}:
     get:
-      summary: Get details of a specific event (admin only)
+      summary: ADMIN ONLY - Get details of a specific event
       operationId: getEventById
       tags:
         - Events
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/EventIdPathParam'
       responses:
@@ -71,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/EventResponse'
+                $ref: '#/components/schemas/Event'
         '401':
           description: Unauthorized - Invalid or missing token
           content:
@@ -97,15 +109,10 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     EventIdPathParam:
-      name: event_id
+      name: eventId
       in: path
       description: UUID of the event
       required: true
@@ -136,7 +143,7 @@ components:
         default: 10
 
     EventTypeQueryParam:
-      name: event_type
+      name: eventType
       in: query
       description: Filter events by event type
       required: false
@@ -144,8 +151,8 @@ components:
         type: string
         example: 'OrderCreated'
 
-    SourceServiceQueryParam:
-      name: source_service
+    EventSourceServiceQueryParam:
+      name: sourceService
       in: query
       description: Filter events by source service name
       required: false
@@ -153,8 +160,8 @@ components:
         type: string
         example: 'OrderService'
 
-    UserIdQueryParam:
-      name: user_id
+    EventUserIdQueryParam:
+      name: userId
       in: query
       description: Filter events by user ID
       required: false
@@ -163,8 +170,8 @@ components:
         format: uuid
         example: 456e7890-e89b-12d3-a456-426614174002
 
-    ProductIdQueryParam:
-      name: product_id
+    EventProductIdQueryParam:
+      name: productId
       in: query
       description: Filter events by product ID
       required: false
@@ -173,8 +180,8 @@ components:
         format: uuid
         example: 321e4567-e89b-12d3-a456-426614174000
 
-    OrderIdQueryParam:
-      name: order_id
+    EventOrderIdQueryParam:
+      name: orderId
       in: query
       description: Filter events by order ID
       required: false
@@ -183,8 +190,26 @@ components:
         format: uuid
         example: 789e4567-e89b-12d3-a456-426614174000
 
-    OccurredAfterQueryParam:
-      name: occurred_after
+    EventSessionIdQueryParam:
+      name: sessionId
+      in: query
+      description: Filter events by session ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 789e4567-e89b-12d3-a456-426614174000
+
+    EventUserEmailQueryParam:
+      name: userEmail
+      in: query
+      description: Filter events by user email
+      required: false
+      schema:
+        type: string
+
+    EventOccurredAfterQueryParam:
+      name: occurredAfter
       in: query
       description: Filter events that occurred after a specific date and time
       required: false
@@ -193,8 +218,8 @@ components:
         format: date-time
         example: '2023-10-01T00:00:00Z'
 
-    OccurredBeforeQueryParam:
-      name: occurred_before
+    EventOccurredBeforeQueryParam:
+      name: occurredBefore
       in: query
       description: Filter events that occurred before a specific date and time
       required: false
@@ -203,69 +228,79 @@ components:
         format: date-time
         example: '2023-10-31T23:59:59Z'
 
-    SortQueryParam:
+    EventRequestCorrelationIdQueryParam:
+      name: requestCorrelationId
+      in: query
+      description: Filter events by request correlation ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
+    EventSortQueryParam:
       name: sort
       in: query
-      description: Sort order (e.g., 'date_asc', 'date_desc')
+      description: Sort order (e.g., 'dateAsc', 'dateDesc')
       required: false
       schema:
         type: string
         enum:
-          - date_asc
-          - date_desc
-        example: 'date_desc'
+          - dateAsc
+          - dateDesc
+        example: 'dateDesc'
 
   schemas:
     Event:
       type: object
       properties:
-        event_id:
+        eventId:
           type: string
           format: uuid
           example: 789e1234-e89b-12d3-a456-426614174001
-        event_type:
+        eventType:
           type: string
           description: Type of the event
           example: 'OrderCreated'
-        source_service:
-          type: string
-          description: Name of the service that generated the event
-          example: 'OrderService'
-        occurred_at:
-          type: string
-          format: date-time
-          description: Timestamp when the event occurred
-          example: '2023-10-17T09:00:00Z'
         body:
           type: string
           description: Event payload (usually a JSON string)
-          example: '{"order_id": "789e4567-e89b-12d3-a456-426614174000", "user_id": "456e7890-e89b-12d3-a456-426614174002"}'
+          example: '{"orderId": "789e4567-e89b-12d3-a456-426614174000", "userId": "456e7890-e89b-12d3-a456-426614174002"}'
         metadata:
           type: object
           description: Additional metadata about the event
           properties:
-            user_id:
+            userId:
               type: string
               format: uuid
               example: '456e7890-e89b-12d3-a456-426614174002'
-            product_id:
+            productId:
               type: string
               format: uuid
               example: '321e4567-e89b-12d3-a456-426614174000'
-            order_id:
+            orderId:
               type: string
               format: uuid
               example: '789e4567-e89b-12d3-a456-426614174000'
-      required:
-        - event_id
-        - event_type
-        - source_service
-        - occurred_at
-        - body
+            userMail:
+              type: string
+            sessionId:
+              type: string
+              format: uuid
+            sourceService:
+              type: string
+              description: Name of the service that generated the event
+              example: 'OrderService'
+            requestCorrelationId:
+              type: string
+              format: uuid
+              example: '789e4567-e89b-12d3-a456-426614174000'
+            timestamp:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred
+              example: '2023-10-17T09:00:00Z'
 
-    EventResponse:
-      allOf:
-        - $ref: '#/components/schemas/Event'
 
     EventListResponse:
       type: object
@@ -277,13 +312,13 @@ components:
         pagination:
           type: object
           properties:
-            current_page:
+            currentPage:
               type: integer
               example: 1
-            total_pages:
+            totalPages:
               type: integer
               example: 5
-            total_items:
+            totalItems:
               type: integer
               example: 50
             limit:
@@ -295,13 +330,14 @@ components:
       properties:
         error:
           type: string
-          example: 'Unauthorized access.'
         details:
           type: string
-          example: 'You are not authorized to access this resource.'
 
-security:
-  - bearerAuth: []
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
 
 tags:
   - name: Events

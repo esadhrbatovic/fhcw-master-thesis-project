@@ -4,7 +4,7 @@ info:
   version: 1.0.0
   description: |
     API specification for the UserService of the e-shop application.
-    Manages user data and personal information, including email, password, name, address, and phone number.
+    Manages user data and personal information, including email, name, address, and phone number.
 
 servers:
   - url: localhost:8082
@@ -26,19 +26,19 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /users:
     get:
-      summary: List all users with optional search and pagination
+      security:
+        - bearerAuth: []
+      summary: ADMIN ONLY - List all users with optional search and pagination
       operationId: listUsers
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
-        - $ref: '#/components/parameters/SearchQueryParam'
-        - $ref: '#/components/parameters/CreatedAfterQueryParam'
-        - $ref: '#/components/parameters/CreatedBeforeQueryParam'
-        - $ref: '#/components/parameters/SortQueryParam'
+        - $ref: '#/components/parameters/UserSearchQueryParam'
+        - $ref: '#/components/parameters/UserCreatedAfterQueryParam'
+        - $ref: '#/components/parameters/UserCreatedBeforeQueryParam'
+        - $ref: '#/components/parameters/UserSortQueryParam'
       responses:
         '200':
           description: Users retrieved successfully
@@ -58,15 +58,21 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/{id}:
     get:
+      security:
+        - bearerAuth: []
       summary: Get a user's profile
       operationId: getUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       responses:
@@ -96,12 +102,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
+      security:
+        - bearerAuth: []
       summary: Update a user's profile
       operationId: updateUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       requestBody:
@@ -144,12 +150,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete a user
       operationId: deleteUser
       tags:
         - User
-      security:
-        - bearerAuth: []
       parameters:
         - $ref: '#/components/parameters/UserIdPathParam'
       responses:
@@ -217,7 +223,7 @@ components:
         maximum: 100
         default: 10
 
-    SearchQueryParam:
+    UserSearchQueryParam:
       name: search
       in: query
       description: Search term to filter users by name or email
@@ -226,7 +232,7 @@ components:
         type: string
         example: "john.doe@example.com"
 
-    CreatedAfterQueryParam:
+    UserCreatedAfterQueryParam:
       name: createdAfter
       in: query
       description: Filter users created after a specific date
@@ -236,7 +242,7 @@ components:
         format: date-time
         example: '2023-01-01T00:00:00Z'
 
-    CreatedBeforeQueryParam:
+    UserCreatedBeforeQueryParam:
       name: createdBefore
       in: query
       description: Filter users created before a specific date
@@ -246,7 +252,7 @@ components:
         format: date-time
         example: '2023-12-31T23:59:59Z'
 
-    SortQueryParam:
+    UserSortQueryParam:
       name: sort
       in: query
       description: Sort order (e.g., 'nameAsc', 'nameDesc', 'dateAsc', 'dateDesc')
@@ -365,22 +371,14 @@ components:
       properties:
         error:
           type: string
-          example: Unauthorized access.
         details:
           type: string
-          example: You are not authorized to access this resource.
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: User

@@ -8,10 +8,9 @@ info:
     Exposes endpoints to view orders and order details.
 
 servers:
-  - url: https://orderservice.yourshop.com
-    description: Production server
-  - url: https://orderservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8085
+    description: local dev
+
 
 paths:
   /health:
@@ -29,18 +28,17 @@ paths:
                 $ref: '#/components/schemas/SuccessResponse'
   /orders:
     get:
-      summary: Get a list of all orders (admin only)
+      summary: ADMIN ONLY - Get a list of all orders (admin only)
       operationId: getAllOrders
       tags:
         - Orders
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
-        - $ref: '#/components/parameters/StatusQueryParam'
-        - $ref: '#/components/parameters/SortQueryParam'
+        - $ref: '#/components/parameters/OrderStatusQueryParam'
+        - $ref: '#/components/parameters/OrderSortQueryParam'
       responses:
         '200':
           description: Orders retrieved successfully
@@ -63,7 +61,7 @@ paths:
 
   /orders/{orderId}:
     get:
-      summary: Get details of a specific order
+      summary: ADMIN ONLY - Get details of a specific order
       operationId: getOrderById
       tags:
         - Orders
@@ -106,11 +104,11 @@ paths:
       security:
         - bearerAuth: []
       parameters:
-        - $ref: '#/components/parameters/UserIdPathParam'
+        - $ref: '#/components/parameters/OrderUserIdPathParam'
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
-        - $ref: '#/components/parameters/StatusQueryParam'
-        - $ref: '#/components/parameters/SortQueryParam'
+        - $ref: '#/components/parameters/OrderStatusQueryParam'
+        - $ref: '#/components/parameters/OrderSortQueryParam'
       responses:
         '200':
           description: User's orders retrieved successfully
@@ -143,80 +141,75 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
-    OrderIdPathParam:
-      name: orderId
-      in: path
-      description: UUID of the order
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 789e4567-e89b-12d3-a456-426614174000
+      OrderIdPathParam:
+        name: orderId
+        in: path
+        description: UUID of the order
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 789e4567-e89b-12d3-a456-426614174000
 
-    UserIdPathParam:
-      name: userId
-      in: path
-      description: UUID of the user
-      required: true
-      schema:
-        type: string
-        format: uuid
-        example: 456e7890-e89b-12d3-a456-426614174002
+      OrderUserIdPathParam:
+        name: userId
+        in: path
+        description: UUID of the user
+        required: true
+        schema:
+          type: string
+          format: uuid
+          example: 456e7890-e89b-12d3-a456-426614174002
 
-    PageQueryParam:
-      name: page
-      in: query
-      description: Page number for pagination (default is 1)
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
+      PageQueryParam:
+        name: page
+        in: query
+        description: Page number for pagination (default is 1)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
 
-    LimitQueryParam:
-      name: limit
-      in: query
-      description: Number of items per page (default is 10)
-      required: false
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 10
+      LimitQueryParam:
+        name: limit
+        in: query
+        description: Number of items per page (default is 10)
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 10
 
-    StatusQueryParam:
-      name: status
-      in: query
-      description: Filter orders by status
-      required: false
-      schema:
-        type: string
-        enum:
-          - OPEN
-          - PAYMENT_COMPLETED
-          - PAYMENT_FAILED
-          - LICENSES_GENERATED
-          - COMPLETED
-        example: "Completed"
+      OrderStatusQueryParam:
+        name: status
+        in: query
+        description: Filter orders by status
+        required: false
+        schema:
+          type: string
+          enum:
+            - OPEN
+            - PAYMENT_COMPLETED
+            - PAYMENT_FAILED
+            - LICENSES_GENERATED
+            - COMPLETED
+          example: "Completed"
 
-    SortQueryParam:
-      name: sort
-      in: query
-      description: Sort order (e.g., 'date_asc', 'date_desc')
-      required: false
-      schema:
-        type: string
-        enum:
-          - date_asc
-          - date_desc
-        example: 'date_desc'
+      OrderSortQueryParam:
+        name: sort
+        in: query
+        description: Sort order (e.g., 'date_asc', 'date_desc')
+        required: false
+        schema:
+          type: string
+          enum:
+            - date_asc
+            - date_desc
+          example: 'date_desc'
 
   schemas:
     Order:
@@ -336,22 +329,14 @@ components:
       properties:
         error:
           type: string
-          example: "Unauthorized access."
         details:
           type: string
-          example: "You are not authorized to access this resource."
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: Orders

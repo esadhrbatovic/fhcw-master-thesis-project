@@ -8,10 +8,8 @@ info:
     Provides admin endpoints to manage license templates and view generated licenses.
 
 servers:
-  - url: https://licenseservice.yourshop.com
-    description: Production server
-  - url: https://licenseservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8087
+    description: local dev
 
 paths:
   /health:
@@ -27,15 +25,15 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SuccessResponse'
+
   /license-templates:
     get:
-      summary: List all license templates
+      summary: ADMIN ONLY - List all license templates
       operationId: listLicenseTemplates
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       responses:
         '200':
           description: License templates retrieved successfully
@@ -56,13 +54,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
     post:
-      summary: Create a new license template (admin only)
+      summary: ADMIN ONLY - Create a new license template
       operationId: createLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       requestBody:
         description: License template data to create
         required: true
@@ -98,15 +95,14 @@ paths:
 
   /license-templates/{productId}:
     get:
-      summary: Get license template by product ID
+      summary: ADMIN ONLY - Get license template by product ID
       operationId: getLicenseTemplateByProductId
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
-        - $ref: '#/components/parameters/ProductIdPathParam'
+        - $ref: '#/components/parameters/LicenseProductIdPathParam'
       responses:
         '200':
           description: License template retrieved successfully
@@ -134,15 +130,14 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Create or update license template for a product
+      summary: ADMIN ONLY - Create or update license template for a product
       operationId: updateLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
-        - $ref: '#/components/parameters/ProductIdPathParam'
+        - $ref: '#/components/parameters/LicenseProductIdPathParam'
       requestBody:
         description: License template data
         required: true
@@ -184,15 +179,14 @@ paths:
 
 
     delete:
-      summary: Delete a license template (admin only)
+      summary: ADMIN ONLY - Delete a license template
       operationId: deleteLicenseTemplate
       tags:
         - License Templates
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
-        - $ref: '#/components/parameters/ProductIdPathParam'
+        - $ref: '#/components/parameters/LicenseProductIdPathParam'
       responses:
         '200':
           description: License template deleted successfully
@@ -221,19 +215,18 @@ paths:
 
   /licenses:
     get:
-      summary: List all generated licenses
+      summary: ADMIN ONLY - List all generated licenses
       operationId: listLicenses
       tags:
         - Licenses
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PageQueryParam'
         - $ref: '#/components/parameters/LimitQueryParam'
-        - $ref: '#/components/parameters/UserIdQueryParam'
-        - $ref: '#/components/parameters/ProductIdQueryParam'
-        - $ref: '#/components/parameters/SortQueryParam'
+        - $ref: '#/components/parameters/LicenseUserIdQueryParam'
+        - $ref: '#/components/parameters/LicenseProductIdQueryParam'
+        - $ref: '#/components/parameters/LicenseSortQueryParam'
       responses:
         '200':
           description: Licenses retrieved successfully
@@ -262,7 +255,6 @@ paths:
         - Licenses
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/SerialNumberPathParam'
       responses:
@@ -297,14 +289,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
-    ProductIdPathParam:
+    LicenseProductIdPathParam:
       name: productId
       in: path
       description: UUID of the product
@@ -345,7 +332,7 @@ components:
         maximum: 100
         default: 10
 
-    UserIdQueryParam:
+    LicenseUserIdQueryParam:
       name: userId
       in: query
       description: Filter licenses by user ID
@@ -355,7 +342,7 @@ components:
         format: uuid
         example: 456e7890-e89b-12d3-a456-426614174002
 
-    ProductIdQueryParam:
+    LicenseProductIdQueryParam:
       name: productId
       in: query
       description: Filter licenses by product ID
@@ -365,7 +352,7 @@ components:
         format: uuid
         example: 321e4567-e89b-12d3-a456-426614174000
 
-    SortQueryParam:
+    LicenseSortQueryParam:
       name: sort
       in: query
       description: Sort order (e.g., 'dateAsc', 'dateDesc')
@@ -440,6 +427,8 @@ components:
           type: string
           format: uuid
           example: 321e4567-e89b-12d3-a456-426614174000
+        productTitle:
+          type: string
         licenseDuration:
           type: integer
           description: Duration of the license in days (0 for perpetual)
@@ -452,13 +441,6 @@ components:
           type: string
           format: date-time
           example: '2024-10-17T09:00:00Z'
-        status:
-          type: string
-          enum:
-            - active
-            - expired
-            - revoked
-          example: 'active'
       required:
         - serialNumber
         - userId
@@ -510,35 +492,25 @@ components:
               type: integer
               example: 10
 
-    ErrorResponse:
-      type: object
-      properties:
-        error:
-          type: string
-          example: 'Invalid input data.'
-        details:
-          type: string
-          example: 'License duration must be a non-negative integer.'
-
     DeleteLicenseTemplateResponse:
       type: object
       properties:
         message:
           type: string
-          example: "License template deleted successfully."
-      required:
-        - message
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: License Templates

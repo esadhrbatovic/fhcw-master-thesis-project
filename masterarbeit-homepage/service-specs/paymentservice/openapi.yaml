@@ -8,10 +8,9 @@ info:
     Provides endpoints for users to retrieve available payment methods and admin endpoints to manage payment methods.
 
 servers:
-  - url: https://paymentservice.yourshop.com
-    description: Production server
-  - url: https://paymentservice.staging.yourshop.com
-    description: Staging server
+  - url: localhost:8086
+    description: local dev
+
 
 paths:
   /health:
@@ -48,15 +47,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
     post:
-      summary: Create a new payment method (admin only)
+      summary: ADMIN ONLY -  Create a new payment method
       operationId: createPaymentMethod
       tags:
         - Payment Methods
       security:
         - bearerAuth: []
-        - adminAuth: []
       requestBody:
         description: Payment method data to create
         required: true
@@ -92,13 +96,12 @@ paths:
 
   /payment-methods/{id}:
     get:
-      summary: Get details of a payment method (admin only)
+      summary: ADMIN ONLY - Get details of a payment method
       operationId: getPaymentMethodById
       tags:
         - Payment Methods
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PaymentMethodIdPathParam'
       responses:
@@ -128,13 +131,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     put:
-      summary: Update a payment method (admin only)
+      summary: ADMIN ONLY - Update a payment method
       operationId: updatePaymentMethod
       tags:
         - Payment Methods
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PaymentMethodIdPathParam'
       requestBody:
@@ -177,13 +179,12 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
     delete:
-      summary: Delete a payment method (admin only)
+      summary: ADMIN ONLY - Delete a payment method
       operationId: deletePaymentMethod
       tags:
         - Payment Methods
       security:
         - bearerAuth: []
-        - adminAuth: []
       parameters:
         - $ref: '#/components/parameters/PaymentMethodIdPathParam'
       responses:
@@ -218,11 +219,6 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-    adminAuth:
-      type: apiKey
-      in: header
-      name: X-Admin-Token
-      description: Token for admin access
 
   parameters:
     PaymentMethodIdPathParam:
@@ -389,21 +385,14 @@ components:
       properties:
         error:
           type: string
-          example: "Invalid input data."
         details:
           type: string
-          example: "The name field is required."
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
-
-security:
-  - bearerAuth: []
 
 tags:
   - name: Payment Methods

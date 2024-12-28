@@ -36,7 +36,7 @@ paths:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
       responses:
-        '201':
+        '200':
           description: User registered successfully
           content:
             application/json:
@@ -78,6 +78,8 @@ paths:
 
   /auth/credentials:
     put:
+      security:
+        - bearerAuth: []
       summary: Update user credentials
       operationId: updateCredentials
       tags:
@@ -102,15 +104,29 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /auth/credentials/{id}:
     put:
-      summary: ADMIN - Update user credentials
+      security:
+        - bearerAuth: []
+      summary: ADMIN ONLY - Update user credentials
       operationId: adminUpdateCredentials
       tags:
         - Credentials
       parameters:
-        - $ref: '#/components/parameters/UserIdPathParam'
+        - $ref: '#/components/parameters/AuthUserIdPathParam'
       requestBody:
         description: User login credentials
         required: true
@@ -131,9 +147,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
-
   securitySchemes:
     bearerAuth:
       type: http
@@ -141,7 +168,7 @@ components:
       bearerFormat: JWT
 
   parameters:
-    UserIdPathParam:
+    AuthUserIdPathParam:
       name: id
       in: path
       description: UUID of the user
@@ -198,6 +225,9 @@ components:
           type: string
         password:
           type: string
+      required:
+        - email
+        - password
 
     AdminUpdateCredentialsRequest:
       type: object
@@ -206,7 +236,6 @@ components:
           type: string
         password:
           type: string
-
 
     UserUpdateCredentialsRequest:
       type: object
@@ -243,7 +272,7 @@ components:
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         message:
           type: string
-          description: Access token expiry time in seconds
+          description: Successful login response message
           example: "Login successful"
 
     UpdateCredentialsResponse:
@@ -255,7 +284,7 @@ components:
           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
         message:
           type: string
-          description: Access token expiry time in seconds
+          description: Successful update of user credentials
           example: "Credentials updated successfuly"
 
     SuccessResponse:
@@ -263,21 +292,15 @@ components:
       properties:
         message:
           type: string
-          description: Access token expiry time in seconds
-          example: "Credentials updated successfuly"
 
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-          example: Invalid credentials.
         details:
           type: string
-          example: The password provided does not meet the security requirements.
 
-security:
-  - bearerAuth: []
 
 tags:
   - name: Authentication

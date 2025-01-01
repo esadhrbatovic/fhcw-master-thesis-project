@@ -1,0 +1,94 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("io.micronaut.application") version "4.4.4"
+    id("io.micronaut.test-resources") version "4.4.4"
+    id("io.micronaut.aot") version "4.4.4"
+    id("io.micronaut.openapi") version "4.4.4"
+}
+
+version = "0.1"
+group = "com.hrbat.micronaut.master.authservice"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+    annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
+    implementation("io.micronaut.data:micronaut-data-mongodb")
+    runtimeOnly("org.mongodb:mongodb-driver-sync")
+    implementation("io.micronaut.kafka:micronaut-kafka")
+    implementation("io.micronaut.serde:micronaut-serde-jackson")
+    compileOnly("io.micronaut:micronaut-http-client")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    testImplementation("io.micronaut:micronaut-http-client")
+    runtimeOnly("io.micronaut.security:micronaut-security-jwt")
+
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+    //for passwordencoder
+    implementation("commons-logging:commons-logging:1.3.4")
+
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("org.springframework.security:spring-security-crypto:6.2.0")
+}
+
+
+application {
+    mainClass = "com.hrbat.micronaut.master.authservice.Application"
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("21")
+    targetCompatibility = JavaVersion.toVersion("21")
+}
+
+
+graalvmNative.toolchainDetection = false
+
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    openapi {
+        server(file("src/main/resources/openapi.yaml")) {
+            apiPackageName = "com.hrbat.master.micronaut.api"
+            modelPackageName = "com.hrbat.master.micronaut.model"
+            useReactive = false
+            useAuth = false
+        }
+    }
+    processing {
+        incremental(true)
+        annotations("com.hrbat.micronaut.*")
+    }
+    testResources {
+        sharedServer = true
+    }
+    aot {
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        optimizeServiceLoading = false
+        convertYamlToJava = false
+        precomputeOperations = true
+        cacheEnvironment = true
+        optimizeClassLoading = true
+        deduceEnvironment = true
+        optimizeNetty = true
+        replaceLogbackXml = true
+    }
+}
+
+
+tasks.named("dockerfileNative") {
+    jdkVersion = "21"
+}
+
+tasks.named("dockerBuildNative") {
+    images = ["esadh/micronaut-authservice"]
+}
+
+tasks.named("optimizedDockerBuildNative") {
+    images = ["esadh/micronaut-authservice"]
+}

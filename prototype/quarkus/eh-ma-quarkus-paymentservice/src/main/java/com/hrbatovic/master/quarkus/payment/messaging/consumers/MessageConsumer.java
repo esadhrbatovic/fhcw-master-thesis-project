@@ -42,8 +42,7 @@ public class MessageConsumer {
         executor.runAsync(()->{
             PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.find("selector", orderCreatedEvent.getOrder().getPaymentMethod()).firstResult();
 
-            //TODO: define constant for error messages
-            if(paymentMethodEntity == null){
+            if(paymentMethodEntity == null || paymentMethodEntity.getActive().equals(Boolean.FALSE)){
                 System.out.println("Selected payment method not available");
                 paymentFailEmitter.send(buildPaymentFailEvent(orderCreatedEvent));
                 return;

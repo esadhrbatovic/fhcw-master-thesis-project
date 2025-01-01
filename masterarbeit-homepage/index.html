@@ -162,7 +162,7 @@
             margin-bottom: 10px;
         }
 
-        .architecture-diagram img {
+        .arch-image img {
             max-width: 100%;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -349,8 +349,10 @@
             <h2>Use Cases & Choreographies</h2>
             <ul class="service-list">
                 <li class="service-item">
-                    <h3><a href="#">Work in Progress</a></h3>
-                    <p>Definition of event flows per use case</p>
+                    <h3><a href="#registeruser">Register user</a></h3>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#buyprocess">Buying process</a></h3>
                 </li>
             </ul>
 
@@ -396,7 +398,7 @@
             <h2>High Level Architecture</h2>
             <p>Below is a high-level overview of the system architecture, illustrating how the microservices interact
                 with each other and external components.</p>
-            <div class="architecture-diagram">
+            <div class="arch-image">
                 <img src="images/architecture-diagram.jpg" alt="High-Level Architecture Diagram">
             </div>
             <!-- ApiGateway Section -->
@@ -407,7 +409,7 @@
                 <li><a href="service-specs/apigateway//openapi.yaml" target="_blank">OpenAPI YAML</a></li>
             </ul>
 
-            
+
             <!-- AuthService Section -->
             <h2 id="authservice">AuthService</h2>
             <p>Handles authentication and authorization: login, logout, and token management.</p>
@@ -1496,6 +1498,26 @@
                     </tr>
                 </tbody>
             </table>
+
+            <section>
+                <h2 id="registeruser">Register user</h2>
+                <div class="arch-image">
+                    <img src="images/register-user.jpg" alt="register user process">
+                </div>
+                    
+                <p>Register user description WIP</p>
+
+            </section>
+
+            <section>
+                <h2 id="buyprocess">Buying process</h2>
+                <div class="arch-image">
+                    <img src="images/buy-process.jpg" alt="buy process">
+                </div>
+                    
+                <p>Buy process description WIP</p>
+
+            </section>
 
 
         </main>

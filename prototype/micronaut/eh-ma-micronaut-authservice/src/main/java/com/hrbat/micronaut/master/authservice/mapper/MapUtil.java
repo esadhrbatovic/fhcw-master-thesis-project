@@ -1,15 +1,18 @@
-package com.hrbatovic.quarkus.master.auth.mapper;
+package com.hrbat.micronaut.master.authservice.mapper;
 
-import com.hrbatovic.master.quarkus.auth.model.*;
-import com.hrbatovic.quarkus.master.auth.db.entities.CredentialsEntity;
-import com.hrbatovic.quarkus.master.auth.db.entities.UserEntity;
-import com.hrbatovic.quarkus.master.auth.messaging.model.out.payload.UserPayload;
+import com.hrbat.master.micronaut.model.*;
+import com.hrbat.micronaut.master.authservice.db.model.CredentialsEntity;
+import com.hrbat.micronaut.master.authservice.db.model.UserEntity;
+import com.hrbat.micronaut.master.authservice.messaging.model.out.payload.UserPayload;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.factory.Mappers;
 
-@Mapper(componentModel = "cdi")
+@Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
+
+    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)

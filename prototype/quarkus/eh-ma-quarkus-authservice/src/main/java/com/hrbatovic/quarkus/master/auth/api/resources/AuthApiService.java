@@ -115,7 +115,7 @@ public class AuthApiService implements AuthApi {
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest updateCredentialsRequest) {
         ApiInputValidator.validateUpdateCredentials(updateCredentialsRequest);
         RegistrationEntity tempRegistrationEntity = RegistrationEntity.findByEmail(updateCredentialsRequest.getEmail());
-        if(tempRegistrationEntity == null){
+        if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
         }
 

@@ -118,13 +118,7 @@ public class UserApiService implements UsersApi {
 
         userEntity.persistOrUpdate();
 
-        UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent().setUserPayload(mapper.mapFromEntity(userEntity));
-        userUpdatedEvent.getUserPayload().setId(userEntity.getId());
-        userUpdatedEvent.setRequestCorrelationId(UUID.randomUUID());
-        userUpdatedEvent.setSessionId(UUID.fromString(sessionIdClaim));
-        userUpdatedEvent.setUserId(UUID.fromString(userSubClaim));
-        userUpdatedEvent.setTimestamp(LocalDateTime.now());
-        userUpdatedEvent.setUserEmail(emailClaim);
+        UserUpdatedEvent userUpdatedEvent = buildUserUpdatedEvent(userEntity);
 
         userUpdatedEmitter.send(userUpdatedEvent);
 
@@ -147,6 +141,17 @@ public class UserApiService implements UsersApi {
         userEntity.delete();
         userDeletedEmitter.send(id);
         return new DeleteUserResponse().message("User deleted successfully");
+    }
+
+    private UserUpdatedEvent buildUserUpdatedEvent(UserEntity userEntity) {
+        UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent().setUserPayload(mapper.mapFromEntity(userEntity));
+        userUpdatedEvent.getUserPayload().setId(userEntity.getId());
+        userUpdatedEvent.setRequestCorrelationId(UUID.randomUUID());
+        userUpdatedEvent.setSessionId(UUID.fromString(sessionIdClaim));
+        userUpdatedEvent.setUserId(UUID.fromString(userSubClaim));
+        userUpdatedEvent.setTimestamp(LocalDateTime.now());
+        userUpdatedEvent.setUserEmail(emailClaim);
+        return userUpdatedEvent;
     }
 
 }

@@ -3,16 +3,20 @@ plugins {
     id("io.micronaut.application") version "4.4.4"
     id("io.micronaut.test-resources") version "4.4.4"
     id("io.micronaut.aot") version "4.4.4"
+    id("io.micronaut.openapi") version "4.4.4"
 }
 
 version = "0.1"
-group = "com.hrbat.micronaut.master.userservice"
+group = "com.hrbatovic.micronaut.master.userservice"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    compileOnly("io.micronaut:micronaut-http-client")
+    testImplementation("io.micronaut:micronaut-http-client")
     annotationProcessor("io.micronaut.data:micronaut-data-document-processor")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
@@ -23,11 +27,20 @@ dependencies {
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.mongodb:mongodb-driver-sync")
     testImplementation("io.micronaut:micronaut-http-client")
+    runtimeOnly("org.yaml:snakeyaml")
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    implementation("org.apache.commons:commons-lang3:3.17.0")
+
+
+    runtimeOnly("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.security:micronaut-security")
+    implementation("org.springframework.security:spring-security-crypto:6.2.0")
 }
 
 
 application {
-    mainClass = "com.hrbat.micronaut.master.userservice.Application"
+    mainClass = "com.hrbatovic.micronaut.master.user.Application"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
@@ -40,9 +53,24 @@ graalvmNative.toolchainDetection = false
 micronaut {
     runtime("netty")
     testRuntime("junit5")
+    openapi {
+        server(file("src/main/resources/openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.micronaut.master.user.api"
+            modelPackageName = "com.hrbatovic.micronaut.master.user.model"
+            useReactive = false
+            useAuth = false
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+    }
     processing {
         incremental(true)
-        annotations("com.hrbat.micronaut.master.userservice.*")
+        annotations("com.hrbatovic.micronaut.*")
     }
     testResources {
         sharedServer = true

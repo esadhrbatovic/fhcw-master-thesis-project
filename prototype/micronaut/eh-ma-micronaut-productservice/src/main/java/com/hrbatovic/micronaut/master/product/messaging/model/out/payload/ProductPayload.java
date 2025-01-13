@@ -1,6 +1,6 @@
-package com.hrbatovic.quarkus.master.product.messaging.model.out.payload;
+package com.hrbatovic.micronaut.master.product.messaging.model.out.payload;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.micronaut.serde.annotation.Serdeable;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@RegisterForReflection
+@Serdeable
 public class ProductPayload implements Serializable {
 
     private UUID id;
@@ -133,4 +133,5 @@ public class ProductPayload implements Serializable {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
 }

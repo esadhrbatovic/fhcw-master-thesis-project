@@ -1,16 +1,19 @@
-package com.hrbatovic.quarkus.master.product.messaging.model.out.payload;
+package com.hrbatovic.micronaut.master.product.db.entities;
 
-import io.quarkus.runtime.annotations.RegisterForReflection;
+import io.micronaut.data.annotation.Id;
+import io.micronaut.data.annotation.MappedEntity;
+import io.micronaut.serde.annotation.Serdeable;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-@RegisterForReflection
-public class ProductPayload implements Serializable {
+@Serdeable
+@MappedEntity(value = "products")
+public class ProductEntity {
 
+    @Id
     private UUID id;
 
     private String title;
@@ -35,8 +38,10 @@ public class ProductPayload implements Serializable {
 
     private LocalDateTime updatedAt;
 
-    public ProductPayload() {
+    public ProductEntity(){
+        this.id = UUID.randomUUID();
     }
+
 
     public UUID getId() {
         return id;
@@ -133,4 +138,23 @@ public class ProductPayload implements Serializable {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "ProductEntity{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", description='" + description + '\'' +
+                ", categoryId=" + categoryId +
+                ", price=" + price +
+                ", currency='" + currency + '\'' +
+                ", imageUrl='" + imageUrl + '\'' +
+                ", licenseAvailable=" + licenseAvailable +
+                ", deleted=" + deleted +
+                ", tags=" + tags +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+
 }

@@ -65,7 +65,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @Secured(SecurityRule.IS_ANONYMOUS)
     public RegisterResponse register(RegisterRequest registerRequest) {
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(registerRequest.getCredentials().getEmail()).orElse(null);
-        if(tempRegistrationEntity == null){
+        if(tempRegistrationEntity != null){
             throw new RuntimeException("This e-mail is not available.");
         }
 

@@ -1,0 +1,21 @@
+micronaut:
+  application:
+    name: eh-ma-micronaut-trackingservice
+  server:
+    port: 8082
+  security:
+    enabled: true
+    authentication: bearer
+    token:
+      jwt:
+        signatures:
+          secret:
+            generator:
+              secret: pleaseChangeThisSecretForANewOne
+kafka:
+  bootstrap:
+    servers: localhost:29092
+
+mongodb:
+  uri: mongodb://localhost:27017/eh-ma-micronaut-trackingservice-db
+  uuid-representation: standard

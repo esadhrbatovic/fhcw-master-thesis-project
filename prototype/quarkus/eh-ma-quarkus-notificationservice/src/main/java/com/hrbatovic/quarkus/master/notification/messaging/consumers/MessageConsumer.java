@@ -58,21 +58,6 @@ public class MessageConsumer {
         });
     }
 
-    public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
-        UserEntity userEntity = UserEntity.findById(licenseGeneratedEvent.getUserId());
-
-        NotificationEntity notificationEntity = new NotificationEntity();
-        notificationEntity.setEmail(userEntity.getEmail());
-        notificationEntity.setSubject("License delivery, order - " + licenseGeneratedEvent.getOrderId());
-        notificationEntity.setBody("Hi " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", your licenses are available: " + licenseGeneratedEvent.getLicenses().toString());
-        notificationEntity.setSentAt(LocalDateTime.now());
-        notificationEntity.setUserId(userEntity.getId());
-        notificationEntity.setType("order-completed");
-        notificationEntity.persist();
-
-        mailer.send(Mail.withText(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody()));
-    }
-
     @Incoming("user-updated-in")
     public void onUserUpdated(UserUpdatedEvent userUpdatedEvent) {
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
@@ -136,6 +121,21 @@ public class MessageConsumer {
 
             mailer.send(Mail.withText(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody()));
         });
+    }
+
+    public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
+        UserEntity userEntity = UserEntity.findById(licenseGeneratedEvent.getUserId());
+
+        NotificationEntity notificationEntity = new NotificationEntity();
+        notificationEntity.setEmail(userEntity.getEmail());
+        notificationEntity.setSubject("License delivery, order - " + licenseGeneratedEvent.getOrderId());
+        notificationEntity.setBody("Hi " + userEntity.getFirstName() + " " + userEntity.getLastName() + ", your licenses are available: " + licenseGeneratedEvent.getLicenses().toString());
+        notificationEntity.setSentAt(LocalDateTime.now());
+        notificationEntity.setUserId(userEntity.getId());
+        notificationEntity.setType("order-completed");
+        notificationEntity.persist();
+
+        mailer.send(Mail.withText(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody()));
     }
 
     private static OrderNotificationSentEvent buildOrderNotificationSentEvent(LicenseGeneratedEvent licenseGeneratedEvent) {

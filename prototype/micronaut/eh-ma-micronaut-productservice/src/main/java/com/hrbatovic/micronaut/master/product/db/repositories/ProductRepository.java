@@ -63,11 +63,9 @@ public interface ProductRepository extends PageableRepository<ProductEntity, UUI
         return findAll(new ArrayList<>(), pageable);
     }
 
-    // Custom method to execute queries with filters
     @MongoFindQuery("{ $and: :filter }")
     List<ProductEntity> findByCustomFilter(List<Document> filter, Pageable pageable);
 
-    // Method to fetch all products without any filter
     @MongoFindQuery("{}")
     List<ProductEntity> findAll(List<Document> filter, Pageable pageable);
 

@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eh-ma-micronaut-notificationservice
   server:
-    port: 8082
+    port: 8088
   security:
     enabled: true
     authentication: bearer

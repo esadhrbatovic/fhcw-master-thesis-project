@@ -35,36 +35,81 @@ public class CheckoutStartedEvent implements Serializable {
         return cart;
     }
 
+    public CheckoutStartedEvent setCart(CartPayload cart) {
+        this.cart = cart;
+        return this;
+    }
+
     public UUID getPaymentToken() {
         return paymentToken;
+    }
+
+    public CheckoutStartedEvent setPaymentToken(UUID paymentToken) {
+        this.paymentToken = paymentToken;
+        return this;
     }
 
     public String getPaymentMethod() {
         return paymentMethod;
     }
 
+    public CheckoutStartedEvent setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+        return this;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public CheckoutStartedEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
     }
 
     public UUID getSessionId() {
         return sessionId;
     }
 
+    public CheckoutStartedEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
     public UUID getUserId() {
         return userId;
+    }
+
+    public CheckoutStartedEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
     }
 
     public String getUserEmail() {
         return userEmail;
     }
 
+    public CheckoutStartedEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
+    }
+
     public String getSourceService() {
         return sourceService;
     }
 
+    public CheckoutStartedEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
     public UUID getRequestCorrelationId() {
         return requestCorrelationId;
+    }
+
+    public CheckoutStartedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
     }
 
     @Override

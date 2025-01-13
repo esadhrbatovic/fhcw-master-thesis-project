@@ -13,4 +13,9 @@ public class OrderPayload implements Serializable {
     public UUID getId() {
         return id;
     }
+
+    public OrderPayload setId(UUID id) {
+        this.id = id;
+        return this;
+    }
 }

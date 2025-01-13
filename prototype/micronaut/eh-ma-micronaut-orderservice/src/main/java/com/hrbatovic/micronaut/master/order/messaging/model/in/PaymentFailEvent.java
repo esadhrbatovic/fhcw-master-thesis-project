@@ -18,8 +18,18 @@ public class PaymentFailEvent implements Serializable {
         return paymentPayload;
     }
 
+    public PaymentFailEvent setPaymentPayload(PaymentPayload paymentPayload) {
+        this.paymentPayload = paymentPayload;
+        return this;
+    }
+
     public String getMessage() {
         return message;
+    }
+
+    public PaymentFailEvent setMessage(String message) {
+        this.message = message;
+        return this;
     }
 
     @Override

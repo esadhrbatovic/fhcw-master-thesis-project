@@ -36,6 +36,9 @@ public class MessageConsumer {
     @Inject
     LicensesGeneratedEventProducer licensesGeneratedEventProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("payment-success")
     public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEvent) {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
@@ -83,7 +86,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -95,7 +98,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userUpdatedEvent.getUserPayload());
+        mapper.update(userEntity, userUpdatedEvent.getUserPayload());
         userRepository.update(userEntity);
 
     }
@@ -119,7 +122,7 @@ public class MessageConsumer {
                 .setTimestamp(LocalDateTime.now())
                 .setOrderId(paymentSuccessEvent.getPaymentPayload().getOrderId())
                 .setRequestCorrelationId(paymentSuccessEvent.getRequestCorrelationId())
-                .setLicenses(MapUtil.INSTANCE.map(licenses));
+                .setLicenses(mapper.map(licenses));
     }
 
 }

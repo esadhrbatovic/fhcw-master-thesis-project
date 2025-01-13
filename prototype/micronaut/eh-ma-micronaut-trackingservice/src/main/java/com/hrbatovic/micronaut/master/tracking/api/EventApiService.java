@@ -8,6 +8,7 @@ import com.hrbatovic.micronaut.master.tracking.model.EventListResponse;
 import com.hrbatovic.micronaut.master.tracking.model.EventListResponsePagination;
 import com.hrbatovic.micronaut.master.tracking.model.ListEventsSortParameter;
 import io.micronaut.http.annotation.Controller;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -22,17 +23,22 @@ public class EventApiService implements EventsApi {
     @Inject
     EventRepository eventRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
+    @RolesAllowed({"admin"})
     public Event getEventById(UUID eventId) {
         EventEntity eventEntity = eventRepository.findById(eventId).orElse(null);
         if (eventEntity == null) {
             throw new RuntimeException("Event not found for ID: " + eventId);
         }
 
-        return MapUtil.INSTANCE.map(eventEntity);
+        return mapper.map(eventEntity);
     }
 
     @Override
+    @RolesAllowed({"admin"})
     public EventListResponse listEvents(Integer page, Integer limit, String eventType, String sourceService, UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId, LocalDateTime occurredAfter, LocalDateTime occurredBefore, UUID requestCorrelationId, ListEventsSortParameter sort) {
         String sortString = sort != null ? sort.toString() : null;
 
@@ -62,7 +68,7 @@ public class EventApiService implements EventsApi {
         pagination.setTotalPages(totalPages);
 
         return new EventListResponse()
-                .events(MapUtil.INSTANCE.map(eventEntities))
+                .events(mapper.map(eventEntities))
                 .pagination(pagination);
     }
 }

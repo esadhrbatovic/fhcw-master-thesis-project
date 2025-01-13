@@ -16,7 +16,7 @@ import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@KafkaListener(groupId = "cart-events-group")
+@KafkaListener(groupId = "order-events-group")
 public class MessageConusmer {
 
     @Inject
@@ -28,6 +28,9 @@ public class MessageConusmer {
     @Inject
     OrderCreatedEventProducer orderCreatedEventProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("checkout-started")
     public void onCheckoutStarted(CheckoutStartedEvent checkoutStartedEvent) {
         OrderEntity orderEntity = orderRepository.findById(checkoutStartedEvent.getCart().getId()).orElse(null);
@@ -36,7 +39,7 @@ public class MessageConusmer {
             return;
         }
 
-        orderEntity = MapUtil.INSTANCE.map(checkoutStartedEvent.getCart());
+        orderEntity = mapper.map(checkoutStartedEvent.getCart());
         orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethod());
         orderEntity.setPaymentToken(checkoutStartedEvent.getPaymentToken());
         orderRepository.save(orderEntity);
@@ -55,7 +58,7 @@ public class MessageConusmer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -128,7 +131,7 @@ public class MessageConusmer {
                 .setTimestamp(LocalDateTime.now())
                 .setSessionId(checkoutStartedEvent.getSessionId())
                 .setRequestCorrelationId(checkoutStartedEvent.getRequestCorrelationId())
-                .setOrder(MapUtil.INSTANCE.toOrderPayload(orderEntity));
+                .setOrder(mapper.toOrderPayload(orderEntity));
     }
 
 }

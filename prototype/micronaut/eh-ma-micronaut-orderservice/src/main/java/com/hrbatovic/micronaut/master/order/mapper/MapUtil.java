@@ -17,13 +17,11 @@ import java.util.List;
 
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
 
     public abstract List<Order> toOrderList(List<OrderEntity> orderEntityList);
 
     @Mapping(target="orderId", source="id")
     @Mapping(target="items", source="orderItems")
-    @Mapping(target="removeItemsItem", ignore = true)
     public abstract Order map(OrderEntity orderEntity);
 
     @Mapping(target="price", source="productPrice")

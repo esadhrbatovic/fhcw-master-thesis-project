@@ -24,28 +24,59 @@ public class LicenseTemplatePayload implements Serializable {
     public LicenseTemplatePayload() {
     }
 
+
     public UUID getId() {
         return id;
+    }
+
+    public LicenseTemplatePayload setId(UUID id) {
+        this.id = id;
+        return this;
     }
 
     public UUID getProductId() {
         return productId;
     }
 
+    public LicenseTemplatePayload setProductId(UUID productId) {
+        this.productId = productId;
+        return this;
+    }
+
     public Integer getLicenseDuration() {
         return licenseDuration;
+    }
+
+    public LicenseTemplatePayload setLicenseDuration(Integer licenseDuration) {
+        this.licenseDuration = licenseDuration;
+        return this;
     }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
+    public LicenseTemplatePayload setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+        return this;
+    }
+
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
+    public LicenseTemplatePayload setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+        return this;
+    }
+
     public LocalDateTime getTimeStamp() {
         return timeStamp;
+    }
+
+    public LicenseTemplatePayload setTimeStamp(LocalDateTime timeStamp) {
+        this.timeStamp = timeStamp;
+        return this;
     }
 
     @Override

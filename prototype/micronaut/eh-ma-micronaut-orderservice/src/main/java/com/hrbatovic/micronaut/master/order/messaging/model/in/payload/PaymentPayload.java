@@ -19,6 +19,11 @@ public class PaymentPayload implements Serializable {
         return orderId;
     }
 
+    public PaymentPayload setOrderId(UUID orderId) {
+        this.orderId = orderId;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)

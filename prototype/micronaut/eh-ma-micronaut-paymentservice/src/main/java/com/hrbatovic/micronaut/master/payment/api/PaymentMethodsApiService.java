@@ -23,13 +23,16 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
     @Inject
     JwtUtil jwtUtil;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin"})
     public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
-        PaymentMethodEntity paymentMethodEntity = MapUtil.INSTANCE.map(createPaymentMethodRequest);
+        PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
 
         paymentMethodRepository.save(paymentMethodEntity);
-        return MapUtil.INSTANCE.toApi(paymentMethodEntity);
+        return mapper.toApi(paymentMethodEntity);
     }
 
     @Override
@@ -54,7 +57,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
             throw new RuntimeException("Payment method not found.");
         }
 
-        return MapUtil.INSTANCE.toApiDetail(paymentMethodEntity);
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 
     @Override
@@ -64,9 +67,9 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
         List<PaymentMethodEntity> paymentMethodEntities = paymentMethodRepository.findAll();
 
         if(jwtUtil.getRoles().contains("admin") && !jwtUtil.getRoles().contains("customer")){
-            paymentMethodListResponse.setPaymentMethods(MapUtil.INSTANCE.toApiList(paymentMethodEntities));
+            paymentMethodListResponse.setPaymentMethods(mapper.toApiList(paymentMethodEntities));
         }else if(jwtUtil.getRoles().contains("customer") && !jwtUtil.getRoles().contains("admin")){
-            paymentMethodListResponse.setPaymentMethods(MapUtil.INSTANCE.toApiListNotAdmin(paymentMethodEntities));
+            paymentMethodListResponse.setPaymentMethods(mapper.toApiListNotAdmin(paymentMethodEntities));
         }
 
         return paymentMethodListResponse;
@@ -80,9 +83,9 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
         if(paymentMethodEntity == null){
             throw new RuntimeException("Payment method not found.");
         }
-        MapUtil.INSTANCE.patch(updatePaymentMethodRequest, paymentMethodEntity);
+        mapper.patch(updatePaymentMethodRequest, paymentMethodEntity);
         paymentMethodRepository.update(paymentMethodEntity);
 
-        return MapUtil.INSTANCE.toApiDetail(paymentMethodEntity);
+        return mapper.toApiDetail(paymentMethodEntity);
     }
 }

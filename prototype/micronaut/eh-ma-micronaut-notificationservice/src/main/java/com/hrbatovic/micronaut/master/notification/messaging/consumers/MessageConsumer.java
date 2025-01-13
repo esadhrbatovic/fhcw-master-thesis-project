@@ -27,6 +27,9 @@ public class MessageConsumer {
     @Inject
     OrderNotificationSentEventProducer orderNotificationSentEventProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("licenses-generated")
     public void onLicensesGenerated(LicenseGeneratedEvent licenseGeneratedEvent){
         System.out.println("Recieved licenses-generated-in event: " + licenseGeneratedEvent);
@@ -43,7 +46,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -55,7 +58,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userUpdatedEvent.getUserPayload());
+        mapper.update(userEntity, userUpdatedEvent.getUserPayload());
         userRepository.update(userEntity);
 
     }
@@ -80,7 +83,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userCredentialsUpdatedEvent);
+        mapper.update(userEntity, userCredentialsUpdatedEvent);
         userRepository.update(userEntity);
 
     }

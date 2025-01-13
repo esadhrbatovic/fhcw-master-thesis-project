@@ -18,14 +18,28 @@ public class OrderItemPayload implements Serializable {
         return productId;
     }
 
+    public OrderItemPayload setProductId(UUID productId) {
+        this.productId = productId;
+        return this;
+    }
+
     public String getProductTitle() {
         return productTitle;
+    }
+
+    public OrderItemPayload setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
+        return this;
     }
 
     public Integer getQuantity() {
         return quantity;
     }
 
+    public OrderItemPayload setQuantity(Integer quantity) {
+        this.quantity = quantity;
+        return this;
+    }
 
     @Override
     public String toString() {

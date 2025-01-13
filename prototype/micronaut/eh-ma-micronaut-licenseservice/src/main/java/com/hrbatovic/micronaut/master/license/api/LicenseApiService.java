@@ -8,12 +8,16 @@ import com.hrbatovic.micronaut.master.license.model.LicenseListResponse;
 import com.hrbatovic.micronaut.master.license.model.LicenseListResponsePagination;
 import com.hrbatovic.micronaut.master.license.model.LicenseResponse;
 import com.hrbatovic.micronaut.master.license.model.ListLicensesSortParameter;
+import io.micronaut.http.annotation.Controller;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.util.List;
 import java.util.UUID;
 
+@Controller
+@Singleton
 public class LicenseApiService implements LicensesApi {
 
     @Inject
@@ -21,6 +25,9 @@ public class LicenseApiService implements LicensesApi {
 
     @Inject
     JwtUtil jwtUtil;
+
+    @Inject
+    MapUtil mapper;
 
     @Override
     @RolesAllowed({"admin", "customer"})
@@ -42,7 +49,7 @@ public class LicenseApiService implements LicensesApi {
             }
         }
 
-        return MapUtil.INSTANCE.toApi(licenseEntity);
+        return mapper.toApi(licenseEntity);
     }
 
     @Override
@@ -53,7 +60,7 @@ public class LicenseApiService implements LicensesApi {
         List<LicenseEntity> licenseEntities = licenseRepository.queryLicenses(page, limit, userId, productId, sortString);
 
         LicenseListResponse response = new LicenseListResponse();
-        response.setLicenses(MapUtil.INSTANCE.toApiLicenseList(licenseEntities));
+        response.setLicenses(mapper.toApiLicenseList(licenseEntities));
 
         LicenseListResponsePagination pagination = new LicenseListResponsePagination();
         pagination.setCurrentPage(page != null ? page : 1);

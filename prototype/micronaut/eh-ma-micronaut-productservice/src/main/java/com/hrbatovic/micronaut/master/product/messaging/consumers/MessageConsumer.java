@@ -10,8 +10,10 @@ import com.hrbatovic.micronaut.master.product.messaging.model.in.UserRegisteredE
 import com.hrbatovic.micronaut.master.product.messaging.model.in.UserUpdatedEvent;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;
+import io.swagger.v3.oas.models.media.MapSchema;
 import jakarta.inject.Inject;
 
+import java.util.Map;
 import java.util.UUID;
 
 @KafkaListener(groupId = "product-events-group")
@@ -23,6 +25,9 @@ public class MessageConsumer {
     @Inject
     ProductRepository productRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("user-registered")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent){
         System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
@@ -32,7 +37,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -44,7 +49,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userUpdatedEvent.getUserPayload());
+        mapper.update(userEntity, userUpdatedEvent.getUserPayload());
         userRepository.update(userEntity);
 
     }
@@ -63,7 +68,7 @@ public class MessageConsumer {
     @Topic("license-template-created")
     public void onLicenseTemplateCreated(LicenseTemplateCreatedEvent licenseTemplateCreatedEvent){
         System.out.println("Recieved license-template-created-in event: " + licenseTemplateCreatedEvent);
-        ProductEntity productEntity = productRepository.findById(licenseTemplateCreatedEvent.getLicenseTemplate().getId()).orElse(null);
+        ProductEntity productEntity = productRepository.findById(licenseTemplateCreatedEvent.getLicenseTemplate().getProductId()).orElse(null);
         if(productEntity == null){
             return;
         }
@@ -81,7 +86,7 @@ public class MessageConsumer {
             return;
         }
 
-        productEntity.setLicenseAvailable(true);
+        productEntity.setLicenseAvailable(false);
         productRepository.update(productEntity);
 
     }

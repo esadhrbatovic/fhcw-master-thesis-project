@@ -39,15 +39,18 @@ dependencies {
 
 
 application {
-    mainClass = "com.hrbat.micronaut.master.authservice.Application"
+    mainClass = "com.hrbatovic.micronaut.master.auth.Application"
 }
 java {
     sourceCompatibility = JavaVersion.toVersion("21")
     targetCompatibility = JavaVersion.toVersion("21")
 }
 
-
 graalvmNative.toolchainDetection = false
+
+sourceSets {
+    main.java.srcDirs += "build/generated/sources/annotationProcessor/java/main"
+}
 
 micronaut {
     runtime("netty")

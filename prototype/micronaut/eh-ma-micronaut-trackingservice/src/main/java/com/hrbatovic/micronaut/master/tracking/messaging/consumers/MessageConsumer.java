@@ -3,6 +3,7 @@ package com.hrbatovic.micronaut.master.tracking.messaging.consumers;
 import com.hrbatovic.micronaut.master.tracking.db.entities.EventEntity;
 import com.hrbatovic.micronaut.master.tracking.db.entities.MetadataEntity;
 import com.hrbatovic.micronaut.master.tracking.db.repositories.EventRepository;
+import com.hrbatovic.micronaut.master.tracking.mapper.MapUtil;
 import com.hrbatovic.micronaut.master.tracking.messaging.model.in.*;
 import io.micronaut.configuration.kafka.annotation.KafkaListener;
 import io.micronaut.configuration.kafka.annotation.Topic;

@@ -1,8 +1,11 @@
 package com.hrbatovic.micronaut.master.order.db.entities;
 
+import io.micronaut.serde.annotation.Serdeable;
+
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Serdeable
 public class OrderItemEntity {
     private UUID productId;
 

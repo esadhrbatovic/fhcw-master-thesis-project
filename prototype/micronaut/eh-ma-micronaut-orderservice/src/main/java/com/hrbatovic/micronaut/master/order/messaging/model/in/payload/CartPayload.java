@@ -27,20 +27,44 @@ public class CartPayload implements Serializable {
         return id;
     }
 
+    public CartPayload setId(UUID id) {
+        this.id = id;
+        return this;
+    }
+
     public UUID getUserId() {
         return userId;
+    }
+
+    public CartPayload setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
     }
 
     public List<CartProductPayload> getCartProducts() {
         return cartProducts;
     }
 
+    public CartPayload setCartProducts(List<CartProductPayload> cartProducts) {
+        this.cartProducts = cartProducts;
+        return this;
+    }
+
     public Integer getTotalItems() {
         return totalItems;
+    }
+
+    public CartPayload setTotalItems(Integer totalItems) {
+        this.totalItems = totalItems;
+        return this;
     }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
+    public CartPayload setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+        return this;
+    }
 }

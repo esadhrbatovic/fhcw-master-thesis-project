@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Singleton
@@ -34,6 +35,9 @@ public class UserApiService implements UserApi {
     @Inject
     UserDeletedProducer userDeletedProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin", "customer"})
     public UserProfileResponse getUser(UUID id) {
@@ -49,7 +53,7 @@ public class UserApiService implements UserApi {
             throw new RuntimeException("You are not allowed to view other user's account.");
         }
 
-        return MapUtil.INSTANCE.map(userEntity);
+        return mapper.map(userEntity);
     }
 
     @Override
@@ -63,7 +67,7 @@ public class UserApiService implements UserApi {
         int totalPages = (int) Math.ceil((double) totalItems / (limit != null ? limit : 10));
 
         UserListResponse userListResponse = new UserListResponse();
-        userListResponse.setUsers(MapUtil.INSTANCE.map(userEntityList));
+        userListResponse.setUsers(mapper.map(userEntityList));
 
         UserListResponsePagination pagination = new UserListResponsePagination();
         pagination.setCurrentPage(page != null ? page : 1);
@@ -92,9 +96,9 @@ public class UserApiService implements UserApi {
                 throw new RuntimeException("You are not allowed change your role.");
             }
 
-            MapUtil.INSTANCE.updateNotAdmin(userEntity, updateUserProfileRequest);
+            mapper.updateNotAdmin(userEntity, updateUserProfileRequest);
         }else{
-            MapUtil.INSTANCE.update(userEntity, updateUserProfileRequest);
+            mapper.update(userEntity, updateUserProfileRequest);
         }
 
         userRepository.update(userEntity);
@@ -102,7 +106,7 @@ public class UserApiService implements UserApi {
         UserUpdatedEvent userUpdatedEvent = buildUserUpdatedEvent(userEntity);
 
         userUpdatedProducer.send(userUpdatedEvent);
-        return MapUtil.INSTANCE.map(userEntity);
+        return mapper.map(userEntity);
     }
 
 
@@ -125,7 +129,7 @@ public class UserApiService implements UserApi {
     }
 
     private UserUpdatedEvent buildUserUpdatedEvent(UserEntity userEntity) {
-        UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent().setUserPayload(MapUtil.INSTANCE.mapFromEntity(userEntity));
+        UserUpdatedEvent userUpdatedEvent = new UserUpdatedEvent().setUserPayload(mapper.mapFromEntity(userEntity));
         userUpdatedEvent.getUserPayload().setId(userEntity.getId());
         userUpdatedEvent.setRequestCorrelationId(UUID.randomUUID());
         userUpdatedEvent.setSessionId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")));

@@ -19,8 +19,6 @@ import java.math.BigDecimal;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
     @Mapping(target = "productId", source = "productId")
     @Mapping(target = "productTitle", source = "productTitle")
     @Mapping(target = "price", source = "productPrice")

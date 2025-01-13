@@ -15,9 +15,6 @@ import java.util.List;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
-
     public abstract UserProfileResponse map(UserEntity userEntity);
 
     public abstract List<UserProfileResponse> map(List<UserEntity> userEntityList);

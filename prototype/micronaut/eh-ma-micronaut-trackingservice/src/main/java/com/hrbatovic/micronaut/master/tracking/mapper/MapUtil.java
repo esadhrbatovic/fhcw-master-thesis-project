@@ -11,8 +11,6 @@ import java.util.List;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
     public abstract List<Event> map(List<EventEntity> eventEntities);
 
     @Mapping(target="eventId", source="id")

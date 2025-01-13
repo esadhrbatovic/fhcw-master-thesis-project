@@ -26,20 +26,44 @@ public class CartProductPayload implements Serializable {
         return productId;
     }
 
+    public CartProductPayload setProductId(UUID productId) {
+        this.productId = productId;
+        return this;
+    }
+
     public String getProductTitle() {
         return productTitle;
+    }
+
+    public CartProductPayload setProductTitle(String productTitle) {
+        this.productTitle = productTitle;
+        return this;
     }
 
     public Integer getQuantity() {
         return quantity;
     }
 
+    public CartProductPayload setQuantity(Integer quantity) {
+        this.quantity = quantity;
+        return this;
+    }
+
     public BigDecimal getProductPrice() {
         return productPrice;
+    }
+
+    public CartProductPayload setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
+        return this;
     }
 
     public BigDecimal getTotalPrice() {
         return totalPrice;
     }
 
+    public CartProductPayload setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
+        return this;
+    }
 }

@@ -31,28 +31,63 @@ public class OrderCreatedEvent implements Serializable {
         return order;
     }
 
+    public OrderCreatedEvent setOrder(OrderPayload order) {
+        this.order = order;
+        return this;
+    }
+
     public LocalDateTime getTimestamp() {
         return timestamp;
+    }
+
+    public OrderCreatedEvent setTimestamp(LocalDateTime timestamp) {
+        this.timestamp = timestamp;
+        return this;
     }
 
     public UUID getSessionId() {
         return sessionId;
     }
 
+    public OrderCreatedEvent setSessionId(UUID sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
     public UUID getUserId() {
         return userId;
+    }
+
+    public OrderCreatedEvent setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
     }
 
     public String getUserEmail() {
         return userEmail;
     }
 
+    public OrderCreatedEvent setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
+        return this;
+    }
+
     public String getSourceService() {
         return sourceService;
     }
 
+    public OrderCreatedEvent setSourceService(String sourceService) {
+        this.sourceService = sourceService;
+        return this;
+    }
+
     public UUID getRequestCorrelationId() {
         return requestCorrelationId;
+    }
+
+    public OrderCreatedEvent setRequestCorrelationId(UUID requestCorrelationId) {
+        this.requestCorrelationId = requestCorrelationId;
+        return this;
     }
 
     @Override

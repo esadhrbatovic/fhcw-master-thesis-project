@@ -22,12 +22,15 @@ public class CategoryApiService implements CategoryManagementApi{
     @Inject
     CategoryRepository categoryRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     public CategoryListResponse listCategories(Integer page, Integer limit, String search) {
         List<CategoryEntity> categoryEntities = categoryRepository.queryCategories(search, page, limit);
 
         List<Category> categories = categoryEntities.stream()
-                .map(MapUtil.INSTANCE::map)
+                .map(mapper::map)
                 .collect(Collectors.toList());
 
         Pagination pagination = new Pagination();
@@ -47,7 +50,7 @@ public class CategoryApiService implements CategoryManagementApi{
     public Category getCategoryById(UUID id) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found for ID: " + id));
-        return MapUtil.INSTANCE.map(categoryEntity);
+        return mapper.map(categoryEntity);
     }
 
 }

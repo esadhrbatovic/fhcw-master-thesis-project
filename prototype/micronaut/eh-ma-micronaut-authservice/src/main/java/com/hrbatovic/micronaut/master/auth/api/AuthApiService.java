@@ -1,6 +1,7 @@
 package com.hrbatovic.micronaut.master.auth.api;
 
 import com.hrbatovic.micronaut.master.auth.Hasher;
+import com.hrbatovic.micronaut.master.auth.JwtTokenContainer;
 import com.hrbatovic.micronaut.master.auth.JwtUtil;
 import com.hrbatovic.micronaut.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.micronaut.master.auth.messaging.producers.UserCredentialsUpdatedProducer;
@@ -34,6 +35,9 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     Hasher hasher;
 
     @Inject
+    MapUtil mapper;
+
+    @Inject
     RegistrationRepository registrationRepository;
 
     @Inject
@@ -56,9 +60,9 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
             throw new RuntimeException("Login Failed");
         }
 
-        String jwtToken = jwtUtil.buildJwtToken(registrationEntity);
+        JwtTokenContainer jwtTokenContainer = jwtUtil.buildJwtToken(registrationEntity);
 
-        return new LoginResponse().message("Login successful").token(jwtToken);
+        return new LoginResponse().message("Login successful").token(jwtTokenContainer.getJwtToken());
     }
 
     @Override
@@ -70,9 +74,9 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
         }
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
-        registrationEntity.setUserEntity(MapUtil.INSTANCE.map(registerRequest.getUserData()));
+        registrationEntity.setUserEntity(mapper.map(registerRequest.getUserData()));
 
-        registrationEntity.setCredentialsEntity(MapUtil.INSTANCE.map(registerRequest.getCredentials()));
+        registrationEntity.setCredentialsEntity(mapper.map(registerRequest.getCredentials()));
 
         registrationEntity.getCredentialsEntity().setPassword(hasher.hash(registerRequest.getCredentials().getPassword()));
 
@@ -85,15 +89,15 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
 
         registrationRepository.save(registrationEntity);
 
-        String jwtToken = jwtUtil.buildJwtToken(registrationEntity);
+        JwtTokenContainer jwtTokenContainer = jwtUtil.buildJwtToken(registrationEntity);
 
-        String sessionIdString = jwtUtil.extractClaim(jwtToken, "sid");
+        String sessionIdString = ((UUID) jwtTokenContainer.getClaims().get("sid")).toString();
 
         UserRegisteredEvent userRegisteredEvent = buildUserRegisteredEvent(registerRequest, registrationEntity, UUID.fromString(sessionIdString), registrationEntity.getCredentialsEntity().getEmail());
         userRegisteredProducer.send(userRegisteredEvent);
         return new RegisterResponse()
                 .message("User registered successfully")
-                .token(jwtToken);
+                .token(jwtTokenContainer.getJwtToken());
     }
 
 
@@ -116,16 +120,16 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
             throw new RuntimeException("Old password is wrong.");
         }
 
-        registrationEntity.setCredentialsEntity(MapUtil.INSTANCE.map(userUpdateCredentialsRequest));
+        registrationEntity.setCredentialsEntity(mapper.map(userUpdateCredentialsRequest));
 
         registrationEntity.getCredentialsEntity().setPassword(hasher.hash(userUpdateCredentialsRequest.getNewPassword()));
 
         registrationRepository.update(registrationEntity);
-        String jwtToken = jwtUtil.buildJwtTokenKeepSession(registrationEntity, UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")));
+        JwtTokenContainer jwtTokenContainer = jwtUtil.buildJwtTokenKeepSession(registrationEntity, UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")));
 
         userCredentialsUpdatedProducer.send(buildUserCredentialsUpdatedEvent(userId, registrationEntity, UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")), registrationEntity.getCredentialsEntity().getEmail()));
 
-        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtToken);
+        return new UpdateCredentialsResponse().message("Credentials updated successfully").token(jwtTokenContainer.getJwtToken());
 
     }
 
@@ -144,7 +148,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
         }
 
 
-        registrationEntity.setCredentialsEntity(MapUtil.INSTANCE.map(adminUpdateCredentialsRequest));
+        registrationEntity.setCredentialsEntity(mapper.map(adminUpdateCredentialsRequest));
 
         registrationEntity.getCredentialsEntity().setPassword(hasher.hash(adminUpdateCredentialsRequest.getPassword()));
 
@@ -157,7 +161,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
 
 
     private UserRegisteredEvent buildUserRegisteredEvent(RegisterRequest registerRequest, RegistrationEntity registrationEntity, UUID sessionId, String userEmail) {
-        UserRegisteredEvent userRegisteredEvent = new UserRegisteredEvent().setUserPayload(MapUtil.INSTANCE.map(registerRequest));
+        UserRegisteredEvent userRegisteredEvent = new UserRegisteredEvent().setUserPayload(mapper.map(registerRequest));
         userRegisteredEvent.getUserPayload().setRole(registrationEntity.getUserEntity().getRole());
         userRegisteredEvent.getUserPayload().setId(registrationEntity.getUserEntity().getId());
         userRegisteredEvent.setTimestamp(LocalDateTime.now());

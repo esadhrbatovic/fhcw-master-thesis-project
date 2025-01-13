@@ -37,6 +37,9 @@ public class CartApiService implements ShoppingCartApi{
     @Inject
     CheckoutStartedEventProducer checkoutStartedEventProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin", "customer"})
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
@@ -54,20 +57,15 @@ public class CartApiService implements ShoppingCartApi{
 
 
         CartEntity cartEntity = findCartByIdOrEmpty(userId);
-        boolean isNewCart = cartEntity == null;
 
         CartProductEntity updatedCartItem = addOrUpdateCartProduct(
                 cartEntity, productEntity, addCartProductRequest.getQuantity());
 
         recalculateCartTotals(cartEntity);
 
-        if(isNewCart){
-            cartRepository.save(cartEntity);
-        }else{
-            cartRepository.update(cartEntity);
-        }
+        cartRepository.update(cartEntity);
 
-        return new CartProductResponse(updatedCartItem.getQuantity() > addCartProductRequest.getQuantity() ? "Product quantity updated in cart." : "Product added to cart.", MapUtil.INSTANCE.map(updatedCartItem));
+        return new CartProductResponse(updatedCartItem.getQuantity() > addCartProductRequest.getQuantity() ? "Product quantity updated in cart." : "Product added to cart.", mapper.map(updatedCartItem));
     }
 
     @Override
@@ -114,7 +112,11 @@ public class CartApiService implements ShoppingCartApi{
         removeCartProduct(cartEntity, productId);
         recalculateCartTotals(cartEntity);
 
-        cartRepository.update(cartEntity);
+        if(cartEntity.getTotalItems().equals(0)){
+            cartRepository.delete(cartEntity);
+        }else{
+            cartRepository.update(cartEntity);
+        }
 
         return new DeleteCartProductResponse("Cart item successfully deleted.");
     }
@@ -135,7 +137,7 @@ public class CartApiService implements ShoppingCartApi{
     public CartResponse getCartProducts() {
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")));
 
-        return MapUtil.INSTANCE.map(cartEntity);
+        return mapper.map(cartEntity);
     }
 
     @Override
@@ -149,7 +151,7 @@ public class CartApiService implements ShoppingCartApi{
         recalculateCartTotals(cartEntity);
         cartRepository.update(cartEntity);
 
-        return new CartProductResponse("Cart product updated successfully.", MapUtil.INSTANCE.map(cartProduct));
+        return new CartProductResponse("Cart product updated successfully.", mapper.map(cartProduct));
     }
 
     public ProductEntity findProductById(UUID productId) {
@@ -173,6 +175,7 @@ public class CartApiService implements ShoppingCartApi{
         cartEntity.setCartProducts(new ArrayList<>());
         cartEntity.setTotalItems(0);
         cartEntity.setTotalPrice(BigDecimal.ZERO);
+        cartRepository.save(cartEntity);
         return cartEntity;
 
     }
@@ -187,7 +190,7 @@ public class CartApiService implements ShoppingCartApi{
                     return existingItem;
                 })
                 .orElseGet(() -> {
-                    CartProductEntity newItem = MapUtil.INSTANCE.map(productEntity, quantity, productEntity.getPrice().multiply(BigDecimal.valueOf(quantity)));
+                    CartProductEntity newItem = mapper.map(productEntity, quantity, productEntity.getPrice().multiply(BigDecimal.valueOf(quantity)));
                     cartEntity.getCartProducts().add(newItem);
                     return newItem;
                 });
@@ -237,6 +240,6 @@ public class CartApiService implements ShoppingCartApi{
                 .setPaymentMethod(startCheckoutRequest.getPaymentMethod())
                 .setPaymentToken(startCheckoutRequest.getPaymentToken())
                 .setRequestCorrelationId(UUID.randomUUID())
-                .setCart(MapUtil.INSTANCE.toCartPayload(cartEntity));
+                .setCart(mapper.toCartPayload(cartEntity));
     }
 }

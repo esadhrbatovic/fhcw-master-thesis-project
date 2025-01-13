@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
     @Mapping(target = "category", ignore = true)
     public abstract Product mapAdmin(ProductEntity productEntity, @Context Map<UUID, String> categoryMap);
 

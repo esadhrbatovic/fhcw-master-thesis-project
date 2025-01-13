@@ -1,7 +1,5 @@
 package com.hrbatovic.micronaut.master.auth;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hrbatovic.micronaut.master.auth.db.entities.RegistrationEntity;
 import io.micronaut.security.token.generator.TokenGenerator;
 import io.micronaut.security.utils.SecurityService;
@@ -19,10 +17,8 @@ public class JwtUtil {
     @Inject
     private SecurityService securityService;
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
-
-    public String buildJwtToken(RegistrationEntity registrationEntity) {
+    public JwtTokenContainer buildJwtToken(RegistrationEntity registrationEntity) {
         HashMap<String, Object> claims = new HashMap<>();
 
         long now = System.currentTimeMillis() / 1000;
@@ -40,12 +36,12 @@ public class JwtUtil {
         claims.put("exp", expiry);
         claims.put("iat", now);
 
-
-        return tokenGenerator.generateToken(claims)
+        String jwtTokenAsString = tokenGenerator.generateToken(claims)
                 .orElseThrow(() -> new RuntimeException("Failed to generate token"));
+        return new JwtTokenContainer(jwtTokenAsString, claims);
     }
 
-    public String buildJwtTokenKeepSession(RegistrationEntity registrationEntity, UUID sessionId) {
+    public JwtTokenContainer buildJwtTokenKeepSession(RegistrationEntity registrationEntity, UUID sessionId) {
         HashMap<String, Object> claims = new HashMap<>();
 
         long now = System.currentTimeMillis() / 1000;
@@ -64,8 +60,9 @@ public class JwtUtil {
         claims.put("iat", now);
 
 
-        return tokenGenerator.generateToken(claims)
+        String jwtTokenAsString = tokenGenerator.generateToken(claims)
                 .orElseThrow(() -> new RuntimeException("Failed to generate token"));
+        return new JwtTokenContainer(jwtTokenAsString, claims);
     }
 
     public String getClaimFromSecurityContext(String claimName){
@@ -83,33 +80,6 @@ public class JwtUtil {
                 .orElse(Collections.emptyList());
     }
 
-    public String extractClaim(String token, String claimName) {
-        try {
-            String[] parts = token.split("\\.");
-            if (parts.length != 3) {
-                System.err.println("Invalid JWT format.");
-                return null;
-            }
 
-            String payload = parts[1];
-
-            byte[] decodedBytes = Base64.getUrlDecoder().decode(payload);
-            String decodedPayload = new String(decodedBytes, "UTF-8");
-
-            JsonNode jsonNode = objectMapper.readTree(decodedPayload);
-
-            JsonNode claimNode = jsonNode.get(claimName);
-            if (claimNode != null) {
-                return claimNode.asText();
-            } else {
-                System.err.println("Claim '" + claimName + "' not found in the token.");
-                return null;
-            }
-
-        } catch (Exception e) {
-            System.err.println("Error extracting claim: " + e.getMessage());
-            return null;
-        }
-    }
 
 }

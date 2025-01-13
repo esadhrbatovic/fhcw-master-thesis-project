@@ -16,8 +16,6 @@ import java.util.List;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
     public abstract UserEntity map(UserPayload userPayload);
 
     @Mapping(target = "email", ignore = true)

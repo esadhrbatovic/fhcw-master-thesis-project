@@ -23,6 +23,9 @@ public class NotificationApiService implements NotificationsApi {
     @Inject
     NotificationRepository notificationRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin"})
     public NotificationResponse getNotificationById(UUID notificationId) {
@@ -32,7 +35,7 @@ public class NotificationApiService implements NotificationsApi {
             throw new RuntimeException("Notification not found");
         }
 
-        return MapUtil.INSTANCE.map(notificationEntity);
+        return mapper.map(notificationEntity);
     }
 
     @Override
@@ -48,7 +51,7 @@ public class NotificationApiService implements NotificationsApi {
         int totalPages = (int) Math.ceil((double) totalItems / (limit != null ? limit : 10));
 
         NotificationListResponse response = new NotificationListResponse();
-        response.setNotifications(MapUtil.INSTANCE.map(notificationEntities));
+        response.setNotifications(mapper.map(notificationEntities));
 
         NotificationListResponsePagination pagination = new NotificationListResponsePagination();
         pagination.setCurrentPage((page != null && page > 0) ? page : 1);

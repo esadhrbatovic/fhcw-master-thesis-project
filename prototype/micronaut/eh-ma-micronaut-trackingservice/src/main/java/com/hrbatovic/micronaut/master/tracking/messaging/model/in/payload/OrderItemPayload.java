@@ -20,6 +20,7 @@ public class OrderItemPayload implements Serializable {
 
     private BigDecimal totalPrice;
 
+
     public UUID getProductId() {
         return productId;
     }

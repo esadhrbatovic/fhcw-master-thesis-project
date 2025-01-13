@@ -17,6 +17,9 @@ public class MessageConsumer {
     @Inject
     UserRepository userRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("user-registered")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent) {
         System.out.println("user-registered message received: " + userRegisteredEvent);
@@ -26,7 +29,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
 
         userEntity.setCreatedAt(LocalDateTime.now());
         userEntity.setUpdatedAt(LocalDateTime.now());
@@ -40,7 +43,7 @@ public class MessageConsumer {
         if (userEntity == null) {
             return;
         }
-        userEntity = MapUtil.INSTANCE.update(userEntity, userCredentialsUpdatedEvent);
+        userEntity = mapper.update(userEntity, userCredentialsUpdatedEvent);
         userEntity.setUpdatedAt(LocalDateTime.now());
         userRepository.update(userEntity);
     }

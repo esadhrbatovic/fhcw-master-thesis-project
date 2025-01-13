@@ -26,6 +26,10 @@ public class MessageConsumer {
     @Inject
     ProductRepository productRepository;
 
+    @Inject
+    MapUtil mapper;
+
+
     @Topic("product-created")
     public void onProductCreated(ProductCreatedEvent productCreatedEvent) {
         System.out.println("Recieved product-created-in event: " + productCreatedEvent);
@@ -33,7 +37,7 @@ public class MessageConsumer {
             return;
         }
 
-        ProductEntity productEntity = MapUtil.INSTANCE.map(productCreatedEvent.getProduct());
+        ProductEntity productEntity = mapper.map(productCreatedEvent.getProduct());
         productRepository.save(productEntity);
     }
 
@@ -45,7 +49,7 @@ public class MessageConsumer {
             return;
         }
 
-        ProductEntity productEntity = MapUtil.INSTANCE.map(productUpdatedEvent.getProduct());
+        ProductEntity productEntity = mapper.map(productUpdatedEvent.getProduct());
 
         productRepository.update(productEntity);
     }
@@ -83,7 +87,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -95,7 +99,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userUpdatedEvent.getUserPayload());
+        mapper.update(userEntity, userUpdatedEvent.getUserPayload());
         userRepository.update(userEntity);
 
     }

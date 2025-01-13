@@ -12,8 +12,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel = "jsr330")
 public abstract class MapUtil {
 
-    public static MapUtil INSTANCE = Mappers.getMapper(MapUtil.class);
-
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "role", ignore = true)
     public abstract UserEntity map(UserForm userData);

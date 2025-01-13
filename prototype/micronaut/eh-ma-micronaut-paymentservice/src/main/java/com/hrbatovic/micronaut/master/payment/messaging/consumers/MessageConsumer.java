@@ -34,6 +34,9 @@ public class MessageConsumer {
     @Inject
     PaymentFailEventProducer paymentFailEventProducer;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("order-created")
     public void onOrderCreated(OrderCreatedEvent orderCreatedEvent){
         System.out.println("Recieved order-created-in event: " + orderCreatedEvent);
@@ -59,7 +62,7 @@ public class MessageConsumer {
             return;
         }
 
-        userEntity = MapUtil.INSTANCE.map(userRegisteredEvent.getUserPayload());
+        userEntity = mapper.map(userRegisteredEvent.getUserPayload());
         userRepository.save(userEntity);
     }
 
@@ -71,7 +74,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userEntity, userUpdatedEvent.getUserPayload());
+        mapper.update(userEntity, userUpdatedEvent.getUserPayload());
         userRepository.update(userEntity);
 
     }
@@ -95,7 +98,7 @@ public class MessageConsumer {
                 .setUserEmail(orderCreatedEvent.getUserEmail())
                 .setSessionId(orderCreatedEvent.getSessionId())
                 .setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId())
-                .setPaymentPayload(MapUtil.INSTANCE.map(orderCreatedEvent.getOrder()));
+                .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 
     private PaymentFailEvent buildPaymentFailEvent(OrderCreatedEvent orderCreatedEvent) {
@@ -106,7 +109,7 @@ public class MessageConsumer {
                 .setSessionId(orderCreatedEvent.getSessionId())
                 .setTimestamp(LocalDateTime.now())
                 .setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId())
-                .setPaymentPayload(MapUtil.INSTANCE.map(orderCreatedEvent.getOrder()));
+                .setPaymentPayload(mapper.map(orderCreatedEvent.getOrder()));
     }
 
 

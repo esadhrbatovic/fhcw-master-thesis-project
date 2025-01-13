@@ -23,6 +23,9 @@ public class OrderApiService implements OrdersApi{
     @Inject
     OrderRepository orderRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin"})
     public OrderListResponse getAllOrders(Integer page, Integer limit, GetAllOrdersStatusParameter status, GetAllOrdersSortParameter sort) {
@@ -33,7 +36,7 @@ public class OrderApiService implements OrdersApi{
         List<OrderEntity> orders = orderRepository.queryOrders(page, limit, statusString, sortString);
 
         OrderListResponse response = new OrderListResponse();
-        response.setOrders(MapUtil.INSTANCE.toOrderList(orders));
+        response.setOrders(mapper.toOrderList(orders));
 
         OrderListResponsePagination pagination = new OrderListResponsePagination();
         pagination.setCurrentPage((page != null && page > 0) ? page : 1);
@@ -56,7 +59,7 @@ public class OrderApiService implements OrdersApi{
         }
 
 
-        return MapUtil.INSTANCE.map(orderEntity);
+        return mapper.map(orderEntity);
     }
 
     @Override
@@ -75,7 +78,7 @@ public class OrderApiService implements OrdersApi{
         List<OrderEntity> orders = orderRepository.queryUserOrders(userId, page, limit, statusString, sortString);
 
         OrderListResponse response = new OrderListResponse();
-        response.setOrders(MapUtil.INSTANCE.toOrderList(orders));
+        response.setOrders(mapper.toOrderList(orders));
 
         OrderListResponsePagination pagination = new OrderListResponsePagination();
         pagination.setCurrentPage((page != null && page > 0) ? page : 1);

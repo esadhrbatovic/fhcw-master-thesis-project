@@ -10,13 +10,17 @@ import com.hrbatovic.micronaut.master.license.messaging.producers.LicenseTemplat
 import com.hrbatovic.micronaut.master.license.messaging.producers.LicenseTemplateDeletedProducer;
 import com.hrbatovic.micronaut.master.license.messaging.producers.LicenseTemplateUpdatedProducer;
 import com.hrbatovic.micronaut.master.license.model.*;
+import io.micronaut.http.annotation.Controller;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Controller
+@Singleton
 public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
     @Inject
@@ -34,14 +38,17 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Inject
     JwtUtil jwtUtil;
 
+    @Inject
+    MapUtil mapper;
+
     @Override
     @RolesAllowed({"admin"})
     public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
-        LicenseTemplateEntity licenseTemplateEntity = MapUtil.INSTANCE.toTemplateEntity(createLicenseTemplateRequest);
+        LicenseTemplateEntity licenseTemplateEntity = mapper.toTemplateEntity(createLicenseTemplateRequest);
         licenseTemplateRepository.save(licenseTemplateEntity);
         licenseTemplateCreatedProducer.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
 
-        return MapUtil.INSTANCE.toApi(licenseTemplateEntity);
+        return mapper.toApi(licenseTemplateEntity);
     }
 
     @Override
@@ -54,7 +61,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
             throw new RuntimeException("License template not found.");
         }
 
-        licenseTemplateDeletedProducer.send(licenseTemplateEntity.getId());
+        licenseTemplateDeletedProducer.send(licenseTemplateEntity.getProductId());
         licenseTemplateRepository.delete(licenseTemplateEntity);
 
         return new DeleteLicenseTemplateResponse().message("License template deleted successfully.");
@@ -69,7 +76,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
             throw new RuntimeException("License template not found.");
         }
 
-        return MapUtil.INSTANCE.toApi(licenseTemplateEntity);
+        return mapper.toApi(licenseTemplateEntity);
     }
 
     @Override
@@ -78,7 +85,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
         List<LicenseTemplateEntity> licenseTemplateEntities = licenseTemplateRepository.findAll();
         LicenseTemplateListResponse licenseTemplateListResponse = new LicenseTemplateListResponse();
 
-        licenseTemplateListResponse.setLicenseTemplates(MapUtil.INSTANCE.toApiList(licenseTemplateEntities));
+        licenseTemplateListResponse.setLicenseTemplates(mapper.toApiList(licenseTemplateEntities));
 
         return licenseTemplateListResponse;
     }
@@ -92,7 +99,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
             throw new RuntimeException("License template not found.");
         }
 
-        MapUtil.INSTANCE.patch(updateLicenseTemplateRequest, licenseTemplateEntity);
+        mapper.patch(updateLicenseTemplateRequest, licenseTemplateEntity);
         licenseTemplateRepository.update(licenseTemplateEntity);
 
         licenseTemplateUpdatedProducer.send(buildLicenseTempalteUpdatedEvent(licenseTemplateEntity));
@@ -105,7 +112,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
                 .setUserEmail(jwtUtil.getClaimFromSecurityContext("email"))
                 .setUserId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")))
                 .setSessionId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")))
-                .setLicenseTemplate(MapUtil.INSTANCE.map(licenseTemplateEntity));
+                .setLicenseTemplate(mapper.map(licenseTemplateEntity));
     }
 
     private LicenseTemplateCreatedEvent buildLicenseTemplateCreatedEvent(LicenseTemplateEntity licenseTemplateEntity) {
@@ -114,6 +121,6 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
                 .setUserId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")))
                 .setSessionId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")))
                 .setTimestamp(LocalDateTime.now())
-                .setLicenseTemplate(MapUtil.INSTANCE.map(licenseTemplateEntity));
+                .setLicenseTemplate(mapper.map(licenseTemplateEntity));
     }
 }

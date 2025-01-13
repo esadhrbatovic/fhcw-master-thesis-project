@@ -15,6 +15,11 @@ public class PaymentSuccessEvent implements Serializable {
         return paymentPayload;
     }
 
+    public PaymentSuccessEvent setPaymentPayload(PaymentPayload paymentPayload) {
+        this.paymentPayload = paymentPayload;
+        return this;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)

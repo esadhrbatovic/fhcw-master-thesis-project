@@ -45,6 +45,9 @@ public class ProductApiService implements ProductManagementApi{
     ProductDeletedEventProducer productDeletedEventProducer;
 
     @Inject
+    MapUtil mapper;
+
+    @Inject
     JwtUtil jwtUtil;
 
     @Override
@@ -81,9 +84,9 @@ public class ProductApiService implements ProductManagementApi{
         ProductListResponse productListResponse = new ProductListResponse();
 
         if(jwtUtil.getRoles().contains("admin") && !jwtUtil.getRoles().contains("customer")){
-            productListResponse.setProducts(MapUtil.INSTANCE.mapAdminList(productEntityList, categoryMap));
+            productListResponse.setProducts(mapper.mapAdminList(productEntityList, categoryMap));
         }else if(jwtUtil.getRoles().contains("customer") && !jwtUtil.getRoles().contains("admin")){
-            productListResponse.setProducts(MapUtil.INSTANCE.mapNonAdminList(productEntityList, categoryMap));
+            productListResponse.setProducts(mapper.mapNonAdminList(productEntityList, categoryMap));
         }
 
         Pagination pagination = new Pagination();
@@ -111,9 +114,9 @@ public class ProductApiService implements ProductManagementApi{
         ProductResponse productResponse = null;
 
         if(jwtUtil.getRoles().contains("admin") && !jwtUtil.getRoles().contains("customer")){
-            productResponse = MapUtil.INSTANCE.mapAdmin(productEntity, categoryName);
+            productResponse = mapper.mapAdmin(productEntity, categoryName);
         }else if(jwtUtil.getRoles().contains("customer") && !jwtUtil.getRoles().contains("admin")){
-            productResponse = MapUtil.INSTANCE.mapNonAdmin(productEntity, categoryName);
+            productResponse = mapper.mapNonAdmin(productEntity, categoryName);
         }
 
         return productResponse;
@@ -140,12 +143,12 @@ public class ProductApiService implements ProductManagementApi{
             }
         }
 
-        MapUtil.INSTANCE.update(productEntity, updateProductRequest, categoryEntity);
+        mapper.update(productEntity, updateProductRequest, categoryEntity);
 
         productRepository.update(productEntity);
 
         productUpdatedEventProducer.send(buildProductUpdatedEvent(productEntity));
-        return MapUtil.INSTANCE.mapAdmin(productEntity, categoryEntity.getName());
+        return mapper.mapAdmin(productEntity, categoryEntity.getName());
     }
 
     @Override
@@ -159,11 +162,11 @@ public class ProductApiService implements ProductManagementApi{
             categoryRepository.save(category);
         }
 
-        ProductEntity productEntity = MapUtil.INSTANCE.map(createProductRequest, category.getId());
+        ProductEntity productEntity = mapper.map(createProductRequest, category.getId());
 
         productRepository.save(productEntity);
         productCreatedEventProducer.send(buildProductCreatedEvent(productEntity));
-        return MapUtil.INSTANCE.mapAdmin(productEntity, category.getName());
+        return mapper.mapAdmin(productEntity, category.getName());
     }
 
     @Override
@@ -192,7 +195,7 @@ public class ProductApiService implements ProductManagementApi{
                 .setUserId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")))
                 .setUserEmail(jwtUtil.getClaimFromSecurityContext("email"))
                 .setSessionId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")))
-                .setProduct(MapUtil.INSTANCE.map(productEntity))
+                .setProduct(mapper.map(productEntity))
                 .setRequestCorrelationId(UUID.randomUUID());
     }
 
@@ -202,7 +205,7 @@ public class ProductApiService implements ProductManagementApi{
                 .setTimestamp(LocalDateTime.now())
                 .setUserEmail(jwtUtil.getClaimFromSecurityContext("email"))
                 .setSessionId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sid")))
-                .setProduct(MapUtil.INSTANCE.map(productEntity))
+                .setProduct(mapper.map(productEntity))
                 .setRequestCorrelationId(UUID.randomUUID());
     }
 }

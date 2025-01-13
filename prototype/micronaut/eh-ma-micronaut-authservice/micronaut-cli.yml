@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: com.hrbat.micronaut.master.authservice
+defaultPackage: com.hrbatovic.micronaut.master.auth
 testFramework: junit
 sourceLanguage: java
 buildTool: gradle

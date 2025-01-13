@@ -17,17 +17,31 @@ public class PaymentPayload implements Serializable {
 
     private List<PaidItemPayload> paidItemPayloads;
 
-
     public UUID getUserId() {
         return userId;
+    }
+
+    public PaymentPayload setUserId(UUID userId) {
+        this.userId = userId;
+        return this;
     }
 
     public UUID getOrderId() {
         return orderId;
     }
 
+    public PaymentPayload setOrderId(UUID orderId) {
+        this.orderId = orderId;
+        return this;
+    }
+
     public List<PaidItemPayload> getPaidItemPayloads() {
         return paidItemPayloads;
+    }
+
+    public PaymentPayload setPaidItemPayloads(List<PaidItemPayload> paidItemPayloads) {
+        this.paidItemPayloads = paidItemPayloads;
+        return this;
     }
 
     @Override

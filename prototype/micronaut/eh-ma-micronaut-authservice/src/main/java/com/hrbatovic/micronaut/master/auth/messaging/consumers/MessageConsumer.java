@@ -16,6 +16,9 @@ public class MessageConsumer {
     @Inject
     RegistrationRepository registrationRepository;
 
+    @Inject
+    MapUtil mapper;
+
     @Topic("user-updated")
     public void onUserUpdated(UserUpdatedEvent userUpdatedEvent){
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
@@ -25,7 +28,7 @@ public class MessageConsumer {
             return;
         }
 
-        MapUtil.INSTANCE.update(userUpdatedEvent.getUserPayload(), registrationEntity.getUserEntity());
+        mapper.update(userUpdatedEvent.getUserPayload(), registrationEntity.getUserEntity());
         registrationRepository.update(registrationEntity);
 
     }

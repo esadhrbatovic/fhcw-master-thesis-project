@@ -138,7 +138,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
 
     private LicenseTemplateCreatedEvent buildLicenseTemplateCreatedEvent(LicenseTemplateEntity licenseTemplateEntity) {
         return new LicenseTemplateCreatedEvent()
-                .setUserEmail(userSubClaim)
+                .setUserEmail(emailClaim)
                 .setUserId(UUID.fromString(userSubClaim))
                 .setSessionId(UUID.fromString(sessionIdClaim))
                 .setTimestamp(LocalDateTime.now())

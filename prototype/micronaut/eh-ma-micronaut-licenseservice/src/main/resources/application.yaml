@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eh-ma-micronaut-licenseservice
   server:
-    port: 8082
+    port: 8087
   security:
     enabled: true
     authentication: bearer

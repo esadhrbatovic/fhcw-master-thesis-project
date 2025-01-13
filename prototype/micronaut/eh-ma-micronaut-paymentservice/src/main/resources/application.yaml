@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eh-ma-micronaut-paymentservice
   server:
-    port: 8082
+    port: 8086
   security:
     enabled: true
     authentication: bearer

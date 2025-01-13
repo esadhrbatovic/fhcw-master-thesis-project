@@ -8,7 +8,6 @@ import io.micronaut.data.mongodb.annotation.MongoCollation;
 import io.micronaut.data.mongodb.annotation.MongoFindQuery;
 import io.micronaut.data.mongodb.annotation.MongoRepository;
 import io.micronaut.data.repository.PageableRepository;
-import jakarta.inject.Inject;
 import org.bson.Document;
 
 import java.math.BigDecimal;

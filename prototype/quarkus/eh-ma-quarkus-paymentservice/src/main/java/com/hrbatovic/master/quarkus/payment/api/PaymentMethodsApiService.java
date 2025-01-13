@@ -42,6 +42,11 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
         ApiInputValidator.validatePaymentMethodId(paymentMethodId);
 
         PaymentMethodEntity paymentMethodEntity = PaymentMethodEntity.findById(paymentMethodId);
+
+        if(paymentMethodEntity == null){
+            throw new EhMaException(404, "Payment method not found.");
+        }
+
         paymentMethodEntity.delete();
 
         return new DeletePaymentMethodResponse().message("Payment method deleted successfully.");

@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eh-ma-micronaut-orderservice
   server:
-    port: 8082
+    port: 8085
   security:
     enabled: true
     authentication: bearer

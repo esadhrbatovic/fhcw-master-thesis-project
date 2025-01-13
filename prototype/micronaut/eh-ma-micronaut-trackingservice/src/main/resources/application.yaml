@@ -2,7 +2,7 @@ micronaut:
   application:
     name: eh-ma-micronaut-trackingservice
   server:
-    port: 8082
+    port: 8089
   security:
     enabled: true
     authentication: bearer

@@ -1,0 +1,68 @@
+package com.hrbatovic.micronaut.master.tracking.api;
+
+import com.hrbatovic.micronaut.master.tracking.db.entities.EventEntity;
+import com.hrbatovic.micronaut.master.tracking.db.repositories.EventRepository;
+import com.hrbatovic.micronaut.master.tracking.mapper.MapUtil;
+import com.hrbatovic.micronaut.master.tracking.model.Event;
+import com.hrbatovic.micronaut.master.tracking.model.EventListResponse;
+import com.hrbatovic.micronaut.master.tracking.model.EventListResponsePagination;
+import com.hrbatovic.micronaut.master.tracking.model.ListEventsSortParameter;
+import io.micronaut.http.annotation.Controller;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
+@Controller
+@Singleton
+public class EventApiService implements EventsApi {
+
+    @Inject
+    EventRepository eventRepository;
+
+    @Override
+    public Event getEventById(UUID eventId) {
+        EventEntity eventEntity = eventRepository.findById(eventId).orElse(null);
+        if (eventEntity == null) {
+            throw new RuntimeException("Event not found for ID: " + eventId);
+        }
+
+        return MapUtil.INSTANCE.map(eventEntity);
+    }
+
+    @Override
+    public EventListResponse listEvents(Integer page, Integer limit, String eventType, String sourceService, UUID userId, String userEmail, UUID sessionId, UUID productId, UUID orderId, LocalDateTime occurredAfter, LocalDateTime occurredBefore, UUID requestCorrelationId, ListEventsSortParameter sort) {
+        String sortString = sort != null ? sort.toString() : null;
+
+        List<EventEntity> eventEntities = eventRepository.queryEvents(
+                page,
+                limit,
+                eventType,
+                sourceService,
+                userId,
+                userEmail,
+                sessionId,
+                productId,
+                orderId,
+                occurredAfter,
+                occurredBefore,
+                requestCorrelationId,
+                sortString
+        );
+
+        long totalItems = eventEntities.size();
+        int totalPages = (int) Math.ceil((double) totalItems / (limit != null ? limit : 10));
+
+        EventListResponsePagination pagination = new EventListResponsePagination();
+        pagination.setCurrentPage((page != null && page > 0) ? page : 1);
+        pagination.setLimit((limit != null && limit > 0) ? limit : 10);
+        pagination.setTotalItems((int) totalItems);
+        pagination.setTotalPages(totalPages);
+
+        return new EventListResponse()
+                .events(MapUtil.INSTANCE.map(eventEntities))
+                .pagination(pagination);
+    }
+}

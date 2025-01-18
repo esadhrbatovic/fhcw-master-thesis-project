@@ -10,6 +10,6 @@ public class HealthApiService implements HealthApi{
 
     @Override
     public SuccessResponse healthCheck() {
-        return null;
+        return new SuccessResponse().message("Micronaut product-service is up and running!");
     }
 }

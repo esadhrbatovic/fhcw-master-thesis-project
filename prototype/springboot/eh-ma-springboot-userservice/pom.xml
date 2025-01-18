@@ -183,7 +183,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<imageName>esadh/springboot-authservice</imageName>
+					<imageName>esadh/springboot-userservice</imageName>
 					<createdDate>${maven.build.timestamp}</createdDate>
 				</configuration>
 			</plugin>

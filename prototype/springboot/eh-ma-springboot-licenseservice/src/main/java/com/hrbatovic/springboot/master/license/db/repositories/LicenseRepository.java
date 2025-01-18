@@ -16,7 +16,7 @@ import java.util.UUID;
 @Repository
 public interface LicenseRepository extends MongoRepository<LicenseEntity, UUID> {
 
-    @Query(value= "{'orderId':  ?0}")
+    @Query(value= "{'orderId':  ?0}", collation = "{ 'locale': 'en_US', 'numericOrdering': true }")
     List<LicenseEntity> findByOrderid(UUID orderId);
 
     default List<LicenseEntity> queryLicenses(Integer page, Integer limit, UUID userId, UUID productId, String sort) {
@@ -46,10 +46,10 @@ public interface LicenseRepository extends MongoRepository<LicenseEntity, UUID> 
         return findAll(new ArrayList<>(), pageable);
     }
 
-    @Query(value= "{ $and: ?0 }")
+    @Query(value= "{ $and: ?0 }", collation = "{ 'locale': 'en_US', 'numericOrdering': true }")
     List<LicenseEntity> findByCustomFilter(List<Document> filter, Pageable pageable);
 
-    @Query(value= "{}")
+    @Query(value= "{}", collation = "{ 'locale': 'en_US', 'numericOrdering': true }")
     List<LicenseEntity> findAll(List<Document> filter, Pageable pageable);
 
     private Sort resolveSort(String sort) {

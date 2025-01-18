@@ -9,7 +9,6 @@ public class Hasher {
 
     private PasswordEncoder passwordEncoder;
 
-
     public String hash(String text) {
         passwordEncoder = new BCryptPasswordEncoder(10);
         return passwordEncoder.encode(text);

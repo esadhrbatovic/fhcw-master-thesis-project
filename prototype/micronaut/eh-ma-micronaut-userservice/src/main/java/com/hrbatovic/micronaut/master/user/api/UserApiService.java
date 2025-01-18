@@ -86,6 +86,10 @@ public class UserApiService implements UserApi {
 
         UserEntity userEntity = userRepository.findById(id).orElse(null);
 
+        if(userEntity == null){
+            throw new RuntimeException("User not found");
+        }
+
         if(jwtUtil.getRoles().contains("customer") && !jwtUtil.getRoles().contains("admin")){
 
             if(!id.equals(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")))){

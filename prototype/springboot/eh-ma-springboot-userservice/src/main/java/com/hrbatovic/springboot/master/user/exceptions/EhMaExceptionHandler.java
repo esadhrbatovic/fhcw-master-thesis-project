@@ -1,4 +1,4 @@
-package com.hrbatovic.springboot.master.auth.exceptions;
+package com.hrbatovic.springboot.master.user.exceptions;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

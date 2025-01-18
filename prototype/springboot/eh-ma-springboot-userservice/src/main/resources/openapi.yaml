@@ -1,0 +1,383 @@
+openapi: 3.0.3
+info:
+  title: UserService API
+  version: 1.0.0
+  description: |
+    API specification for the UserService of the e-shop application.
+    Manages user data and personal information, including email, name, address, and phone number.
+
+servers:
+  - url: localhost:8082
+    description: local dev
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+  /users:
+    get:
+      summary: ADMIN ONLY - List all users with optional search and pagination
+      operationId: listUsers
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/UserSearchQueryParam'
+        - $ref: '#/components/parameters/UserCreatedAfterQueryParam'
+        - $ref: '#/components/parameters/UserCreatedBeforeQueryParam'
+        - $ref: '#/components/parameters/UserSortQueryParam'
+      responses:
+        '200':
+          description: Users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListResponse'
+        '400':
+          description: Bad Request - Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /users/{id}:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get a user's profile
+      operationId: getUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update a user's profile
+      operationId: updateUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      requestBody:
+        description: Updated user profile data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserProfileRequest'
+      responses:
+        '200':
+          description: User profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfileResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to update this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete a user
+      operationId: deleteUser
+      tags:
+        - User
+      parameters:
+        - $ref: '#/components/parameters/UserIdPathParam'
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteUserResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to delete this user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - User does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    UserIdPathParam:
+      name: id
+      in: path
+      description: UUID of the user
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    UserSearchQueryParam:
+      name: search
+      in: query
+      description: Search term to filter users by name or email
+      required: false
+      schema:
+        type: string
+        example: "john.doe@example.com"
+
+    UserCreatedAfterQueryParam:
+      name: createdAfter
+      in: query
+      description: Filter users created after a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-01-01T00:00:00Z'
+
+    UserCreatedBeforeQueryParam:
+      name: createdBefore
+      in: query
+      description: Filter users created before a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-12-31T23:59:59Z'
+
+    UserSortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'nameAsc', 'nameDesc', 'dateAsc', 'dateDesc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - nameAsc
+          - nameDesc
+          - dateAsc
+          - dateDesc
+        example: 'nameAsc'
+
+  schemas:
+    UserProfileResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 123e4567-e89b-12d3-a456-426614174000
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        role:
+          type: string
+        email:
+          type: string
+          example: user@example.com
+        phoneNumber:
+          type: string
+          example: '+1234567890'
+        address:
+          $ref: '#/components/schemas/Address'
+        created_at:
+          type: string
+          format: date-time
+          example: '2023-10-15T10:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          example: '2023-10-16T12:00:00Z'
+
+    UpdateUserProfileRequest:
+      type: object
+      properties:
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: Doe
+        role:
+          type: string
+          example: customer
+        phoneNumber:
+          type: string
+          example: '+1234567890'
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      properties:
+        street:
+          type: string
+          example: '123 Main St'
+        city:
+          type: string
+          example: 'Anytown'
+        state:
+          type: string
+          example: 'State'
+        postalCode:
+          type: string
+          example: '12345'
+        country:
+          type: string
+          example: 'Country'
+
+    DeleteUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User deleted successfully.
+
+    UserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserProfileResponse'
+        pagination:
+          type: object
+          properties:
+            currentPage:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 5
+            totalItems:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+tags:
+  - name: User
+    description: Endpoints related to managing user data and personal information.

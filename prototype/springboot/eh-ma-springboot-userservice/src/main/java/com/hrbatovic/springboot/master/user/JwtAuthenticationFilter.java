@@ -1,4 +1,4 @@
-package com.hrbatovic.springboot.master.auth;
+package com.hrbatovic.springboot.master.user;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

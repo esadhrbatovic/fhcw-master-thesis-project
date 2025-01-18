@@ -9,6 +9,7 @@ import com.hrbatovic.springboot.master.product.db.repositories.CategoryRepositor
 import com.hrbatovic.springboot.master.product.mapper.MapUtil;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class CategoryApiService implements CategoriesApi {
     MapUtil mapper;
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public CategoryListResponse listCategories(Integer page, Integer limit, String search) {
         List<CategoryEntity> categoryEntities = categoryRepository.queryCategories(search, page, limit);
 
@@ -46,6 +48,7 @@ public class CategoryApiService implements CategoriesApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public Category getCategoryById(UUID id) {
         CategoryEntity categoryEntity = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found for ID: " + id));

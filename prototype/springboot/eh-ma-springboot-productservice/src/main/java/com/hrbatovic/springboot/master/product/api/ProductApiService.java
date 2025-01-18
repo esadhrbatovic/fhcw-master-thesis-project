@@ -17,6 +17,7 @@ import com.hrbatovic.springboot.master.product.messaging.producers.ProductDelete
 import com.hrbatovic.springboot.master.product.messaging.producers.ProductUpdatedEventProducer;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -51,6 +52,7 @@ public class ProductApiService implements ProductsApi {
     ClaimUtils claimUtils;
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ProductListResponse listProducts(Integer page, Integer limit, String search, String category, Float priceMin, Float priceMax, LocalDateTime createdAfter, LocalDateTime createdBefore, String sort) {
 
         String sortString = sort != null ? sort.toString() : null;
@@ -100,6 +102,7 @@ public class ProductApiService implements ProductsApi {
 
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public ProductResponse getProductById(UUID id) {
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 
@@ -122,6 +125,7 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ProductResponse updateProduct(UUID id, UpdateProductRequest updateProductRequest) {
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 
@@ -149,6 +153,7 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ProductResponse createProduct(CreateProductRequest createProductRequest) {
 
         CategoryEntity category = categoryRepository.findByName(createProductRequest.getCategory()).orElse(null);

@@ -1,23 +1,20 @@
-package com.hrbatovic.micronaut.master.tracking.messaging.consumers;
+package com.hrbatovic.springboot.master.tracking.messaging.consumers;
 
-import com.hrbatovic.micronaut.master.tracking.db.entities.EventEntity;
-import com.hrbatovic.micronaut.master.tracking.db.entities.MetadataEntity;
-import com.hrbatovic.micronaut.master.tracking.db.repositories.EventRepository;
-import com.hrbatovic.micronaut.master.tracking.mapper.MapUtil;
-import com.hrbatovic.micronaut.master.tracking.messaging.model.in.*;
-import io.micronaut.configuration.kafka.annotation.KafkaListener;
-import io.micronaut.configuration.kafka.annotation.Topic;
-import jakarta.inject.Inject;
+import com.hrbatovic.springboot.master.tracking.db.entities.EventEntity;
+import com.hrbatovic.springboot.master.tracking.db.entities.MetadataEntity;
+import com.hrbatovic.springboot.master.tracking.db.repositories.EventRepository;
+import com.hrbatovic.springboot.master.tracking.messaging.consumers.in.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
-@KafkaListener(groupId = "tracking-events-group")
+@Service
 public class MessageConsumer {
 
-    @Inject
+    @Autowired
     EventRepository eventRepository;
 
-    @Topic("user-updated")
+    @KafkaListener(groupId = "tracking-group", topics = "user-updated", containerFactory = "userUpdatedFactory")
     public void onUserUpdated(UserUpdatedEvent userUpdatedEvent){
         System.out.println("Recieved user-updated-in event: " + userUpdatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -36,7 +33,7 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
-    @Topic("user-registered")
+    @KafkaListener(groupId = "tracking-group", topics = "user-registered", containerFactory = "userRegisteredFactory")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent){
         System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
 
@@ -56,27 +53,28 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
+    @KafkaListener(groupId = "tracking-group", topics = "user-deleted", containerFactory = "userDeletedFactory")
+    public void onUserRegistered(UserDeletedEvent userDeletedEvent){
+        System.out.println("Recieved user-deleted-in event: " + userDeletedEvent);
 
-    @Topic("user-deleted")
-    public void consumeUserDeleted(UUID id) {
-        System.out.println("Recieved user-deleted-in event: " + id);
         EventEntity eventEntity = new EventEntity();
-        eventEntity.setEventType("user-deleted");
-        eventEntity.setBody(id.toString());
-        //MetadataEntity metadataEntity = new MetadataEntity();
-        //metadataEntity.setUserId(userRegisteredEvent.getUserId());
-        //metadataEntity.setTimestamp(userRegisteredEvent.getTimestamp());
-        //metadataEntity.setUserMail(userRegisteredEvent.getUserEmail());
-        //metadataEntity.setSesionId(userRegisteredEvent.getSessionId());
-        //metadataEntity.setSourceService(userRegisteredEvent.getSourceService());
+        eventEntity.setEventType("user-registered");
+        eventEntity.setBody(userDeletedEvent.getId().toString());
+        MetadataEntity metadataEntity = new MetadataEntity();
+        metadataEntity.setUserId(userDeletedEvent.getUserId());
+        metadataEntity.setTimestamp(userDeletedEvent.getTimestamp());
+        metadataEntity.setUserMail(userDeletedEvent.getUserEmail());
+        metadataEntity.setSessionId(userDeletedEvent.getSessionId());
+        metadataEntity.setSourceService(userDeletedEvent.getSourceService());
+        metadataEntity.setRequestCorrelationId(userDeletedEvent.getRequestCorrelationId());
         //metadataEntity.setOrderId();
         //metadataEntity.setProductId();
-        //eventEntity.setMetadata(metadataEntity);
+        eventEntity.setMetadata(metadataEntity);
         eventRepository.save(eventEntity);
     }
 
 
-    @Topic("user-credentials-updated")
+    @KafkaListener(groupId = "tracking-group", topics = "user-credentials-updated", containerFactory = "userCredentialsUpdatedFactory")
     public void onUserCredentialsUpdated(UserCredentialsUpdatedEvent userCredentialsUpdatedEvent) {
         System.out.println("Recieved user-credentials-updated-in event: " + userCredentialsUpdatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -96,7 +94,7 @@ public class MessageConsumer {
     }
 
 
-    @Topic("product-created")
+    @KafkaListener(groupId = "tracking-group", topics = "product-created", containerFactory = "productCreatedFactory")
     public void onProductCreated(ProductCreatedEvent productCreatedEvent) {
         System.out.println("Recieved product-created-in event: " + productCreatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -116,7 +114,7 @@ public class MessageConsumer {
     }
 
 
-    @Topic("product-updated")
+    @KafkaListener(groupId = "tracking-group", topics = "product-updated", containerFactory = "productUpdatedFactory")
     public void onProductUpdated(ProductUpdatedEvent productUpdatedEvent) {
         System.out.println("Recieved product-updated-in event: " + productUpdatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -135,26 +133,26 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
-
-    @Topic("product-deleted")
-    public void onProductDeleted(UUID id) {
-        System.out.println("Recieved product-deleted-in event: " + id);
+    @KafkaListener(groupId = "tracking-group", topics = "product-deleted", containerFactory = "productDeletedFactory")
+    public void onProductUpdated(ProductDeletedEvent productDeletedEvent) {
+        System.out.println("Recieved product-deleted-in event: " + productDeletedEvent);
         EventEntity eventEntity = new EventEntity();
-        eventEntity.setEventType("product-deleted");
-        eventEntity.setBody(id.toString());
+        eventEntity.setEventType("product-updated");
+        eventEntity.setBody(productDeletedEvent.toString());
         MetadataEntity metadataEntity = new MetadataEntity();
-        //metadataEntity.setUserId(productUpdatedEvent.getUserId());
-        //metadataEntity.setTimestamp(productUpdatedEvent.getTimestamp());
-        //metadataEntity.setUserMail(productUpdatedEvent.getUserEmail());
-        //metadataEntity.setSesionId(productUpdatedEvent.getSessionId());
-        //metadataEntity.setSourceService(productUpdatedEvent.getSourceService());
+        metadataEntity.setUserId(productDeletedEvent.getUserId());
+        metadataEntity.setTimestamp(productDeletedEvent.getTimestamp());
+        metadataEntity.setUserMail(productDeletedEvent.getUserEmail());
+        metadataEntity.setSessionId(productDeletedEvent.getSessionId());
+        metadataEntity.setSourceService(productDeletedEvent.getSourceService());
+        metadataEntity.setRequestCorrelationId(productDeletedEvent.getRequestCorrelationId());
         //metadataEntity.setOrderId();
-        metadataEntity.setProductId(id);
+        metadataEntity.setProductId(productDeletedEvent.getId());
         eventEntity.setMetadata(metadataEntity);
         eventRepository.save(eventEntity);
     }
 
-    @Topic("checkout-started")
+    @KafkaListener(groupId = "tracking-group", topics = "checkout-started", containerFactory = "checkoutStartedFactory")
     public void onCheckoutStared(CheckoutStartedEvent checkoutStartedEvent) {
         System.out.println("Recieved checkout-started-in event: " + checkoutStartedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -173,28 +171,7 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
-
-    @Topic("order-created")
-    public void onOrderCreated(OrderCreatedEvent orderCreatedEvent) {
-        System.out.println("Recieved order-created-in event: " + orderCreatedEvent);
-        EventEntity eventEntity = new EventEntity();
-        eventEntity.setEventType("order-created");
-        eventEntity.setBody(orderCreatedEvent.toString());
-        MetadataEntity metadataEntity = new MetadataEntity();
-        metadataEntity.setUserId(orderCreatedEvent.getUserId());
-        metadataEntity.setTimestamp(orderCreatedEvent.getTimestamp());
-        metadataEntity.setUserMail(orderCreatedEvent.getUserEmail());
-        metadataEntity.setSessionId(orderCreatedEvent.getSessionId());
-        metadataEntity.setSourceService(orderCreatedEvent.getSourceService());
-        metadataEntity.setOrderId(orderCreatedEvent.getOrder().getId());
-        metadataEntity.setRequestCorrelationId(orderCreatedEvent.getRequestCorrelationId());
-        //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
-        eventEntity.setMetadata(metadataEntity);
-        eventRepository.save(eventEntity);
-    }
-
-
-    @Topic("payment-success")
+    @KafkaListener(groupId = "tracking-group", topics = "payment-success", containerFactory = "paymentSuccessFactory")
     public void onPaymentSuccess(PaymentSuccessEvent paymentSuccessEvent) {
         System.out.println("Recieved payment-success-in event: " + paymentSuccessEvent);
         EventEntity eventEntity = new EventEntity();
@@ -214,7 +191,7 @@ public class MessageConsumer {
     }
 
 
-    @Topic("payment-fail")
+    @KafkaListener(groupId = "tracking-group", topics = "payment-fail", containerFactory = "paymentFailFactory")
     public void onPaymentFail(PaymentFailEvent paymentFailEvent) {
         System.out.println("Recieved payment-fail-in event: " + paymentFailEvent);
         EventEntity eventEntity = new EventEntity();
@@ -234,7 +211,7 @@ public class MessageConsumer {
     }
 
 
-    @Topic("license-generated") //TODO: correct title
+    @KafkaListener(groupId = "tracking-group", topics = "licenses-generated", containerFactory = "licensesGeneratedFactory")
     public void onLicenseGenerated(LicensesGeneratedEvent licensesGeneratedEvent) {
         System.out.println("Recieved license-generated-in event: " + licensesGeneratedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -254,7 +231,7 @@ public class MessageConsumer {
     }
 
 
-    @Topic("license-template-created")
+    @KafkaListener(groupId = "tracking-group", topics = "license-template-created", containerFactory = "licenseTemplateCreatedFactory")
     public void onLicenseTemplateCreated(LicenseTemplateCreatedEvent licenseTemplateCreatedEvent) {
         System.out.println("Recieved license-template-created-in event: " + licenseTemplateCreatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -273,7 +250,8 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
-    @Topic("license-template-updated")
+
+    @KafkaListener(groupId = "tracking-group", topics = "license-template-updated", containerFactory = "licenseTemplateUpdatedFactory")
     public void onLicenseTemplateUpdated(LicenseTemplateUpdatedEvent licenseTemplateUpdatedEvent) {
         System.out.println("Recieved license-template-updated-in event: " + licenseTemplateUpdatedEvent);
         EventEntity eventEntity = new EventEntity();
@@ -292,26 +270,27 @@ public class MessageConsumer {
         eventRepository.save(eventEntity);
     }
 
-
-    @Topic("license-template-deleted")
-    public void onLicenseTemplateDeleted(UUID id) {
-        System.out.println("Recieved license-template-deleted-in event: " + id);
+    @KafkaListener(groupId = "tracking-group", topics = "license-template-deleted", containerFactory = "licenseTemplateDeletedFactory")
+    public void onLicenseTemplateUpdated(LicenseTemplateDeletedEvent licenseTemplateDeletedEvent) {
+        System.out.println("Recieved license-template-updated-in event: " + licenseTemplateDeletedEvent);
         EventEntity eventEntity = new EventEntity();
-        eventEntity.setEventType("license-template-deleted");
-        eventEntity.setBody(id.toString());
+        eventEntity.setEventType("license-template-updated");
+        eventEntity.setBody(licenseTemplateDeletedEvent.toString());
         MetadataEntity metadataEntity = new MetadataEntity();
-        //metadataEntity.setUserId(licenseTemplateUpdatedEvent.getUserId());
-        //metadataEntity.setTimestamp(licenseTemplateUpdatedEvent.getTimestamp());
-        //metadataEntity.setUserMail(licenseTemplateUpdatedEvent.getUserEmail());
-        //metadataEntity.setSesionId(licenseTemplateUpdatedEvent.getSessionId());
-        //metadataEntity.setSourceService(licenseTemplateUpdatedEvent.getSourceService());
+        metadataEntity.setUserId(licenseTemplateDeletedEvent.getUserId());
+        metadataEntity.setTimestamp(licenseTemplateDeletedEvent.getTimestamp());
+        metadataEntity.setUserMail(licenseTemplateDeletedEvent.getUserEmail());
+        metadataEntity.setSessionId(licenseTemplateDeletedEvent.getSessionId());
+        metadataEntity.setSourceService(licenseTemplateDeletedEvent.getSourceService());
+        metadataEntity.setRequestCorrelationId(licenseTemplateDeletedEvent.getRequestCorrelationId());
         //metadataEntity.setOrderId(licenseTemplateCreatedEvent.get());
-        //metadataEntity.setProductId(checkoutStartedEvent.getCart().getId());
+        //metadataEntity.setOrderId(licenseTemplateUpdatedEvent.getLicenseTemplate().getProductId());
         eventEntity.setMetadata(metadataEntity);
         eventRepository.save(eventEntity);
     }
 
-    @Topic("order-notification-sent")
+
+    @KafkaListener(groupId = "tracking-group", topics = "order-notification-sent", containerFactory = "orderNotificationSentFactory")
     public void onOrderNotificationSent(OrderNotificationSentEvent orderNotificationSentEvent) {
         System.out.println("Recieved order-notification-sent-in event: " + orderNotificationSentEvent);
         EventEntity eventEntity = new EventEntity();

@@ -1,13 +1,14 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class LicensePayload implements Serializable {
+
+    public LicensePayload() {
+    }
+
     private UUID serialNumber;
 
     private UUID productId;
@@ -24,8 +25,6 @@ public class LicensePayload implements Serializable {
 
     private boolean active;
 
-    public LicensePayload() {
-    }
 
     public UUID getSerialNumber() {
         return serialNumber;
@@ -101,15 +100,16 @@ public class LicensePayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("serialNumber", serialNumber)
-                .append("productId", productId)
-                .append("userId", userId)
-                .append("orderId", orderId)
-                .append("licenseDuration", licenseDuration)
-                .append("issuedAt", issuedAt)
-                .append("expiresAt", expiresAt)
-                .append("active", active)
-                .toString();
+        final StringBuilder sb = new StringBuilder("LicensePayload{");
+        sb.append("serialNumber=").append(serialNumber);
+        sb.append(", productId=").append(productId);
+        sb.append(", userId=").append(userId);
+        sb.append(", orderId=").append(orderId);
+        sb.append(", licenseDuration=").append(licenseDuration);
+        sb.append(", issuedAt=").append(issuedAt);
+        sb.append(", expiresAt=").append(expiresAt);
+        sb.append(", active=").append(active);
+        sb.append('}');
+        return sb.toString();
     }
 }

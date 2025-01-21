@@ -9,6 +9,9 @@ public class PaymentFailEvent implements Serializable {
 
     private PaymentPayload paymentPayload;
 
+    public PaymentFailEvent() {
+    }
+
     private String message;
 
     public PaymentPayload getPaymentPayload() {
@@ -29,12 +32,4 @@ public class PaymentFailEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("PaymentFailEvent{");
-        sb.append("paymentPayload=").append(paymentPayload);
-        sb.append(", message='").append(message).append('\'');
-        sb.append('}');
-        return sb.toString();
-    }
 }

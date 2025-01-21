@@ -2,14 +2,16 @@ package com.hrbatovic.springboot.master.tracking.messaging.consumers.in;
 
 
 import com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload.CartPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class CheckoutStartedEvent implements Serializable {
+
+    public CheckoutStartedEvent() {
+    }
+
     private UUID paymentToken;
 
     private String paymentMethod;
@@ -112,16 +114,17 @@ public class CheckoutStartedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("paymentToken", paymentToken)
-                .append("paymentMethod", paymentMethod)
-                .append("cart", cart)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
+        final StringBuilder sb = new StringBuilder("CheckoutStartedEvent{");
+        sb.append("paymentToken=").append(paymentToken);
+        sb.append(", paymentMethod='").append(paymentMethod).append('\'');
+        sb.append(", cart=").append(cart);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", sessionId=").append(sessionId);
+        sb.append(", userId=").append(userId);
+        sb.append(", userEmail='").append(userEmail).append('\'');
+        sb.append(", sourceService='").append(sourceService).append('\'');
+        sb.append(", requestCorrelationId=").append(requestCorrelationId);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -64,14 +64,4 @@ public class OrderItemPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "OrderItemPayload{" +
-                "productId=" + productId +
-                ", productTitle='" + productTitle + '\'' +
-                ", quantity=" + quantity +
-                ", productPrice=" + productPrice +
-                ", totalPrice=" + totalPrice +
-                '}';
-    }
 }

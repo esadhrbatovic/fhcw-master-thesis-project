@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class UserCredentialsUpdatedEvent implements Serializable {
+
+    public UserCredentialsUpdatedEvent() {
+    }
+
     UUID id;
     String email;
 

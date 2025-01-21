@@ -5,10 +5,10 @@ import java.util.UUID;
 
 public class UserDeletedEvent implements Serializable {
 
-    private UUID id;
-
     public UserDeletedEvent() {
     }
+
+    private UUID id;
 
     public UUID getId() {
         return id;

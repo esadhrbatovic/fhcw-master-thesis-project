@@ -3,7 +3,7 @@ package com.hrbatovic.springboot.master.payment;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration.class})
 public class
 Application {
 

@@ -82,18 +82,5 @@ public class UserDeletedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("UserDeletedEvent{");
-        sb.append("id=").append(id);
-        sb.append(", timestamp=").append(timestamp);
-        sb.append(", sessionId=").append(sessionId);
-        sb.append(", userId=").append(userId);
-        sb.append(", userEmail='").append(userEmail).append('\'');
-        sb.append(", sourceService='").append(sourceService).append('\'');
-        sb.append(", requestCorrelationId=").append(requestCorrelationId);
-        sb.append('}');
-        return sb.toString();
-    }
 }
 

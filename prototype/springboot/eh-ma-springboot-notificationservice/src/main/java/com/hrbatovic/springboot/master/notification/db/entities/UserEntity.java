@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.UUID;
 
-@Document(collation = "users")
+@Document(collection = "users")
 public class UserEntity {
     @Id
     public UUID id;

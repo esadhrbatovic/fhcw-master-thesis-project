@@ -25,18 +25,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
+        System.out.println("starting filter");
         String header = request.getHeader("Authorization");
 
         if (header == null || !header.startsWith("Bearer ")) {
+            System.out.println("header null");
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = header.substring(7);
         try {
+            System.out.println("Start parsing claims");
             Claims claims = Jwts.parser().setSigningKey(SECRET).build().parseClaimsJws(token).getBody();
-
+            System.out.println("Parsed Claims: " + claims);
             String username = claims.getSubject();
             List<String> roles = claims.get("roles", List.class);
 
@@ -44,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
             JwtAuthentication jwtAuthentication = new JwtAuthentication(username, authorities);
+            System.out.println("JWT Authentication: " + jwtAuthentication);
             jwtAuthentication.setAuthenticated(true);
 
 
@@ -56,6 +59,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(jwtAuthentication);
 
         } catch (Exception e) {
+            System.out.println("Caught exception in creating jwtAuthentication");
+            e.printStackTrace();
             SecurityContextHolder.clearContext();
         }
 

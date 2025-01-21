@@ -1,12 +1,12 @@
 package com.hrbatovic.springboot.master.license.messaging.model.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.util.UUID;
 
 public class PaidItemPayload implements Serializable {
+
+    public PaidItemPayload() {
+    }
 
     private UUID productId;
     private String productTitle;
@@ -39,12 +39,4 @@ public class PaidItemPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("productId", productId)
-                .append("productTitle", productTitle)
-                .append("quantity", quantity)
-                .toString();
-    }
 }

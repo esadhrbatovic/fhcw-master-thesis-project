@@ -7,7 +7,7 @@ import com.hrbatovic.springboot.master.cart.db.repositories.CartRepository;
 import com.hrbatovic.springboot.master.cart.db.repositories.ProductRepository;
 import com.hrbatovic.springboot.master.cart.db.repositories.UserRepository;
 import com.hrbatovic.springboot.master.cart.mapper.MapUtil;
-import com.hrbatovic.springboot.master.cart.messaging.consumers.model.in.*;
+import com.hrbatovic.springboot.master.cart.messaging.model.in.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;

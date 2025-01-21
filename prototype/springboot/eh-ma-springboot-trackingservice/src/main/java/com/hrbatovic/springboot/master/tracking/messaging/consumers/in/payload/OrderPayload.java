@@ -1,8 +1,5 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -125,17 +122,18 @@ public class OrderPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("userId", userId)
-                .append("status", status)
-                .append("currency", currency)
-                .append("totalAmount", totalAmount)
-                .append("createdAt", createdAt)
-                .append("updatedAt", updatedAt)
-                .append("paymentToken", paymentToken)
-                .append("paymentMethod", paymentMethod)
-                .append("orderItems", orderItems)
-                .toString();
+        final StringBuilder sb = new StringBuilder("OrderPayload{");
+        sb.append("id=").append(id);
+        sb.append(", userId=").append(userId);
+        sb.append(", status='").append(status).append('\'');
+        sb.append(", currency='").append(currency).append('\'');
+        sb.append(", totalAmount=").append(totalAmount);
+        sb.append(", createdAt=").append(createdAt);
+        sb.append(", updatedAt=").append(updatedAt);
+        sb.append(", paymentToken=").append(paymentToken);
+        sb.append(", paymentMethod='").append(paymentMethod).append('\'');
+        sb.append(", orderItems=").append(orderItems);
+        sb.append('}');
+        return sb.toString();
     }
 }

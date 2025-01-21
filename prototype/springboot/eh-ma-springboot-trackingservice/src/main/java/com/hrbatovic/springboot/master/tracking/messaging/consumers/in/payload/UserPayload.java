@@ -1,8 +1,5 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -83,14 +80,15 @@ public class UserPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("firstName", firstName)
-                .append("lastName", lastName)
-                .append("role", role)
-                .append("email", email)
-                .append("phoneNumber", phoneNumber)
-                .append("address", address)
-                .toString();
+        final StringBuilder sb = new StringBuilder("UserPayload{");
+        sb.append("id=").append(id);
+        sb.append(", firstName='").append(firstName).append('\'');
+        sb.append(", lastName='").append(lastName).append('\'');
+        sb.append(", role='").append(role).append('\'');
+        sb.append(", email='").append(email).append('\'');
+        sb.append(", phoneNumber='").append(phoneNumber).append('\'');
+        sb.append(", address=").append(address);
+        sb.append('}');
+        return sb.toString();
     }
 }

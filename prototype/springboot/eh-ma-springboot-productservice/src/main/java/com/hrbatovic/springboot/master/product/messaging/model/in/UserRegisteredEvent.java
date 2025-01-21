@@ -1,14 +1,16 @@
 package com.hrbatovic.springboot.master.product.messaging.model.in;
 
 import com.hrbatovic.springboot.master.product.messaging.model.in.payload.UserPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+
 
 import java.io.Serializable;
 
 public class UserRegisteredEvent implements Serializable {
 
     private UserPayload userPayload;
+
+    public UserRegisteredEvent() {
+    }
 
     public UserPayload getUserPayload() {
         return userPayload;
@@ -19,10 +21,4 @@ public class UserRegisteredEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userPayload", userPayload)
-                .toString();
-    }
 }

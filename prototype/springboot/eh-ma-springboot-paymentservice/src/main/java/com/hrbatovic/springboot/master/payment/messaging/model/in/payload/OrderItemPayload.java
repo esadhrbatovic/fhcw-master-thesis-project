@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class OrderItemPayload implements Serializable {
+
+    public OrderItemPayload() {
+    }
+
     private UUID productId;
 
     private String productTitle;
@@ -37,12 +41,4 @@ public class OrderItemPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "OrderItemPayload{" +
-                "productId=" + productId +
-                ", productTitle='" + productTitle + '\'' +
-                ", quantity=" + quantity +
-                '}';
-    }
 }

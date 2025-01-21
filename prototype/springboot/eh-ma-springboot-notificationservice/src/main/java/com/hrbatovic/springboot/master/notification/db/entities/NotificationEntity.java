@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Document(collation = "notifications")
+@Document(collection = "notifications")
 public class NotificationEntity {
 
     @Id

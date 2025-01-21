@@ -38,6 +38,7 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<!--
 				<executions>
 					<execution>
 						<goals>
@@ -45,6 +46,7 @@
 						</goals>
 					</execution>
 				</executions>
+				-->
 				<configuration>
 					<imageName>esadh/springboot-apigateway</imageName>
 					<createdDate>${maven.build.timestamp}</createdDate>

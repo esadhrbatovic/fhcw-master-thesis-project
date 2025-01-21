@@ -22,6 +22,7 @@ public class MessageConsumer {
 
     @KafkaListener(groupId = "user-group", topics = "user-registered", containerFactory = "userRegisteredFactory")
     public void consumeUserRegisteredEvent(UserRegisteredEvent userRegisteredEvent) {
+
         System.out.println("user-registered message received: " + userRegisteredEvent);
         UserEntity userEntity = userRepository.findById(userRegisteredEvent.getUserPayload().getId()).orElse(null);
 
@@ -34,6 +35,7 @@ public class MessageConsumer {
         userEntity.setCreatedAt(LocalDateTime.now());
         userEntity.setUpdatedAt(LocalDateTime.now());
         userRepository.save(userEntity);
+
     }
 
     @KafkaListener(groupId = "user-group", topics = "user-credentials-updated", containerFactory = "userCredentialsUpdatedFactory")

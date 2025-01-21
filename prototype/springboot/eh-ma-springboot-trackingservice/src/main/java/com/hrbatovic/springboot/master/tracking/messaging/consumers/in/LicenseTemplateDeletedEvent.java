@@ -1,13 +1,13 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class LicenseTemplateDeletedEvent implements Serializable {
+
+    public LicenseTemplateDeletedEvent() {
+    }
 
     private UUID id;
 
@@ -89,14 +89,15 @@ public class LicenseTemplateDeletedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
+        final StringBuilder sb = new StringBuilder("LicenseTemplateDeletedEvent{");
+        sb.append("id=").append(id);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", sessionId=").append(sessionId);
+        sb.append(", userId=").append(userId);
+        sb.append(", userEmail='").append(userEmail).append('\'');
+        sb.append(", sourceService='").append(sourceService).append('\'');
+        sb.append(", requestCorrelationId=").append(requestCorrelationId);
+        sb.append('}');
+        return sb.toString();
     }
 }

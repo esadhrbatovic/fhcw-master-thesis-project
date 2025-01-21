@@ -5,7 +5,11 @@ import com.hrbatovic.springboot.master.order.messaging.model.in.payload.UserPayl
 import java.io.Serializable;
 
 public class UserRegisteredEvent implements Serializable {
+
     private UserPayload userPayload;
+
+    public UserRegisteredEvent() {
+    }
 
     public UserPayload getUserPayload() {
         return userPayload;
@@ -16,11 +20,4 @@ public class UserRegisteredEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("UserRegisteredEvent{");
-        sb.append("userPayload=").append(userPayload);
-        sb.append('}');
-        return sb.toString();
-    }
 }

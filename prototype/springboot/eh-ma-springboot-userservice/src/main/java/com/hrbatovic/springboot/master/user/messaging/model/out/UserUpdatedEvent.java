@@ -84,17 +84,4 @@ public class UserUpdatedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("UserUpdatedEvent{");
-        sb.append("userPayload=").append(userPayload);
-        sb.append(", timestamp=").append(timestamp);
-        sb.append(", sessionId=").append(sessionId);
-        sb.append(", userId=").append(userId);
-        sb.append(", userEmail='").append(userEmail).append('\'');
-        sb.append(", sourceService='").append(sourceService).append('\'');
-        sb.append(", requestCorrelationId=").append(requestCorrelationId);
-        sb.append('}');
-        return sb.toString();
-    }
 }

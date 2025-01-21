@@ -20,10 +20,4 @@ public class LicenseTemplateUpdatedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "LicenseTemplateUpdatedEvent{" +
-                "licenseTemplate=" + licenseTemplate +
-                '}';
-    }
 }

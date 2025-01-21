@@ -8,6 +8,9 @@ import java.util.UUID;
 
 public class OrderNotificationSentEvent implements Serializable {
 
+    public OrderNotificationSentEvent() {
+    }
+
     private UUID orderId;
 
     //Metadata

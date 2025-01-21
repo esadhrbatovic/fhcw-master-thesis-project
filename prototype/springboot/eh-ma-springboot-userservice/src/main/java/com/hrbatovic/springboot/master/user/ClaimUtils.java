@@ -55,6 +55,8 @@ public class ClaimUtils {
 
     private JwtAuthentication getSecurityContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
+
 
         if (authentication instanceof JwtAuthentication) {
             return (JwtAuthentication) authentication;

@@ -1,14 +1,14 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
 public class CartPayload implements Serializable {
+
+    public CartPayload() {
+    }
 
     private UUID id;
 
@@ -19,9 +19,6 @@ public class CartPayload implements Serializable {
     private Integer totalItems;
 
     private BigDecimal totalPrice;
-
-    public CartPayload() {
-    }
 
     public UUID getId() {
         return id;
@@ -70,12 +67,13 @@ public class CartPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("userId", userId)
-                .append("cartProducts", cartProducts)
-                .append("totalItems", totalItems)
-                .append("totalPrice", totalPrice)
-                .toString();
+        final StringBuilder sb = new StringBuilder("CartPayload{");
+        sb.append("id=").append(id);
+        sb.append(", userId=").append(userId);
+        sb.append(", cartProducts=").append(cartProducts);
+        sb.append(", totalItems=").append(totalItems);
+        sb.append(", totalPrice=").append(totalPrice);
+        sb.append('}');
+        return sb.toString();
     }
 }

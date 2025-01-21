@@ -9,6 +9,9 @@ import java.io.Serializable;
 public class UserUpdatedEvent implements Serializable {
     private UserPayload userPayload;
 
+    public UserUpdatedEvent() {
+    }
+
     public UserPayload getUserPayload() {
         return userPayload;
     }
@@ -16,13 +19,6 @@ public class UserUpdatedEvent implements Serializable {
     public UserUpdatedEvent setUserPayload(UserPayload userPayload) {
         this.userPayload = userPayload;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userPayload", userPayload)
-                .toString();
     }
 
 }

@@ -1,7 +1,8 @@
 package com.hrbatovic.springboot.master.auth.api;
 
+import com.hrbatovic.master.springboot.auth.api.HealthApi;
+import com.hrbatovic.master.springboot.auth.model.SuccessResponse;
 import com.hrbatovic.springboot.master.auth.JwtAuthentication;
-import com.hrbatovic.springboot.master.auth.model.SuccessResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RestController;

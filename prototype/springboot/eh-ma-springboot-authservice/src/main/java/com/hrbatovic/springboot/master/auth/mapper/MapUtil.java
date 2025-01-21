@@ -1,9 +1,9 @@
 package com.hrbatovic.springboot.master.auth.mapper;
 
+import com.hrbatovic.master.springboot.auth.model.*;
 import com.hrbatovic.springboot.master.auth.db.entities.CredentialsEntity;
 import com.hrbatovic.springboot.master.auth.db.entities.UserEntity;
 import com.hrbatovic.springboot.master.auth.messaging.model.out.payload.UserPayload;
-import com.hrbatovic.springboot.master.auth.model.*;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,12 +1,12 @@
 package com.hrbatovic.springboot.master.notification.messaging.model.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.util.UUID;
 
 public class PaymentPayload implements Serializable {
+
+    public PaymentPayload() {
+    }
 
     private UUID userId;
     private UUID orderId;
@@ -29,11 +29,4 @@ public class PaymentPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("userId", userId)
-                .append("orderId", orderId)
-                .toString();
-    }
 }

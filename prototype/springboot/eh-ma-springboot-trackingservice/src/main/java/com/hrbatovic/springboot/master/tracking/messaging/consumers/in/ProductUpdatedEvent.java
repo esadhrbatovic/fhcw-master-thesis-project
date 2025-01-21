@@ -2,14 +2,15 @@ package com.hrbatovic.springboot.master.tracking.messaging.consumers.in;
 
 
 import com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload.ProductPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ProductUpdatedEvent implements Serializable {
+
+    public ProductUpdatedEvent() {
+    }
 
     ProductPayload product;
 
@@ -91,14 +92,15 @@ public class ProductUpdatedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("product", product)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
+        final StringBuilder sb = new StringBuilder("ProductUpdatedEvent{");
+        sb.append("product=").append(product);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", sessionId=").append(sessionId);
+        sb.append(", userId=").append(userId);
+        sb.append(", userEmail='").append(userEmail).append('\'');
+        sb.append(", sourceService='").append(sourceService).append('\'');
+        sb.append(", requestCorrelationId=").append(requestCorrelationId);
+        sb.append('}');
+        return sb.toString();
     }
 }

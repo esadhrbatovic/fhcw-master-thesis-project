@@ -11,6 +11,9 @@ public class ProductCreatedEvent implements Serializable {
 
     ProductPayload product;
 
+    public ProductCreatedEvent() {
+    }
+
     //Metadata
     private LocalDateTime timestamp;
 
@@ -82,17 +85,4 @@ public class ProductCreatedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("ProductCreatedEvent{");
-        sb.append("product=").append(product);
-        sb.append(", timestamp=").append(timestamp);
-        sb.append(", sessionId=").append(sessionId);
-        sb.append(", userId=").append(userId);
-        sb.append(", userEmail='").append(userEmail).append('\'');
-        sb.append(", sourceService='").append(sourceService).append('\'');
-        sb.append(", requestCorrelationId=").append(requestCorrelationId);
-        sb.append('}');
-        return sb.toString();
-    }
 }

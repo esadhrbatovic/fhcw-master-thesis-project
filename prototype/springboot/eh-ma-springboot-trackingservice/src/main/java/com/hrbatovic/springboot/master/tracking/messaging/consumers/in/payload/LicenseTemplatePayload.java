@@ -1,13 +1,14 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class LicenseTemplatePayload implements Serializable {
+
+    public LicenseTemplatePayload() {
+    }
+
     private UUID id;
 
     private UUID productId;
@@ -20,8 +21,6 @@ public class LicenseTemplatePayload implements Serializable {
 
     private LocalDateTime timeStamp;
 
-    public LicenseTemplatePayload() {
-    }
 
     public UUID getId() {
         return id;
@@ -79,13 +78,14 @@ public class LicenseTemplatePayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("productId", productId)
-                .append("licenseDuration", licenseDuration)
-                .append("createdAt", createdAt)
-                .append("updatedAt", updatedAt)
-                .append("timeStamp", timeStamp)
-                .toString();
+        final StringBuilder sb = new StringBuilder("LicenseTemplatePayload{");
+        sb.append("id=").append(id);
+        sb.append(", productId=").append(productId);
+        sb.append(", licenseDuration=").append(licenseDuration);
+        sb.append(", createdAt=").append(createdAt);
+        sb.append(", updatedAt=").append(updatedAt);
+        sb.append(", timeStamp=").append(timeStamp);
+        sb.append('}');
+        return sb.toString();
     }
 }

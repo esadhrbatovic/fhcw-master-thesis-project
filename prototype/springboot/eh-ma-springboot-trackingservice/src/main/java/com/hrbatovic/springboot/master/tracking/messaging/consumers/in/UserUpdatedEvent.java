@@ -1,14 +1,16 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in;
 
-
 import com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload.UserPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class UserUpdatedEvent implements Serializable {
+
+    public UserUpdatedEvent() {
+    }
+
     private UserPayload userPayload;
 
     //Metadata
@@ -23,9 +25,6 @@ public class UserUpdatedEvent implements Serializable {
     private String sourceService;
 
     private UUID requestCorrelationId;
-
-    public UserUpdatedEvent() {
-    }
 
     public UserPayload getUserPayload() {
         return userPayload;
@@ -92,14 +91,15 @@ public class UserUpdatedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this)
-                .append("userPayload", userPayload)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
+        final StringBuilder sb = new StringBuilder("UserUpdatedEvent{");
+        sb.append("userPayload=").append(userPayload);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", sessionId=").append(sessionId);
+        sb.append(", userId=").append(userId);
+        sb.append(", userEmail='").append(userEmail).append('\'');
+        sb.append(", sourceService='").append(sourceService).append('\'');
+        sb.append(", requestCorrelationId=").append(requestCorrelationId);
+        sb.append('}');
+        return sb.toString();
     }
 }

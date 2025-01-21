@@ -9,6 +9,9 @@ import java.util.UUID;
 
 public class CheckoutStartedEvent implements Serializable {
 
+    public CheckoutStartedEvent() {
+    }
+
     private CartPayload cart;
 
     private UUID paymentToken;
@@ -109,19 +112,4 @@ public class CheckoutStartedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("CheckoutStartedEvent{");
-        sb.append("cart=").append(cart);
-        sb.append(", paymentToken=").append(paymentToken);
-        sb.append(", paymentMethod='").append(paymentMethod).append('\'');
-        sb.append(", timestamp=").append(timestamp);
-        sb.append(", sessionId=").append(sessionId);
-        sb.append(", userId=").append(userId);
-        sb.append(", userEmail='").append(userEmail).append('\'');
-        sb.append(", sourceService='").append(sourceService).append('\'');
-        sb.append(", requestCorrelationId=").append(requestCorrelationId);
-        sb.append('}');
-        return sb.toString();
-    }
 }

@@ -7,6 +7,9 @@ public class LicenseTemplateDeletedEvent implements Serializable {
 
     private UUID id;
 
+    public LicenseTemplateDeletedEvent() {
+    }
+
     public UUID getId() {
         return id;
     }

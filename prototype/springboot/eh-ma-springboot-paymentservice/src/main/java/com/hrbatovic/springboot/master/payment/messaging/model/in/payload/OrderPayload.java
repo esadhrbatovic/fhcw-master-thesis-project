@@ -1,8 +1,5 @@
 package com.hrbatovic.springboot.master.payment.messaging.model.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -67,14 +64,4 @@ public class OrderPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
-                .append("userId", userId)
-                .append("paymentToken", paymentToken)
-                .append("paymentMethod", paymentMethod)
-                .append("orderItems", orderItems)
-                .toString();
-    }
 }

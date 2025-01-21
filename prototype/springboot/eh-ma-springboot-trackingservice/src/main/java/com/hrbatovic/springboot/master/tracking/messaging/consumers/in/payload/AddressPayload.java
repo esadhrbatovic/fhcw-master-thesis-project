@@ -1,19 +1,17 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 
 public class AddressPayload implements Serializable {
+
+    public AddressPayload() {
+    }
+
     private String street;
     private String city;
     private String state;
     private String postalCode;
     private String country;
-
-    public AddressPayload() {
-    }
 
     public String getStreet() {
         return street;
@@ -62,12 +60,13 @@ public class AddressPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("street", street)
-                .append("city", city)
-                .append("state", state)
-                .append("postalCode", postalCode)
-                .append("country", country)
-                .toString();
+        final StringBuilder sb = new StringBuilder("AddressPayload{");
+        sb.append("street='").append(street).append('\'');
+        sb.append(", city='").append(city).append('\'');
+        sb.append(", state='").append(state).append('\'');
+        sb.append(", postalCode='").append(postalCode).append('\'');
+        sb.append(", country='").append(country).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public class UserDeletedEvent implements Serializable {
+
+
+
     private UUID id;
 
     public UserDeletedEvent() {

@@ -1,5 +1,7 @@
 package com.hrbatovic.springboot.master.auth.api;
 
+import com.hrbatovic.master.springboot.auth.api.AuthApi;
+import com.hrbatovic.master.springboot.auth.model.*;
 import com.hrbatovic.springboot.master.auth.Hasher;
 import com.hrbatovic.springboot.master.auth.JwtAuthentication;
 import com.hrbatovic.springboot.master.auth.JwtTokenContainer;
@@ -12,7 +14,6 @@ import com.hrbatovic.springboot.master.auth.messaging.producers.UserCredentialsU
 import com.hrbatovic.springboot.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.springboot.master.auth.messaging.model.out.UserRegisteredEvent;
 import com.hrbatovic.springboot.master.auth.messaging.producers.UserRegisteredEventProducer;
-import com.hrbatovic.springboot.master.auth.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

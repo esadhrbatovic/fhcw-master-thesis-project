@@ -1,7 +1,6 @@
 package com.hrbatovic.springboot.master.license.messaging.model.out;
 
 import com.hrbatovic.springboot.master.license.messaging.model.out.payload.LicensePayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -9,6 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public class LicensesGeneratedEvent implements Serializable {
+
+    public LicensesGeneratedEvent() {
+    }
+
     private UUID orderId;
     private List<LicensePayload> licenses;
 
@@ -92,17 +95,4 @@ public class LicensesGeneratedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("orderId", orderId)
-                .append("licenses", licenses)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
-    }
 }

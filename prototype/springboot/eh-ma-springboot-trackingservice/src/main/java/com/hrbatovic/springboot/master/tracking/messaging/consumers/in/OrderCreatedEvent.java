@@ -1,15 +1,15 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in;
 
-
 import com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload.OrderPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OrderCreatedEvent implements Serializable {
+
+    public OrderCreatedEvent() {
+    }
 
     OrderPayload order;
 
@@ -89,16 +89,4 @@ public class OrderCreatedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("order", order)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
-    }
 }

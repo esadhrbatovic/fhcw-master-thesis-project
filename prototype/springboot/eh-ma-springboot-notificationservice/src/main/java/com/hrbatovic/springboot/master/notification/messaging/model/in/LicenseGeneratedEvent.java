@@ -1,8 +1,6 @@
 package com.hrbatovic.springboot.master.notification.messaging.model.in;
 
 import com.hrbatovic.springboot.master.notification.messaging.model.in.payload.LicensePayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -10,6 +8,9 @@ import java.util.List;
 import java.util.UUID;
 
 public class LicenseGeneratedEvent implements Serializable {
+
+    public LicenseGeneratedEvent() {
+    }
 
     private UUID orderId;
     private UUID userId;
@@ -97,20 +98,6 @@ public class LicenseGeneratedEvent implements Serializable {
     public LicenseGeneratedEvent setRequestCorrelationId(UUID requestCorrelationId) {
         this.requestCorrelationId = requestCorrelationId;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("orderId", orderId)
-                .append("userId", userId)
-                .append("licenses", licenses)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
     }
 }
 

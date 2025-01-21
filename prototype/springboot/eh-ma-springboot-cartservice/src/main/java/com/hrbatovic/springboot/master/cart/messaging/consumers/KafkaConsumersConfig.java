@@ -1,6 +1,6 @@
 package com.hrbatovic.springboot.master.cart.messaging.consumers;
 
-import com.hrbatovic.springboot.master.cart.messaging.consumers.model.in.*;
+import com.hrbatovic.springboot.master.cart.messaging.model.in.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;

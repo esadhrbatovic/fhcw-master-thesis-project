@@ -9,6 +9,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class ProductCreatedEvent implements Serializable {
+    public ProductCreatedEvent() {
+    }
+
     ProductPayload product;
 
     //Metadata
@@ -89,14 +92,15 @@ public class ProductCreatedEvent implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("product", product)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
+        final StringBuilder sb = new StringBuilder("ProductCreatedEvent{");
+        sb.append("product=").append(product);
+        sb.append(", timestamp=").append(timestamp);
+        sb.append(", sessionId=").append(sessionId);
+        sb.append(", userId=").append(userId);
+        sb.append(", userEmail='").append(userEmail).append('\'');
+        sb.append(", sourceService='").append(sourceService).append('\'');
+        sb.append(", requestCorrelationId=").append(requestCorrelationId);
+        sb.append('}');
+        return sb.toString();
     }
 }

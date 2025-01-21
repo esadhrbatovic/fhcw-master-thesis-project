@@ -1,8 +1,5 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
-
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -135,19 +132,20 @@ public class ProductPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("id", id)
-                .append("title", title)
-                .append("description", description)
-                .append("categoryId", categoryId)
-                .append("price", price)
-                .append("currency", currency)
-                .append("imageUrl", imageUrl)
-                .append("licenseAvailable", licenseAvailable)
-                .append("deleted", deleted)
-                .append("tags", tags)
-                .append("createdAt", createdAt)
-                .append("updatedAt", updatedAt)
-                .toString();
+        final StringBuilder sb = new StringBuilder("ProductPayload{");
+        sb.append("id=").append(id);
+        sb.append(", title='").append(title).append('\'');
+        sb.append(", description='").append(description).append('\'');
+        sb.append(", categoryId=").append(categoryId);
+        sb.append(", price=").append(price);
+        sb.append(", currency='").append(currency).append('\'');
+        sb.append(", imageUrl='").append(imageUrl).append('\'');
+        sb.append(", licenseAvailable=").append(licenseAvailable);
+        sb.append(", deleted=").append(deleted);
+        sb.append(", tags=").append(tags);
+        sb.append(", createdAt=").append(createdAt);
+        sb.append(", updatedAt=").append(updatedAt);
+        sb.append('}');
+        return sb.toString();
     }
 }

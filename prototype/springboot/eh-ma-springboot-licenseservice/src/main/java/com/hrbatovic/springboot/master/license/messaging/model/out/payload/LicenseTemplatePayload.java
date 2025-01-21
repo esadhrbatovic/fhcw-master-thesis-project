@@ -65,15 +65,5 @@ public class LicenseTemplatePayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "LicenseTemplateCreatedEvent{" +
-                "id=" + id +
-                ", productId=" + productId +
-                ", licenseDuration=" + licenseDuration +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 
 }

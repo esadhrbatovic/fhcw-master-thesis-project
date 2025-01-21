@@ -1,14 +1,15 @@
 package com.hrbatovic.springboot.master.payment.messaging.model.out;
 
 import com.hrbatovic.springboot.master.payment.messaging.model.out.payload.PaymentPayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class PaymentSuccessEvent implements Serializable {
+
+    public PaymentSuccessEvent() {
+    }
 
     private PaymentPayload paymentPayload;
 
@@ -84,16 +85,5 @@ public class PaymentSuccessEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("paymentPayload", paymentPayload)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
-    }
+
 }

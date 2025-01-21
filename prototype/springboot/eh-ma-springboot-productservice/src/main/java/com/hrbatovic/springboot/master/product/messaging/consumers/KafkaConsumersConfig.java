@@ -18,6 +18,7 @@ import java.util.Map;
 public class KafkaConsumersConfig {
 
     private <K, V> ConsumerFactory<K, V> generateFactory(Deserializer<K> keyDeserializer, Deserializer<V> valueDeserializer) {
+        System.out.println("generateFactory");
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092"); //TODO: configurable
         props.put(JsonDeserializer.TRUSTED_PACKAGES, "*");
@@ -56,6 +57,8 @@ public class KafkaConsumersConfig {
 
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, UserRegisteredEvent> userRegisteredFactory() {
+
+        System.out.println("userRegisteredFactory");
         ConcurrentKafkaListenerContainerFactory<String, UserRegisteredEvent> factory = new ConcurrentKafkaListenerContainerFactory<>();
         var consumerFactory = generateFactory(new StringDeserializer(), new JsonDeserializer<>(UserRegisteredEvent.class));
         factory.setConsumerFactory(consumerFactory);

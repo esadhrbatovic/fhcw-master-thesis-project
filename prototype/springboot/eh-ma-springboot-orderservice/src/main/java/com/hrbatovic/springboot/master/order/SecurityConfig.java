@@ -45,6 +45,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationEntryPoint unauthorizedEntryPoint() {
         return (HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) -> {
+
+            authException.printStackTrace();
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
         };

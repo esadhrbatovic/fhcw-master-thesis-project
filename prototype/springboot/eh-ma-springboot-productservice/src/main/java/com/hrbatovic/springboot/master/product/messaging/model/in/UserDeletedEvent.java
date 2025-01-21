@@ -7,6 +7,9 @@ public class UserDeletedEvent implements Serializable {
 
     private UUID id;
 
+    public UserDeletedEvent() {
+    }
+
     public UUID getId() {
         return id;
     }

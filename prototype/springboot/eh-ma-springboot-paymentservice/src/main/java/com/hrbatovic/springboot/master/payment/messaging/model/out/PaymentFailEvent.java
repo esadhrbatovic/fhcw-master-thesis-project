@@ -9,6 +9,9 @@ import java.util.UUID;
 
 public class PaymentFailEvent implements Serializable {
 
+    public PaymentFailEvent() {
+    }
+
     private PaymentPayload paymentPayload;
 
     private String message;
@@ -91,20 +94,6 @@ public class PaymentFailEvent implements Serializable {
     public PaymentFailEvent setRequestCorrelationId(UUID requestCorrelationId) {
         this.requestCorrelationId = requestCorrelationId;
         return this;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("paymentPayload", paymentPayload)
-                .append("message", message)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
     }
 
 }

@@ -24,7 +24,7 @@ public class MessageConsumer {
 
     @KafkaListener(groupId = "product-group", topics = "user-registered", containerFactory = "userRegisteredFactory")
     public void onUserRegistered(UserRegisteredEvent userRegisteredEvent){
-        System.out.println("Recieved user-registered-in event: " + userRegisteredEvent);
+        System.out.println("Recieved user-registered-in event" + userRegisteredEvent);
 
         UserEntity userEntity = userRepository.findById(userRegisteredEvent.getUserPayload().getId()).orElse(null);
         if(userEntity != null){

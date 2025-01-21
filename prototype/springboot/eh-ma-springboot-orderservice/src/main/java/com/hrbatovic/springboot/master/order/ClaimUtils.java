@@ -1,8 +1,10 @@
 package com.hrbatovic.springboot.master.order;
 
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 
 import java.util.List;
 import java.util.Objects;
@@ -55,6 +57,8 @@ public class ClaimUtils {
 
     private JwtAuthentication getSecurityContext(){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Current SecurityContext: " + SecurityContextHolder.getContext().getAuthentication());
+
 
         if (authentication instanceof JwtAuthentication) {
             return (JwtAuthentication) authentication;

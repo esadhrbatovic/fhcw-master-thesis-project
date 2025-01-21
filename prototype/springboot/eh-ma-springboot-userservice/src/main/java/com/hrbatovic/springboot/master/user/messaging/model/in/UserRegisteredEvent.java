@@ -8,6 +8,8 @@ public class UserRegisteredEvent implements Serializable {
 
     private UserPayload userPayload;
 
+
+
     public UserPayload getUserPayload() {
         return userPayload;
     }

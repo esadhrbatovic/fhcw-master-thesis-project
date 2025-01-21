@@ -1,13 +1,15 @@
 package com.hrbatovic.springboot.master.tracking.messaging.consumers.in.payload;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 
 public class PaymentPayload implements Serializable {
+
+    public PaymentPayload() {
+    }
+
     private UUID userId;
     private UUID orderId;
     private List<PaidItemPayload> paidItemPayloads;
@@ -41,10 +43,11 @@ public class PaymentPayload implements Serializable {
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.JSON_STYLE)
-                .append("userId", userId)
-                .append("orderId", orderId)
-                .append("paidItemPayloads", paidItemPayloads)
-                .toString();
+        final StringBuilder sb = new StringBuilder("PaymentPayload{");
+        sb.append("userId=").append(userId);
+        sb.append(", orderId=").append(orderId);
+        sb.append(", paidItemPayloads=").append(paidItemPayloads);
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -1,0 +1,131 @@
+[
+  {
+    "name": "com.fasterxml.jackson.datatype.jsr310.JavaTimeModule",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "java.time.LocalDateTime",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.KeysBridge",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.DefaultClaimsBuilder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.DefaultJwtParserBuilder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.Claims",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.JwtAuthentication",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "org.springframework.security.core.Authentication",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.JwtAuthenticationFilter",
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
+  },
+  {
+    "name": "org.springframework.security.core.context.SecurityContextHolder",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.springframework.security.access.prepost.PreAuthorize",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.StandardSecureDigestAlgorithms",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.DefaultJwtBuilder",
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.StandardKeyOperations",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.StandardEncryptionAlgorithms",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.io.StandardCompressionAlgorithms",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.StandardKeyAlgorithms",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "io.jsonwebtoken.impl.security.DefaultJwtBuilder",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.messaging.model.out.UserDeletedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.messaging.model.out.UserUpdatedEvent",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.messaging.model.out.payload.UserDeletedEventProducer",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.messaging.model.out.payload.UserUpdatedEventProducer",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
+  }
+]

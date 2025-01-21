@@ -17,11 +17,5 @@ public class LicensesGeneratedEvent implements Serializable {
         this.orderId = orderId;
     }
 
-    @Override
-    public String toString() {
-        return "LicensesGeneratedEventPayload{" +
-                "orderId=" + orderId +
-                '}';
-    }
 
 }

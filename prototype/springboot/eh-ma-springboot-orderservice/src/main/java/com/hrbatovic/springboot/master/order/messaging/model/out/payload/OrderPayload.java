@@ -124,19 +124,4 @@ public class OrderPayload implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", id)
-                .append("userId", userId)
-                .append("status", status)
-                .append("currency", currency)
-                .append("totalAmount", totalAmount)
-                .append("createdAt", createdAt)
-                .append("updatedAt", updatedAt)
-                .append("paymentToken", paymentToken)
-                .append("paymentMethod", paymentMethod)
-                .append("orderItems", orderItems)
-                .toString();
-    }
 }

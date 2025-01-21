@@ -1,13 +1,14 @@
 package com.hrbatovic.springboot.master.license.messaging.model.out;
 
 import com.hrbatovic.springboot.master.license.messaging.model.out.payload.LicenseTemplatePayload;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class LicenseTemplateCreatedEvent implements Serializable {
+
+    public LicenseTemplateCreatedEvent() {
+    }
 
     private LicenseTemplatePayload licenseTemplate;
 
@@ -82,17 +83,5 @@ public class LicenseTemplateCreatedEvent implements Serializable {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this)
-                .append("licenseTemplate", licenseTemplate)
-                .append("timestamp", timestamp)
-                .append("sessionId", sessionId)
-                .append("userId", userId)
-                .append("userEmail", userEmail)
-                .append("sourceService", sourceService)
-                .append("requestCorrelationId", requestCorrelationId)
-                .toString();
-    }
 
 }

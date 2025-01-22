@@ -127,5 +127,12 @@
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.user.exceptions.EhMaExceptionHandler$ErrorResponse",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true,
+    "allDeclaredConstructors": true
   }
+
 ]

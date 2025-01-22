@@ -35,7 +35,7 @@
     "allDeclaredMethods": true
   },
   {
-    "name": "com.hrbatovic.springboot.master.user.JwtAuthentication",
+    "name": "com.hrbatovic.springboot.master.auth.JwtAuthentication",
     "allDeclaredFields": true,
     "allDeclaredMethods": true
   },
@@ -45,7 +45,7 @@
     "allDeclaredFields": true
   },
   {
-    "name": "com.hrbatovic.springboot.master.user.JwtAuthenticationFilter",
+    "name": "com.hrbatovic.springboot.master.auth.JwtAuthenticationFilter",
     "allDeclaredMethods": true,
     "allDeclaredFields": true
   },
@@ -127,5 +127,11 @@
     "allDeclaredFields": true,
     "allDeclaredMethods": true,
     "allDeclaredConstructors": true
+  },
+  {
+    "name": "com.hrbatovic.springboot.master.auth.exceptions.EhMaExceptionHandler$ErrorResponse",
+    "allDeclaredConstructors": true,
+    "allDeclaredMethods": true,
+    "allDeclaredFields": true
   }
 ]

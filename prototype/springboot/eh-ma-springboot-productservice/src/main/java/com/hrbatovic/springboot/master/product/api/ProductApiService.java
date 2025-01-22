@@ -171,6 +171,7 @@ public class ProductApiService implements ProductsApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public DeleteProductResponse deleteProduct(UUID id) {
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 

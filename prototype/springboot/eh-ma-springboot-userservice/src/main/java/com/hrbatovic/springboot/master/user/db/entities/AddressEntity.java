@@ -1,5 +1,6 @@
 package com.hrbatovic.springboot.master.user.db.entities;
 
+import com.hrbatovic.springboot.master.user.exceptions.EhMaExceptionHandler;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
@@ -12,6 +13,7 @@ public class AddressEntity {
     private String country;
 
     public AddressEntity() {
+
     }
 
     public String getStreet() {

@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: AuthService API
+  version: 1.0.0
+  description: API specification for the AuthService of the e-shop application. Handles user authentication and authorization.
+
+servers:
+  - url: localhost:8081
+    description: local dev
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      operationId: register
+      tags:
+        - Authentication
+      requestBody:
+        description: User registration data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+        '400':
+          description: Bad Request - Invalid input data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/login:
+    post:
+      summary: Authenticate a user and obtain an access token
+      operationId: login
+      tags:
+        - Authentication
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Bad Request - Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/credentials:
+    put:
+      security:
+        - bearerAuth: []
+      summary: Update user credentials
+      operationId: updateCredentials
+      tags:
+        - Credentials
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateCredentialsRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCredentialsResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /auth/credentials/{id}:
+    put:
+      security:
+        - bearerAuth: []
+      summary: ADMIN ONLY - Update user credentials
+      operationId: adminUpdateCredentials
+      tags:
+        - Credentials
+      parameters:
+        - $ref: '#/components/parameters/AuthUserIdPathParam'
+      requestBody:
+        description: User login credentials
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminUpdateCredentialsRequest'
+      responses:
+        '200':
+          description: User authenticated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AuthUserIdPathParam:
+      name: id
+      in: path
+      description: UUID of the user
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 123e4567-e89b-12d3-a456-426614174000
+
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        userData:
+          $ref: '#/components/schemas/UserForm'
+        credentials:
+          $ref: '#/components/schemas/CredentialsForm'
+
+    UserForm:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phoneNumber:
+          type : string
+        address:
+          $ref: '#/components/schemas/AddressForm'
+
+    AddressForm:
+      type: object
+      properties:
+        street:
+          type: string
+          example: '123 Main St'
+        city:
+          type: string
+          example: 'Anytown'
+        state:
+          type: string
+          example: 'State'
+        postalCode:
+          type: string
+          example: '12345'
+        country:
+          type: string
+          example: 'Country'
+
+    CredentialsForm:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - password
+
+    AdminUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    UserUpdateCredentialsRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User registered successfully.
+        token:
+          type: string
+          example: "bearer ey...."
+
+    LoginRequest:
+      type: object
+      properties:
+        credentials:
+          $ref: '#/components/schemas/CredentialsForm'
+
+    LoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        message:
+          type: string
+          description: Successful login response message
+          example: "Login successful"
+
+    UpdateCredentialsResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        message:
+          type: string
+          description: Successful update of user credentials
+          example: "Credentials updated successfuly"
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+
+tags:
+  - name: Authentication
+    description: Register and login user.

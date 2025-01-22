@@ -14,7 +14,7 @@ public class EhMaExceptionHandler {
                 .body(new ErrorResponse(ex.getCode(), ex.getMessage()));
     }
 
-    static class ErrorResponse {
+    public static class ErrorResponse {
         private final int code;
         private final String message;
 

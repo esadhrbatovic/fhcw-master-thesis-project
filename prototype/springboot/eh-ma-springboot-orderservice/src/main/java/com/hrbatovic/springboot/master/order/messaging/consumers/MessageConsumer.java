@@ -33,19 +33,34 @@ public class MessageConsumer {
 
     @KafkaListener(groupId = "order-group", topics = "checkout-started", containerFactory = "checkoutStartedFactory")
     public void onCheckoutStarted(CheckoutStartedEvent checkoutStartedEvent) {
-        OrderEntity orderEntity = orderRepository.findById(checkoutStartedEvent.getCart().getId()).orElse(null);
+        try{
+            System.out.println("Recieved checkout-started event: " + checkoutStartedEvent);
 
-        if (orderEntity != null) {
-            return;
+            System.out.println("In try block");
+            OrderEntity orderEntity = orderRepository.findById(checkoutStartedEvent.getCart().getId()).orElse(null);
+            System.out.println("Fetched mongodb");
+
+            if (orderEntity != null) {
+                return;
+            }
+            System.out.println("Order not there");
+
+            orderEntity = mapper.map(checkoutStartedEvent.getCart());
+            System.out.println("mapped to new order entity");
+            orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethod());
+            System.out.println("mapped paymentmethod");
+            orderEntity.setPaymentToken(checkoutStartedEvent.getPaymentToken());
+            System.out.println("saved order entity");
+            orderRepository.save(orderEntity);
+            System.out.println("saved order entity");
+
+            OrderCreatedEvent orderCreatedEvent = buildOrderCreatedEvent(checkoutStartedEvent, orderEntity);
+            System.out.println("constructed order created event");
+            orderCreatedEventProducer.send(orderCreatedEvent);
+            System.out.println("order-created event sent");
+        }catch(Exception e){
+            e.printStackTrace();
         }
-
-        orderEntity = mapper.map(checkoutStartedEvent.getCart());
-        orderEntity.setPaymentMethod(checkoutStartedEvent.getPaymentMethod());
-        orderEntity.setPaymentToken(checkoutStartedEvent.getPaymentToken());
-        orderRepository.save(orderEntity);
-
-        OrderCreatedEvent orderCreatedEvent = buildOrderCreatedEvent(checkoutStartedEvent, orderEntity);
-        orderCreatedEventProducer.send(orderCreatedEvent);
     }
 
 

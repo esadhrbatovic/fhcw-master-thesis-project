@@ -11,6 +11,8 @@ import com.hrbatovic.springboot.master.notification.messaging.model.out.OrderNot
 import com.hrbatovic.springboot.master.notification.messaging.producers.OrderNotificationSentEventProducer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,6 +32,9 @@ public class MessageConsumers {
     @Autowired
     MapUtil mapper;
 
+
+    @Autowired
+    private JavaMailSender emailSender;
 
     @KafkaListener(groupId = "notification-group", topics = "licenses-generated", containerFactory = "licensesGeneratedFactory")
     public void onLicensesGenerated(LicenseGeneratedEvent licenseGeneratedEvent){
@@ -106,11 +111,15 @@ public class MessageConsumers {
         notificationEntity.setUserId(userEntity.getId());
         notificationRepository.save(notificationEntity);
 
-        //TODO: sendMail
+        sendMail(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody());
     }
 
     public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
         UserEntity userEntity = userRepository.findById(licenseGeneratedEvent.getUserId()).orElse(null);
+
+        if (userEntity == null) {
+            return;
+        }
 
         NotificationEntity notificationEntity = new NotificationEntity();
         notificationEntity.setEmail(userEntity.getEmail());
@@ -121,7 +130,7 @@ public class MessageConsumers {
         notificationEntity.setType("order-completed");
         notificationRepository.save(notificationEntity);
 
-        //TODO: send mail
+        sendMail(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody());
     }
 
     private static OrderNotificationSentEvent buildOrderNotificationSentEvent(LicenseGeneratedEvent licenseGeneratedEvent) {
@@ -136,4 +145,14 @@ public class MessageConsumers {
 
     }
 
+
+    public void sendMail(
+            String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("g2c.admin@hrbatovic.com");
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        emailSender.send(message);
+    }
 }

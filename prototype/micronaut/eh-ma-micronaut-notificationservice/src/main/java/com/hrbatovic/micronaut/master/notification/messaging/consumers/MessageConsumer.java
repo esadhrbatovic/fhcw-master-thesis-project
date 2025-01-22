@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.notification.messaging.consumers;
 
+import com.hrbatovic.micronaut.master.notification.MailSender;
 import com.hrbatovic.micronaut.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.micronaut.master.notification.db.entities.UserEntity;
 import com.hrbatovic.micronaut.master.notification.db.repositories.NotificationRepository;
@@ -29,6 +30,9 @@ public class MessageConsumer {
 
     @Inject
     MapUtil mapper;
+
+    @Inject
+    MailSender mailSender;
 
     @Topic("licenses-generated")
     public void onLicensesGenerated(LicenseGeneratedEvent licenseGeneratedEvent){
@@ -107,7 +111,7 @@ public class MessageConsumer {
         notificationEntity.setUserId(userEntity.getId());
         notificationRepository.save(notificationEntity);
 
-        //TODO: sendMail
+        mailSender.sendEmail(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody());
     }
 
     public void sendOrderConfirmation(LicenseGeneratedEvent licenseGeneratedEvent){
@@ -122,7 +126,7 @@ public class MessageConsumer {
         notificationEntity.setType("order-completed");
         notificationRepository.save(notificationEntity);
 
-        //TODO: send mail
+        mailSender.sendEmail(notificationEntity.getEmail(), notificationEntity.getSubject(), notificationEntity.getBody());
     }
 
     private static OrderNotificationSentEvent buildOrderNotificationSentEvent(LicenseGeneratedEvent licenseGeneratedEvent) {

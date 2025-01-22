@@ -40,6 +40,16 @@
     "allDeclaredMethods": true
   },
   {
+    "name": "io.jsonwebtoken.Jwts",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
+    "name": "io.jsonwebtoken.Jwts.SIG",
+    "allDeclaredFields": true,
+    "allDeclaredMethods": true
+  },
+  {
     "name": "com.hrbatovic.springboot.master.order.JwtAuthentication",
     "allDeclaredFields": true,
     "allDeclaredMethods": true

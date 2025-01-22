@@ -2,14 +2,13 @@ package com.hrbatovic.springboot.master.order.messaging.model.out;
 
 import com.hrbatovic.springboot.master.order.messaging.model.out.payload.OrderPayload;
 
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class OrderCreatedEvent implements Serializable {
 
-    OrderPayload order;
+    private OrderPayload order;
 
     //Metadata
     private LocalDateTime timestamp;

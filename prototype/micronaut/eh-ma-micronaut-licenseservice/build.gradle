@@ -77,7 +77,7 @@ micronaut {
         annotations("com.hrbatovic.micronaut.*")
     }
     testResources {
-        sharedServer = true
+        enabled.set(false)
     }
     aot {
         // Please review carefully the optimizations enabled below

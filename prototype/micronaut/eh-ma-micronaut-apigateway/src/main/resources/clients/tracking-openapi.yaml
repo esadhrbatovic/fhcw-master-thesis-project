@@ -1,0 +1,353 @@
+openapi: 3.0.3
+info:
+  title: TrackingService API
+  version: 1.1.0
+  description: |
+    API specification for the TrackingService of the e-shop application.
+    Collects and records events for analytics and monitoring.
+    Provides admin endpoints to list and filter recorded events.
+
+servers:
+  - url: localhost:8089
+    description: local dev
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+  /events:
+    get:
+      summary: ADMIN ONLY - List recorded events
+      operationId: listEvents
+      tags:
+        - Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/EventTypeQueryParam'
+        - $ref: '#/components/parameters/EventSourceServiceQueryParam'
+        - $ref: '#/components/parameters/EventUserIdQueryParam'
+        - $ref: '#/components/parameters/EventUserEmailQueryParam'
+        - $ref: '#/components/parameters/EventSessionIdQueryParam'
+        - $ref: '#/components/parameters/EventProductIdQueryParam'
+        - $ref: '#/components/parameters/EventOrderIdQueryParam'
+        - $ref: '#/components/parameters/EventOccurredAfterQueryParam'
+        - $ref: '#/components/parameters/EventOccurredBeforeQueryParam'
+        - $ref: '#/components/parameters/EventRequestCorrelationIdQueryParam'
+        - $ref: '#/components/parameters/EventSortQueryParam'
+        - $ref: '#/components/parameters/AuthorizationHeader'
+      responses:
+        '200':
+          description: Events retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventListResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /events/{eventId}:
+    get:
+      summary: ADMIN ONLY - Get details of a specific event
+      operationId: getEventById
+      tags:
+        - Events
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/EventIdPathParam'
+        - $ref: '#/components/parameters/AuthorizationHeader'
+      responses:
+        '200':
+          description: Event retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Event does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AuthorizationHeader:
+      name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+
+    EventIdPathParam:
+      name: eventId
+      in: path
+      description: UUID of the event
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 789e1234-e89b-12d3-a456-426614174001
+
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    EventTypeQueryParam:
+      name: eventType
+      in: query
+      description: Filter events by event type
+      required: false
+      schema:
+        type: string
+        example: 'OrderCreated'
+
+    EventSourceServiceQueryParam:
+      name: sourceService
+      in: query
+      description: Filter events by source service name
+      required: false
+      schema:
+        type: string
+        example: 'OrderService'
+
+    EventUserIdQueryParam:
+      name: userId
+      in: query
+      description: Filter events by user ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
+    EventProductIdQueryParam:
+      name: productId
+      in: query
+      description: Filter events by product ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 321e4567-e89b-12d3-a456-426614174000
+
+    EventOrderIdQueryParam:
+      name: orderId
+      in: query
+      description: Filter events by order ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 789e4567-e89b-12d3-a456-426614174000
+
+    EventSessionIdQueryParam:
+      name: sessionId
+      in: query
+      description: Filter events by session ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 789e4567-e89b-12d3-a456-426614174000
+
+    EventUserEmailQueryParam:
+      name: userEmail
+      in: query
+      description: Filter events by user email
+      required: false
+      schema:
+        type: string
+
+    EventOccurredAfterQueryParam:
+      name: occurredAfter
+      in: query
+      description: Filter events that occurred after a specific date and time
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-10-01T00:00:00Z'
+
+    EventOccurredBeforeQueryParam:
+      name: occurredBefore
+      in: query
+      description: Filter events that occurred before a specific date and time
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-10-31T23:59:59Z'
+
+    EventRequestCorrelationIdQueryParam:
+      name: requestCorrelationId
+      in: query
+      description: Filter events by request correlation ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
+    EventSortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'dateAsc', 'dateDesc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - dateAsc
+          - dateDesc
+        example: 'dateDesc'
+
+  schemas:
+    Event:
+      type: object
+      properties:
+        eventId:
+          type: string
+          format: uuid
+          example: 789e1234-e89b-12d3-a456-426614174001
+        eventType:
+          type: string
+          description: Type of the event
+          example: 'OrderCreated'
+        body:
+          type: string
+          description: Event payload (usually a JSON string)
+          example: '{"orderId": "789e4567-e89b-12d3-a456-426614174000", "userId": "456e7890-e89b-12d3-a456-426614174002"}'
+        metadata:
+          type: object
+          description: Additional metadata about the event
+          properties:
+            userId:
+              type: string
+              format: uuid
+              example: '456e7890-e89b-12d3-a456-426614174002'
+            productId:
+              type: string
+              format: uuid
+              example: '321e4567-e89b-12d3-a456-426614174000'
+            orderId:
+              type: string
+              format: uuid
+              example: '789e4567-e89b-12d3-a456-426614174000'
+            userMail:
+              type: string
+            sessionId:
+              type: string
+              format: uuid
+            sourceService:
+              type: string
+              description: Name of the service that generated the event
+              example: 'OrderService'
+            requestCorrelationId:
+              type: string
+              format: uuid
+              example: '789e4567-e89b-12d3-a456-426614174000'
+            timestamp:
+              type: string
+              format: date-time
+              description: Timestamp when the event occurred
+              example: '2023-10-17T09:00:00Z'
+
+
+    EventListResponse:
+      type: object
+      properties:
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+        pagination:
+          type: object
+          properties:
+            currentPage:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 5
+            totalItems:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+tags:
+  - name: Events
+    description: Endpoints related to viewing and managing tracked events.

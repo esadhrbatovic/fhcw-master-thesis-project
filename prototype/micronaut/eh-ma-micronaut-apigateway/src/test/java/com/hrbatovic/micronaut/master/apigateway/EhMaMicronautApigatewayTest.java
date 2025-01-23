@@ -1,4 +1,4 @@
-package com.hrbat.micronaut.master.apigateway;
+package com.hrbatovic.micronaut.master.apigateway;
 
 import io.micronaut.runtime.EmbeddedApplication;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;

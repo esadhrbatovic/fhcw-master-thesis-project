@@ -1,0 +1,288 @@
+openapi: 3.0.3
+info:
+  title: NotificationService API
+  version: 1.0.0
+  description: |
+    API specification for the NotificationService of the e-shop application.
+    Sends notifications (e.g., emails) to users.
+    Provides admin endpoints to list and filter notifications that have been sent.
+
+servers:
+  - url: localhost:8088
+    description: local dev
+
+paths:
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      tags:
+        - Health
+      responses:
+        '200':
+          description: Authservice health response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+  /notifications:
+    get:
+      summary: ADMIN ONLY - List sent notifications
+      operationId: listNotifications
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageQueryParam'
+        - $ref: '#/components/parameters/LimitQueryParam'
+        - $ref: '#/components/parameters/EmailQueryParam'
+        - $ref: '#/components/parameters/NotificationUserIdQueryParam'
+        - $ref: '#/components/parameters/NotificationTypeQueryParam'
+        - $ref: '#/components/parameters/NotificationSentAfterQueryParam'
+        - $ref: '#/components/parameters/NotificationSentBeforeQueryParam'
+        - $ref: '#/components/parameters/NotificationSortQueryParam'
+        - $ref: '#/components/parameters/AuthorizationHeader'
+      responses:
+        '200':
+          description: Notifications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationListResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /notifications/{notificationId}:
+    get:
+      summary: ADMIN ONLY - Get details of a specific notification
+      operationId: getNotificationById
+      tags:
+        - Notifications
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/NotificationIdPathParam'
+        - $ref: '#/components/parameters/AuthorizationHeader'
+      responses:
+        '200':
+          description: Notification retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationResponse'
+        '401':
+          description: Unauthorized - Invalid or missing token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden - Not allowed to access this resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Not Found - Notification does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    AuthorizationHeader:
+      name: Authorization
+      in: header
+      required: true
+      schema:
+        type: string
+    NotificationIdPathParam:
+      name: notificationId
+      in: path
+      description: UUID of the notification
+      required: true
+      schema:
+        type: string
+        format: uuid
+        example: 789e1234-e89b-12d3-a456-426614174001
+
+    PageQueryParam:
+      name: page
+      in: query
+      description: Page number for pagination (default is 1)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+
+    LimitQueryParam:
+      name: limit
+      in: query
+      description: Number of items per page (default is 10)
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 10
+
+    EmailQueryParam:
+      name: email
+      in: query
+      description: Filter notifications by recipient email
+      required: false
+      schema:
+        type: string
+        format: email
+        example: user@example.com
+
+    NotificationUserIdQueryParam:
+      name: userId
+      in: query
+      description: Filter notifications by user ID
+      required: false
+      schema:
+        type: string
+        format: uuid
+        example: 456e7890-e89b-12d3-a456-426614174002
+
+    NotificationTypeQueryParam:
+      name: type
+      in: query
+      description: Filter notifications by type
+      required: false
+      schema:
+        type: string
+
+    NotificationSentAfterQueryParam:
+      name: sentAfter
+      in: query
+      description: Filter notifications sent after a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-01-01T00:00:00Z'
+
+    NotificationSentBeforeQueryParam:
+      name: sentBefore
+      in: query
+      description: Filter notifications sent before a specific date
+      required: false
+      schema:
+        type: string
+        format: date-time
+        example: '2023-12-31T23:59:59Z'
+
+    NotificationSortQueryParam:
+      name: sort
+      in: query
+      description: Sort order (e.g., 'dateAsc', 'dateDesc')
+      required: false
+      schema:
+        type: string
+        enum:
+          - dateAsc
+          - dateDesc
+        example: 'dateDesc'
+
+  schemas:
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 789e1234-e89b-12d3-a456-426614174001
+        userId:
+          type: string
+          format: uuid
+          description: User ID if the notification is associated with a user
+          example: 456e7890-e89b-12d3-a456-426614174002
+        email:
+          type: string
+          format: email
+          description: Recipient email address
+          example: user@example.com
+        type:
+          type: string
+          description: Type of the notification
+          example: 'orderConfirmation'
+        subject:
+          type: string
+          description: Email subject
+          example: 'Your Order Confirmation'
+        body:
+          type: string
+          description: Email body content
+          example: 'Thank you for your purchase...'
+        sentAt:
+          type: string
+          format: date-time
+          description: Timestamp when the notification was sent
+          example: '2023-10-17T09:00:00Z'
+
+
+    NotificationResponse:
+      allOf:
+        - $ref: '#/components/schemas/Notification'
+
+    NotificationListResponse:
+      type: object
+      properties:
+        notifications:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+        pagination:
+          type: object
+          properties:
+            currentPage:
+              type: integer
+              example: 1
+            totalPages:
+              type: integer
+              example: 5
+            totalItems:
+              type: integer
+              example: 50
+            limit:
+              type: integer
+              example: 10
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: string
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
+tags:
+  - name: Notifications
+    description: Endpoints related to viewing and managing notifications.

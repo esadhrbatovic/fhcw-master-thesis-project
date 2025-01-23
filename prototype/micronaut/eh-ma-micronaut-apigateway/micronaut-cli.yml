@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: com.hrbat.micronaut.master.apigateway
+defaultPackage: com.hrbatovic.micronaut.master.apigateway
 testFramework: junit
 sourceLanguage: java
 buildTool: gradle

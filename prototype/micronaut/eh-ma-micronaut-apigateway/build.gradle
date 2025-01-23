@@ -3,10 +3,11 @@ plugins {
     id("io.micronaut.application") version "4.4.4"
     id("io.micronaut.test-resources") version "4.4.4"
     id("io.micronaut.aot") version "4.4.4"
+    id("io.micronaut.openapi") version "4.4.4"
 }
 
 version = "0.1"
-group = "com.hrbat.micronaut.master.apigateway"
+group = "com.hrbatovic.micronaut.master.apigateway"
 
 repositories {
     mavenCentral()
@@ -19,15 +20,23 @@ dependencies {
     implementation("io.micronaut.data:micronaut-data-mongodb")
     implementation("io.micronaut.kafka:micronaut-kafka")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
-    compileOnly("io.micronaut:micronaut-http-client")
+    implementation ("io.micronaut:micronaut-http-client")
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly("org.mongodb:mongodb-driver-sync")
-    testImplementation("io.micronaut:micronaut-http-client")
+
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+
+    runtimeOnly("org.yaml:snakeyaml")
+
+    implementation("org.springframework.security:spring-security-crypto:6.2.0")
+    runtimeOnly("io.micronaut.security:micronaut-security-jwt")
+    implementation("io.micronaut.security:micronaut-security")
 }
 
 
 application {
-    mainClass = "com.hrbat.micronaut.master.apigateway.Application"
+    mainClass = "com.hrbatovic.micronaut.master.apigateway.Application"
 }
 
 java {
@@ -43,15 +52,165 @@ micronaut {
     testRuntime("junit5")
     processing {
         incremental(true)
-        annotations("com.hrbat.micronaut.master.apigateway.*")
+        annotations("com.hrbatovic.micronaut.*")
     }
     testResources {
-        sharedServer = true
+        enabled.set(false)
+    }
+    openapi {
+        server(file("src/main/resources/openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.micronaut.master.apigateway.api"
+            modelPackageName = "com.hrbatovic.micronaut.master.apigateway.model"
+            useReactive = false
+            useAuth = false
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("authClient", file("src/main/resources/clients/auth-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.auth.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.auth.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "authClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("userClient", file("src/main/resources/clients/user-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.user.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.user.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "userClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("productClient", file("src/main/resources/clients/product-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.product.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.product.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "productClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("cartClient", file("src/main/resources/clients/cart-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.cart.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.cart.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "cartClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("orderClient", file("src/main/resources/clients/order-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.order.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.order.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "orderClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("paymentClient", file("src/main/resources/clients/payment-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.payment.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.payment.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "paymentClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("notificationClient", file("src/main/resources/clients/notification-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.notification.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.notification.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "notificationClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("trackingClient", file("src/main/resources/clients/tracking-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.tracking.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.tracking.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "trackingClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
+        client("licenseClient", file("src/main/resources/clients/license-openapi.yaml")) {
+            apiPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.license.api"
+            modelPackageName = "com.hrbatovic.master.micronaut.apigateway.clients.license.model"
+            useOptional = false
+            useReactive = false
+            useAuth = false
+            clientId = "licenseClient"
+            additionalProperties = [
+                    "dateLibrary"           : "java8-localdatetime",
+                    "typeMappings.date-time": "LocalDateTime",
+                    "typeMappings.date"     : "LocalDate",
+                    "importMappings.LocalDateTime": "java.time.LocalDateTime",
+                    "importMappings.LocalDate": "java.time.LocalDate"
+            ]
+        }
     }
     aot {
         // Please review carefully the optimizations enabled below
         // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
-        optimizeServiceLoading = false
+        optimizeServiceLoading = true
         convertYamlToJava = false
         precomputeOperations = true
         cacheEnvironment = true
@@ -59,6 +218,7 @@ micronaut {
         deduceEnvironment = true
         optimizeNetty = true
         replaceLogbackXml = true
+        precomputeOperations = true
     }
 }
 

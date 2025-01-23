@@ -248,12 +248,12 @@ public class MessageConsumer {
         });
     }
 
-    @Incoming("license-generated-in")
-    public void onLicenseGenerated(LicensesGeneratedEvent licensesGeneratedEvent) {
+    @Incoming("licenses-generated-in")
+    public void onLicensesGenerated(LicensesGeneratedEvent licensesGeneratedEvent) {
         System.out.println("Recieved license-generated-in event: " + licensesGeneratedEvent);
         executor.runAsync(() -> {
             EventEntity eventEntity = new EventEntity();
-            eventEntity.setEventType("license-generated");
+            eventEntity.setEventType("licenses-generated");
             eventEntity.setBody(licensesGeneratedEvent.toString());
             MetadataEntity metadataEntity = new MetadataEntity();
             metadataEntity.setUserId(licensesGeneratedEvent.getUserId());

@@ -271,6 +271,23 @@
             }
         }
 
+        /* Styling for inline code elements */
+        .code-inline {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f4f4f4;
+            color: #d63384;
+            /* A nice magenta tone for differentiation */
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            /* Prevent wrapping */
+            border: 1px solid #e2e2e2;
+            display: inline;
+            vertical-align: middle;
+            /* Keeps inline code aligned nicely with text */
+        }
+
         /* Additional Responsive Styles for Tables */
         @media (max-width: 600px) {
             table {
@@ -290,6 +307,8 @@
             table col:nth-child(3) {
                 width: 40%;
             }
+
+
         }
     </style>
 </head>
@@ -346,14 +365,49 @@
                 </li>
             </ul>
 
-            <h2>Use Cases & Choreographies</h2>
+            <h2>Choreographies - Process Descriptions</h2>
             <ul class="service-list">
                 <li class="service-item">
                     <h3><a href="#registeruser">Register user</a></h3>
+                    <p>Event Tracking & Analytics</p>
+                    <p>Flow Chart & Description of user registration</p>
                 </li>
                 <li class="service-item">
                     <h3><a href="#buyprocess">Buying process</a></h3>
+                    <p>Flow Chart & Description of buying process</p>
                 </li>
+            </ul>
+
+            <h2>Cross Cutting Concerns</h2>
+            <ul class="service-list">
+                <li class="service-item">
+                    <h3><a href="#communication">Communication</a></h3>
+                    <p>Messaging pattern</p>
+                    <p>API Gateway</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#dbperservice">Persistence - CQRS pattern</a></h3>
+                    <p>Database per service pattern</p>
+                    <p>Command Query Responsibility Segregation</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#sagas">Distributed Transactions - Saga Pattern</a></h3>
+                    <p>Handling of errors over microservices with database per service approach</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#security">Security</a></h3>
+                    <p>Authentication & Authorization with JWT Tokens</p>
+                    <p>Hashing</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#monitoring">Monitoring</a></h3>
+                    <p>Tracability and monitoring of microservice processes</p>
+                </li>
+                <li class="service-item">
+                    <h3><a href="#codegen">Code Generation - OpenApi</a></h3>
+                    <p>Contract first approach with OpenApi specifications</p>
+                </li>
+
             </ul>
 
         </nav>
@@ -362,45 +416,52 @@
             <section id="introduction">
                 <h2>Introduction</h2>
                 <p>
-                    Microservice architectures enable software systems to be divided into small, independently
-                    deployable modules that collaboratively address specific business challenges. Integration within
-                    these architectures can follow either orchestration or choreography approaches. Choreography-based
-                    architectures are particularly well-suited for modern cloud environments, offering advantages such
-                    as independent deployability, loose coupling, and enhanced scalability. They rely on event-driven
-                    communication and eventual consistency without a central controller, allowing systems to better
+                    Integration of <strong>microservices</strong> can 
+                    either follow an <strong>orchestration</strong> or <strong>choreography</strong> approach. Choreographies offer asynchronous communication, loose coupling and enhanced scalability. 
+                    Due to their event-driven nature, they can achieve <strong>eventual consistency</strong> without a centralized controller. This allows systems to better
                     manage traffic spikes and maintain functionality even if individual services fail. Additionally,
                     this approach supports agile development by allowing teams to work concurrently and independently on
-                    different services, resulting in flexible and resilient products without single points of failure.
+                    different services, which results in flexible and resilient products without single points of failure.
                 </p>
                 <p>
-                    Java remains one of the most widely used programming languages, making it highly relevant for
-                    microservice architectures. Its popularity and extensive tool support make it a preferred choice for
-                    many organizations. Recently, alternative Java frameworks and runtimes like Quarkus, Micronaut, and
-                    Spring Boot have emerged, specifically designed to meet the demands of cloud-based microservices
+                    <strong>Java</strong> remains one of the most widely used programming languages, making it very relevant for
+                    microservice architectures. Its popularity and broad tool support make it a preferred choice for
+                    many organizations. Recently, alternative Java frameworks and runtimes like <strong>Quarkus</strong>, <strong>Micronaut</strong>, and
+                    <strong>Spring Boot</strong> have emerged, specifically designed to meet the demands of <strong>cloud-native</strong> applications
                     with improvements in performance optimization, resource utilization, and startup speed.
                 </p>
                 <p>
-                    A key focus of this work is the comparison between JVM-based and native Java service implementations
-                    using GraalVM. GraalVM’s Ahead-Of-Time (AOT) compilation enables faster startup times and reduced
-                    memory consumption, which are essential for distributed and cloud-native systems.
+                    A key focus of this work is the comparison between <strong>JVM-based</strong> and <strong>native Java</strong> service implementations
+                    using <strong>GraalVM</strong>. GraalVM’s <strong>Ahead-Of-Time (AOT) compilation</strong> promises faster startup times and reduced
+                    memory consumption, which are essential for distributed and cloud-native systems. Up unitl recently, 
+                    <strong>serverless functions</strong> and java applications were not a great match due to the JVM warm-up time.  
+                    It can usually be attributed to lazy class loading and <strong>just-in-time compilation</strong>, which optimize the JVM for subsequent requests.
+                    However with GraalVM on the playing field and its AOT compilation capabilities, Java became a viable option.
+                    Limitations exist, especially due to the fact that the JVM works with reflection.
+                    Java native executables needs to know ahead-of-time the reflectively accessed program elements.
+                    GraalVM tries to resolve the target elements through a static analysis that detects calls to the Reflection API. Where the analysis fails, 
+                    the program elements reflectively accessed at run time must be specified using a manual configuration. 
                 </p>
                 <p>
                     This study evaluates which of the three leading Java frameworks—Quarkus, Micronaut, and Spring
-                    Boot—performs best in a choreography-based architecture under realistic conditions concerning
-                    startup time, performance, and resource usage. By examining necessary adjustments and existing
-                    limitations, the research aims to provide valuable insights for developers and architects. These
-                    insights will assist in making informed decisions for implementing cost-effective and
-                    high-performance cloud and serverless solutions, demonstrated through a digital goods e-shop
+                    Boot performs best in a microservice choreography under realistic conditions concerning
+                    startup time, throughput, data propagation times, as well as CPU- and memory usage. By examining necessary adjustments, design patterns and existing
+                    limitations with GraalVM, the research aims to provide valuable insights for developers and architects. The objective is to assist in making informed decisions 
+                    for implementing cost-effective and high-performance cloud-native / servlerless solutions with java, demonstrated through a digital goods e-shop
                     application.
                 </p>
             </section>
 
             <h2>High Level Architecture</h2>
-            <p>Below is a high-level overview of the system architecture, illustrating how the microservices interact
-                with each other and external components.</p>
+            <p>
+                
+            The following section, provides insights into each of the services, describing their APIs using interactive OpenApi specifications, database schemas and outgoing events.
+            </p>
             <div class="arch-image">
                 <img src="images/architecture-diagram.jpg" alt="High-Level Architecture Diagram">
             </div>
+
+
             <!-- ApiGateway Section -->
             <h2 id="apigateway">ApiGateway</h2>
             <p>Entry point for external requests</p>
@@ -1499,14 +1560,45 @@
                 </tbody>
             </table>
 
+            <h1>Process descriptions - Choreographies</h1>
             <section>
                 <h2 id="registeruser">Register user</h2>
                 <div class="arch-image">
                     <img src="images/register-user.jpg" alt="register user process">
                 </div>
-                    
-                <p>Register user description WIP</p>
 
+                <p>
+                    The <strong>user registration process</strong> consists of the following steps:
+                </p>
+                <ol>
+                    <li>The <strong>client</strong> sends a <code class="code-inline">POST /auth/register</code> request
+                        to the
+                        <strong>ApiGateway</strong>, initiating the user registration process.
+                    </li>
+                    <li>The <strong>ApiGateway</strong> forwards the request to the <strong>AuthService</strong> for
+                        processing.</li>
+                    <li>The <strong>AuthService</strong> immediately responds to the <strong>ApiGateway</strong> and the
+                        <strong>client</strong> with a JWT token after successfuly storing the user's
+                        credentials.
+                    </li>
+                    <li>After the <strong>AuthService</strong> saves the user registration data in the <strong>MongoDB
+                            authdb</strong> it emits a <code class="code-inline">UserRegisteredEvent</code> to
+                        <strong>Kafka</strong>.
+                    </li>
+                    <li>The <strong>Kafka</strong> message broker propagates the <code
+                            class="code-inline">UserRegisteredEvent</code> to
+                        subscribing services.</li>
+                    <li>The <strong>UserService</strong> and all other services consume the
+                        <code class="code-inline">UserRegisteredEvent</code>, processes the event, and save
+                        user-specific information they
+                        to the <strong>MongoDB userdb</strong> Mainly the user's role and id for validation purposes.
+                    </li>
+                    <li>Simultaneously, the <strong>TrackingService</strong> consumes the
+                        <code class="code-inline">UserRegisteredEvent</code> and records an event log in the
+                        <strong>MongoDB
+                            trackingdb</strong> for analytics and tracking purposes.
+                    </li>
+                </ol>
             </section>
 
             <section>
@@ -1514,9 +1606,361 @@
                 <div class="arch-image">
                     <img src="images/buy-process.jpg" alt="buy process">
                 </div>
-                    
-                <p>Buy process description WIP</p>
 
+                <p>
+                    The <strong>buying process</strong> consists of the following steps:
+                </p>
+                <ol>
+                    <li>The <strong>Client</strong> sends a <code
+                            class="code-inline">POST /cart-products/checkout</code> request
+                        to the <strong>ApiGateway</strong>, initiating the checkout process.</li>
+                    <li>The <strong>ApiGateway</strong> forwards the request to the <strong>CartService</strong></li>
+                    </li>
+                    <li>The <strong>CartService</strong> reads the cart data from the <strong>MongoDB cartdb</strong>
+                        generates an order id and returns the order id to the <strong>Client</strong> through the
+                        <strong>ApiGateway</strong>
+                    </li>
+                    <li>The <strong>CartService</strong> generates a <code
+                            class="code-inline">CheckoutStartedEvent</code> and publishes it through
+                        <strong>Kafka</strong>,</li>
+                    </li>
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">CheckoutStartedEvent</code>, creates an order with a status of
+                        <strong>"OPEN"</strong>, saves it to the <strong>MongoDB orderdb</strong>, and emits an <code
+                            class="code-inline">OrderCreatedEvent</code>.
+                    </li>
+                    <li>The <strong>CartService</strong> consumes the <code class="code-inline">OrderCreatedEvent</code>
+                        and deletes the corresponding cart from the db, since the order is now pending and the cart is
+                        no longer needed</code>.</li>
+                    <li>The <strong>PaymentService</strong> consumes the <code
+                            class="code-inline">OrderCreatedEvent</code>, validates the payment method, processes the
+                        payment, and emits a <code class="code-inline">PaymentSuccessEvent</code>.</li>
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">PaymentSuccessEvent</code> to update the order status to
+                        <strong>"PAYMENT_SUCCESS"</strong>.
+                    </li>
+                    <li>The <strong>LicenseService</strong> consumes the <code
+                            class="code-inline">PaymentSuccessEvent</code>, searches for license templates in the
+                        <strong>MongoDB licensedb</strong>, generates the licenses, stores them, and emits a <code
+                            class="code-inline">LicensesGeneratedEvent</code>.
+                    </li>
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">LicensesGeneratedEvent</code> to update the order status to
+                        <strong>"LICENSES_GENERATED"</strong>.
+                    </li>
+                    <li>The <strong>NotificationService</strong> consumes the <code
+                            class="code-inline">LicensesGeneratedEvent</code>, queries user data (email and name) from
+                        its database, builds an email notification with the generated licenses, and emits a <code
+                            class="code-inline">NotificationSentEvent</code>.</li>
+                    <li>The <strong>NotificationService</strong> interacts with an <strong>external mail server</strong>
+                        to send the email to the user with the licenses attached.</li>
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">NotificationSentEvent</code> to update the order status to
+                        <strong>"COMPLETED"</strong>.
+                    </li>
+                    <li>Throughout the process, the <strong>TrackingService</strong> consumes all events (<code
+                            class="code-inline">CheckoutStartedEvent</code>, <code
+                            class="code-inline">OrderCreatedEvent</code>, <code
+                            class="code-inline">PaymentSuccessEvent</code>, <code
+                            class="code-inline">LicensesGeneratedEvent</code>, and <code
+                            class="code-inline">NotificationSentEvent</code>) and logs them to the <strong>MongoDB
+                            trackingdb</strong> for analytics and auditing purposes.</li>
+                </ol>
+            </section>
+
+            <h1>Cross Cutting Concerns and Design Patterns</h1>
+            <section>
+                <h2 id="communication">Communication</h2>
+                <h3>Messaging</h3>
+                <p>
+                    The <strong>Messaging</strong> pattern enables asynchronous communication between services by
+                    exchanging events through a message broker, such as <strong>Apache Kafka</strong>. In this
+                    architecture, services emit events, like <code class="code-inline">UserRegisteredEvent</code> or
+                    <code class="code-inline">PaymentFailEvent</code>, which other services consume independently. This
+                    decouples services, keeps them autonomous and each service can handle messages at their own pace.
+                </p>
+                <p>
+                    Messaging is essential for implementing choreographies, which allows for distributed transactions
+                    and eventual consistency while avoiding direct service-to-service dependencies or a central
+                    orchestrator.
+                </p>
+            </section>
+
+            <section>
+                <h3 id="gateway">API Gateway</h2>
+                    <p>
+                        The <strong>API Gateway</strong> acts as the single entry point for all external client
+                        requests, which can simplify communication with the underlying microservices as the clients
+                        don't need to know the addresses of each service. By routing, aggregating, and translating
+                        client requests, the API Gateway abstracts the complexity of the distributed system, which
+                        enables clients to easily communicate with the application.
+                    </p>
+                    <p>
+                        Additionally, this approach enables hiding the services within a private network, not making them
+                        accessible from the public internet. Multiple API gateways can be used for different clients,
+                        meeting their specific needs such as UI for admin and UI for customers.
+                    </p>
+            </section>
+
+
+
+            <section>
+                <h2 id="dbperservice">Persistence</h2>
+                <h3>Database per service - CQRS pattern</h3>
+                <p>
+                    In the <strong>Database per Service</strong> approach , each service has exclusive ownership of its
+                    own database. This pattern promotes loose coupling by isolating data within a service, which enables
+                    it to process it independently without impacting others. Each service can also choose the database
+                    technology that best suits its specific requirements.
+                </p>
+                <p>
+                    This approach is aiming for modularity, scalability, and resilience. Patterns like
+                    <strong>Saga</strong> can be used to manage distributed transactions and achieve eventual
+                    consistency across services when necessary.
+                </p>
+                <p>
+                    One drawback: How to implement a query that retrieves data from multiple services in a microservice
+                    architecture without introducing joins over the network? E.g <strong>OrderService</strong> might
+                    need to validate incoming requests but needs user data such as <code class="code-inline">role</code>
+                    and <code class="code-inline">id</code> for that.
+                </p>
+                <p>
+                    Here a compromise between normalized data models and redundancy is introduced. Normalized models
+                    reduce duplication, they tightly couple services. Redundancy and maintaining denormalized models
+                    ensures loose coupling at the cost of increased storage and complexity in achieving eventual
+                    consistency.
+                </p>
+                <p>
+                    While our <strong>UserService</strong> is the owner of it's data, the <strong>OrderService</strong>
+                    can store a copy of that as read only data entries, updating it when consuming certain events, like
+                    <code class="code-inline">UserUpdatedEvent</code> or <code
+                        class="code-inline">UserDeletedEvent</code>.
+                </p>
+                <p>
+                    This approach is also referred to as the Command Query Responsibility Segregation (CQRS) pattern.
+                    "Define a view database, which is a read-only ‘replica’ that is designed specifically to support
+                    that query, or a group of related queries. The application keeps the database up to date by
+                    subscribing to Domain events published by the service that own the data. The type of database and
+                    its schema are optimized for the query or queries. It’s often a NoSQL database, such as a document
+                    database or a key-value store."
+                </p>
+            </section>
+
+
+            <section>
+                <h2 id="sagas">Distributed Transactions - Saga Pattern</h2>
+                <h3>How to implement transactions that span services</h3>
+
+                <p>
+                    By implementing each business transaction that spans multiple services as a so called saga. A saga is a sequence of
+                    local transactions. Each local transaction updates the database and publishes a message or event to
+                    trigger the next local transaction in the saga. If a local transaction fails because it violates a
+                    business rule then the saga executes a series of compensating transactions. These either undo the changes
+                    that were made by the preceding local transactions or handle the violation.
+                </p>
+
+                <p>
+                    There are two ways to coordinate sagas:
+                <ul>
+                    <li>Choreography - each local transaction publishes domain events that trigger local transactions in
+                        other services</li>
+                    <li>Orchestration - an orchestrator (object) tells the participants what local transactions to
+                        execute</li>
+                </ul>
+
+                </p>
+                <h3>Payment failed scenario</h3>
+                <div class="arch-image">
+                    <img src="images/saga-payment-failed.jpg" alt="payment failed">
+                </div>
+                <p>
+                    A <strong>failed payment</strong> in this system follows a choreography-based saga, consisting of
+                    the following steps:
+                </p>
+                <ol>
+                    <li>The <strong>Client</strong> sends a <code
+                            class="code-inline">POST /cart-products/checkout</code> request
+                        to the <strong>ApiGateway</strong>, initiating the checkout process.</li>
+                    <li>The <strong>ApiGateway</strong> forwards the request to the <strong>CartService</strong></li>
+                    </li>
+                    <li>The <strong>CartService</strong> reads the cart data from the <strong>MongoDB cartdb</strong>
+                        generates an order id and returns the order id to the <strong>Client</strong> through the
+                        <strong>ApiGateway</strong>
+                    </li>
+                    <li>The <strong>CartService</strong> generates a <code
+                            class="code-inline">CheckoutStartedEvent</code> and publishes it through
+                        <strong>Kafka</strong>,</li>
+                    </li>
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">CheckoutStartedEvent</code>, creates an order with a status of
+                        <strong>"OPEN"</strong>, saves it to the <strong>MongoDB orderdb</strong>, and emits an <code
+                            class="code-inline">OrderCreatedEvent</code>.
+                    </li>
+                    <li>The <strong>CartService</strong> consumes the <code class="code-inline">OrderCreatedEvent</code>
+                        and deletes the corresponding cart from the db, since the order is now pending and the cart is
+                        no longer needed</code>.</li>
+                    <li>The <strong>PaymentService</strong> consumes the <code
+                            class="code-inline">OrderCreatedEvent</code>, validates the payment method, and attempts to
+                        process the payment. If the payment fails, it emits a <code
+                            class="code-inline">PaymentFailEvent</code>.</li>
+
+                    <p>From here on, compensating transactions are being performed, as suggested by the saga pattern.
+                    </p>
+
+                    <li>The <strong>OrderService</strong> consumes the <code
+                            class="code-inline">PaymentFailEvent</code>, rejects the order, and updates the order status
+                        to <strong>"PAYMENT_FAILED"</strong> in the <strong>MongoDB orderdb</strong>.</li>
+                    <li>The <strong>NotificationService</strong> consumes the <code
+                            class="code-inline">PaymentFailEvent</code>, queries user data (email and name) from its
+                        database, builds an email notification with the payment failure details, and emits a <code
+                            class="code-inline">NotificationSentEvent</code>.</li>
+                    <li>The <strong>NotificationService</strong> interacts with an <strong>external mail server</strong>
+                        to send an email to the user informing them of the payment failure.</li>
+                    <li>Throughout the process, the <strong>TrackingService</strong> consumes all relevant events (<code
+                            class="code-inline">CheckoutStartedEvent</code>, <code
+                            class="code-inline">OrderCreatedEvent</code>, <code
+                            class="code-inline">PaymentFailEvent</code>, and <code
+                            class="code-inline">NotificationSentEvent</code>) and logs them to the <strong>MongoDB
+                            trackingdb</strong> for analytics and auditing purposes.</li>
+                </ol>
+
+
+            </section>
+
+            <section>
+                <h2 id="security">Security</h2>
+                <h3>JWT Tokens</h3>
+                <p>
+                    <strong>JWT (JSON Web Tokens)</strong> are used as part of the security strategy to authenticate and
+                    authorize users.
+                <p>
+                    Some API endpoints are only open to admins, while others are open to both customers and admins. When
+                    a user logs in or registers, the <strong>AuthService</strong> generates a signed JWT containing
+                    user-specific claims. This token is included in subsequent API requests, allowing services to verify
+                    the user’s identity and permissions without directly querying the AuthService.
+                </p>
+                <div class="arch-image">
+                    <img src="images/admin-jwt.jpg" alt="admin jwt token">
+                </div>
+                <p>
+                    Example of an admin jwt token.
+                <ul>
+                    <li><code class="code-inline">iss</code>: Issuer of the token.</li>
+                    <li><code class="code-inline">upn</code>: User Principal Name, in our case the e-mail</li>
+                    <li><code class="code-inline">groups</code>: The user's roles for role based access control.</li>
+                    <li><code class="code-inline">sid</code>: Unique session id</li>
+                    <li><code class="code-inline">sub</code>: User id</li>
+                    <li><code class="code-inline">email</code>: User e-mail</li>
+                    <li><code class="code-inline">exp</code>: Expiration of token</li>
+                    <li><code class="code-inline">iat</code>: Issued at</li>
+                    <li><code class="code-inline">jti</code>: JWT Id, unique identifier for this token</li>
+                </ul>
+                </p>
+            </section>
+
+            <section>
+                <h2 id="hasing">Hashing</h2>
+                <h3>Protecting Sensitive Data</h3>
+                <p>
+                    The system implements <strong>hasing</strong> mechanisms to secure sensitive data, such as user
+                    credentials. Hashing is achieved using the <strong>BCrypt algorithm</strong>. Each
+                    framework—<strong>Spring Boot</strong>, <strong>Micronaut</strong>, and
+                    <strong>Quarkus</strong>—utilizes its native or integrated libraries to provide secure hashing
+                    functionality.
+                </p>
+                <p>
+                    <strong>Implementation Details:</strong>
+                <ul>
+                    <li>
+                        <strong>Micronaut:</strong> Utilizes the <code class="code-inline">BCryptPasswordEncoder</code>
+                        from Spring Security to hash and verify plaintext data.
+                    </li>
+                    <li>
+                        <strong>Quarkus:</strong> Integrates with <code class="code-inline">BcryptUtil</code>, a native
+                        utility designed to leverage Quarkus's cloud-native optimizations.
+                    </li>
+                    <li>
+                        <strong>Spring Boot:</strong> Leverages <code class="code-inline">BCryptPasswordEncoder</code>
+                        from the Spring Security ecosystem.
+                    </li>
+                </ul>
+                </p>
+                <div class="arch-image">
+                    <img src="images/crypt-password.jpg" alt="hashed passwords">
+                </div>
+                <p>
+                    This shows that passwords are being stored as hashed strings.
+                </p>
+            </section>
+
+
+            <section>
+                <h2 id="monitoring">Monitoring</h2>
+                <h3>Tracking Service</h3>
+                <p>
+                    The <strong>Tracking Service</strong> is a dedicated microservice that enables monitoring and
+                    analytics by capturing events and their associated metadata throughout the system. This service
+                    consumes events, such as <code class="code-inline">CheckoutStartedEvent</code>, <code
+                        class="code-inline">OrderCreatedEvent</code>, and <code
+                        class="code-inline">PaymentFailEvent</code>, from Kafka and logs them into the <strong>MongoDB
+                        trackingdb</strong>. These events provide a detailed view of the system's operations for
+                    real-time and historical analysis.
+                </p>
+                <p>
+                    Each event contains <strong>metadata</strong>, such as:
+                <ul>
+                    <li><code class="code-inline">userId</code> and <code class="code-inline">userEmail</code>: For
+                        identifying which user triggered the event.</li>
+                    <li><code class="code-inline">productId</code> and <code class="code-inline">orderId</code>: For
+                        tracking specific orders and products involved.</li>
+                    <li><code class="code-inline">timestamp</code>: To capture the exact time the event occurred.</li>
+                    <li><code class="code-inline">sourceService</code>: To identify which service generated the event,
+                        such as <strong>AuthService</strong> or <strong>PaymentService</strong>.</li>
+                    <li><code class="code-inline">requestCorrelationId</code>: To enable traceability of requests across
+                        multiple services.</li>
+                    <li><code class="code-inline">sessionId</code>: To link events to a specific user session.</li>
+                </ul>
+                </p>
+
+                <p>
+                    The tracking api provides search and filter capabilities using the metadata.
+                </p>
+                <div class="arch-image">
+                    <img src="images/tracking-output-example.jpg" alt="tracking output example">
+                </div>
+                <p>
+                    The image shows the output by quering for specific sessions in ascending time of occurance. In one
+                    session the buying process
+                    completed successfully and in another session the payment failed. The timestamps show how long it
+                    took
+                    to propagate the data and complete the process from the moment it was initialized to when it
+                    finished.
+                </p>
+            </section>
+
+            <section>
+                <h2 id="codegen">Code Generation - OpenApi</h2>
+                <h3>Contract first appraoch</h3>
+                <p>
+                    The <strong>Contract-First Approach</strong> ensures that the design of our APIs is standardized,
+                    well-documented, and agreed upon before any code is written. In our implementation, this approach
+                    involves defining service APIs using <strong>OpenAPI specifications</strong>, which act as a
+                    contract between the service providers and consumers.
+                </p>
+                <p>
+                    The API server code for each microservice is generated directly from the OpenAPI specification.
+
+                <p>
+                    On the <strong>API Gateway</strong>, REST clients are also generated from the same OpenAPI
+                    specifications.
+                </p>
+                <p>
+                    This was adapted in the frameworks <strong>Spring Boot</strong>,
+                    <strong>Micronaut</strong>, and <strong>Quarkus</strong> using openapi codegen plugins.
+                </p>
+                <p>
+                    By automating server and client code generation, development is highly accelerated.
+                </p>
             </section>
 
 

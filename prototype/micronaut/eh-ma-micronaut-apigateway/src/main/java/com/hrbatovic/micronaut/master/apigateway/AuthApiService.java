@@ -2,10 +2,14 @@ package com.hrbatovic.micronaut.master.apigateway;
 
 import com.hrbatovic.micronaut.master.apigateway.api.AuthenticationApi;
 import com.hrbatovic.micronaut.master.apigateway.api.CredentialsApi;
+import com.hrbatovic.micronaut.master.apigateway.exceptions.EhMaException;
 import com.hrbatovic.micronaut.master.apigateway.mapper.MapUtil;
 import com.hrbatovic.micronaut.master.apigateway.model.*;
 import io.micronaut.core.annotation.ReflectiveAccess;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.client.exceptions.HttpClientException;
+import io.micronaut.http.client.exceptions.HttpClientResponseException;
+import io.micronaut.http.exceptions.HttpException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import io.micronaut.security.annotation.Secured;
@@ -34,27 +38,43 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @ExecuteOn(TaskExecutors.BLOCKING)
     @Secured(SecurityRule.IS_ANONYMOUS)
     public LoginResponse login(LoginRequest loginRequest) {
-        return mapper.map(authenticationApiClient.login(mapper.map(loginRequest)));
+        try {
+            return mapper.map(authenticationApiClient.login(mapper.map(loginRequest)));
+        } catch (HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @Secured(SecurityRule.IS_ANONYMOUS)
     public RegisterResponse register(RegisterRequest registerRequest) {
-        return mapper.map(authenticationApiClient.register(mapper.map(registerRequest)));
+        try {
+            return mapper.map(authenticationApiClient.register(mapper.map(registerRequest)));
+        } catch (HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @RolesAllowed({"admin"})
     @ExecuteOn(TaskExecutors.BLOCKING)
     public SuccessResponse adminUpdateCredentials(UUID id, String authorization, AdminUpdateCredentialsRequest adminUpdateCredentialsRequest) {
-        return mapper.map(credentialsApiClient.adminUpdateCredentials(id, authorization, mapper.map(adminUpdateCredentialsRequest)));
+        try {
+            return mapper.map(credentialsApiClient.adminUpdateCredentials(id, authorization, mapper.map(adminUpdateCredentialsRequest)));
+        } catch (HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public UpdateCredentialsResponse updateCredentials(String authorization, UserUpdateCredentialsRequest userUpdateCredentialsRequest) {
-        return mapper.map(credentialsApiClient.updateCredentials(authorization, mapper.map(userUpdateCredentialsRequest)));
+        try {
+            return mapper.map(credentialsApiClient.updateCredentials(authorization, mapper.map(userUpdateCredentialsRequest)));
+        } catch (HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.hrbatovic.micronaut.master.apigateway;
 
 import com.hrbatovic.micronaut.master.apigateway.api.UserApi;
+import com.hrbatovic.micronaut.master.apigateway.exceptions.EhMaException;
 import com.hrbatovic.micronaut.master.apigateway.mapper.MapUtil;
 import com.hrbatovic.micronaut.master.apigateway.model.*;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.annotation.security.RolesAllowed;
@@ -27,28 +29,48 @@ public class UserApiService implements UserApi {
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public DeleteUserResponse deleteUser(UUID id, String authorization) {
-        return mapper.map(userApiClient.deleteUser(id, authorization));
+        try {
+            return mapper.map(userApiClient.deleteUser(id, authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public UserProfileResponse getUser(UUID id, String authorization) {
-        return mapper.map(userApiClient.getUser(id, authorization));
+        try {
+            return mapper.map(userApiClient.getUser(id, authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin"})
     public UserListResponse listUsers(String authorization, Integer page, Integer limit, String search, LocalDateTime createdAfter, LocalDateTime createdBefore, ListUsersSortParameter sort) {
-        return mapper.map(userApiClient.listUsers(authorization, page, limit, search, createdAfter, createdBefore, mapper.map(sort)));
+        try {
+            return mapper.map(userApiClient.listUsers(authorization, page, limit, search, createdAfter, createdBefore, mapper.map(sort)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public UserProfileResponse updateUser(UUID id, String authorization, UpdateUserProfileRequest updateUserProfileRequest) {
-        return mapper.map(userApiClient.updateUser(id, authorization, mapper.map(updateUserProfileRequest)));
+        try {
+            return mapper.map(userApiClient.updateUser(id, authorization, mapper.map(updateUserProfileRequest)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
 }

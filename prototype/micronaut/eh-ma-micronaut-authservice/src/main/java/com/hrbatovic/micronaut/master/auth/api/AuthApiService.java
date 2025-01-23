@@ -3,6 +3,7 @@ package com.hrbatovic.micronaut.master.auth.api;
 import com.hrbatovic.micronaut.master.auth.Hasher;
 import com.hrbatovic.micronaut.master.auth.JwtTokenContainer;
 import com.hrbatovic.micronaut.master.auth.JwtUtil;
+import com.hrbatovic.micronaut.master.auth.exceptions.EhMaException;
 import com.hrbatovic.micronaut.master.auth.messaging.model.out.UserCredentialsUpdatedEvent;
 import com.hrbatovic.micronaut.master.auth.messaging.producers.UserCredentialsUpdatedProducer;
 import com.hrbatovic.micronaut.master.auth.messaging.producers.UserRegisteredProducer;
@@ -53,11 +54,11 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
         RegistrationEntity registrationEntity = registrationRepository.findByCredentialsEntityEmail(loginRequest.getCredentials().getEmail()).orElse(null);
 
         if (registrationEntity == null) {
-            throw new RuntimeException("Login Failed");
+            throw new EhMaException(400, "Login Failed");
         }
 
         if(!hasher.check(loginRequest.getCredentials().getPassword(), registrationEntity.getCredentialsEntity().getPassword())){
-            throw new RuntimeException("Login Failed");
+            throw new EhMaException(400, "Login Failed");
         }
 
         JwtTokenContainer jwtTokenContainer = jwtUtil.buildJwtToken(registrationEntity);
@@ -70,7 +71,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     public RegisterResponse register(RegisterRequest registerRequest) {
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(registerRequest.getCredentials().getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
-            throw new RuntimeException("This e-mail is not available.");
+            throw new EhMaException(400, "This e-mail is not available.");
         }
 
         RegistrationEntity registrationEntity = new RegistrationEntity();
@@ -106,18 +107,18 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest userUpdateCredentialsRequest) {
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(userUpdateCredentialsRequest.getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
-            throw new RuntimeException("This e-mail is not available.");
+            throw new EhMaException(400, "This e-mail is not available.");
         }
 
         UUID userId = UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub"));
         RegistrationEntity registrationEntity = registrationRepository.findByUserEntityId(userId).orElse(null);
 
         if(registrationEntity == null){
-            throw new RuntimeException("User not found.");
+            throw new EhMaException(404, "User not found.");
         }
 
         if(!hasher.check(userUpdateCredentialsRequest.getNewPassword(), registrationEntity.getCredentialsEntity().getPassword())){
-            throw new RuntimeException("Old password is wrong.");
+            throw new EhMaException(400, "Old password is wrong.");
         }
 
         registrationEntity.setCredentialsEntity(mapper.map(userUpdateCredentialsRequest));
@@ -138,13 +139,13 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest adminUpdateCredentialsRequest) {
         RegistrationEntity registrationEntity = registrationRepository.findByUserEntityId(id).orElse(null);
         if(registrationEntity == null){
-            throw new RuntimeException("User not found.");
+            throw new EhMaException(404, "User not found.");
         }
 
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(adminUpdateCredentialsRequest.getEmail()).orElse(null);
 
         if(tempRegistrationEntity != null){
-            throw new RuntimeException("This e-mail is not available.");
+            throw new EhMaException(400, "This e-mail is not available.");
         }
 
 

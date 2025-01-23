@@ -1,11 +1,13 @@
 package com.hrbatovic.micronaut.master.apigateway;
 
 import com.hrbatovic.micronaut.master.apigateway.api.NotificationsApi;
+import com.hrbatovic.micronaut.master.apigateway.exceptions.EhMaException;
 import com.hrbatovic.micronaut.master.apigateway.mapper.MapUtil;
 import com.hrbatovic.micronaut.master.apigateway.model.ListLicensesSortParameter;
 import com.hrbatovic.micronaut.master.apigateway.model.NotificationListResponse;
 import com.hrbatovic.micronaut.master.apigateway.model.NotificationResponse;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.annotation.security.RolesAllowed;
@@ -29,13 +31,23 @@ public class NotificationApiService implements NotificationsApi {
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin"})
     public NotificationResponse getNotificationById(UUID notificationId, String authorization) {
-        return mapper.map(notificationsApiClient.getNotificationById(notificationId, authorization));
+        try {
+            return mapper.map(notificationsApiClient.getNotificationById(notificationId, authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin"})
     public NotificationListResponse listNotifications(String authorization, Integer page, Integer limit, String email, UUID userId, String type, LocalDateTime sentAfter, LocalDateTime sentBefore, ListLicensesSortParameter sort) {
-        return mapper.map(notificationsApiClient.listNotifications(authorization, page, limit, email, userId, type, sentAfter, sentBefore, mapper.toNotificationSort(sort)));
+        try {
+            return mapper.map(notificationsApiClient.listNotifications(authorization, page, limit, email, userId, type, sentAfter, sentBefore, mapper.toNotificationSort(sort)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 }

@@ -1,9 +1,11 @@
 package com.hrbatovic.micronaut.master.apigateway;
 
 import com.hrbatovic.micronaut.master.apigateway.api.ShoppingCartApi;
+import com.hrbatovic.micronaut.master.apigateway.exceptions.EhMaException;
 import com.hrbatovic.micronaut.master.apigateway.mapper.MapUtil;
 import com.hrbatovic.micronaut.master.apigateway.model.*;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.client.exceptions.HttpClientResponseException;
 import io.micronaut.scheduling.TaskExecutors;
 import io.micronaut.scheduling.annotation.ExecuteOn;
 import jakarta.annotation.security.RolesAllowed;
@@ -26,41 +28,71 @@ public class CartApiService implements ShoppingCartApi {
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public CartProductResponse addProductToCart(String authorization, AddCartProductRequest addCartProductRequest) {
-        return mapper.map(shoppingCartApiClient.addProductToCart(authorization, mapper.map(addCartProductRequest)));
+        try {
+            return mapper.map(shoppingCartApiClient.addProductToCart(authorization, mapper.map(addCartProductRequest)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public CheckoutResponse checkoutCart(String authorization, StartCheckoutRequest startCheckoutRequest) {
-        return mapper.map(shoppingCartApiClient.checkoutCart(authorization, mapper.map(startCheckoutRequest)));
+        try {
+            return mapper.map(shoppingCartApiClient.checkoutCart(authorization, mapper.map(startCheckoutRequest)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public DeleteCartProductResponse deleteCartProduct(UUID productId, String authorization) {
-        return mapper.map(shoppingCartApiClient.deleteCartProduct(productId, authorization));
+        try {
+            return mapper.map(shoppingCartApiClient.deleteCartProduct(productId, authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public EmptyCartResponse emptyCart(String authorization) {
-        return mapper.map(shoppingCartApiClient.emptyCart(authorization));
+        try {
+            return mapper.map(shoppingCartApiClient.emptyCart(authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public CartResponse getCartProducts(String authorization) {
-        return mapper.map(shoppingCartApiClient.getCartProducts(authorization));
+        try {
+            return mapper.map(shoppingCartApiClient.getCartProducts(authorization));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 
     @Override
     @ExecuteOn(TaskExecutors.BLOCKING)
     @RolesAllowed({"admin", "customer"})
     public CartProductResponse updateCartProduct(UUID productId, String authorization, UpdateCartProductRequest updateCartProductRequest) {
-        return mapper.map(shoppingCartApiClient.updateCartProduct(productId, authorization, mapper.map(updateCartProductRequest)));
+        try {
+            return mapper.map(shoppingCartApiClient.updateCartProduct(productId, authorization, mapper.map(updateCartProductRequest)));
+        } catch (
+                HttpClientResponseException e) {
+            throw new EhMaException(e.getStatus().getCode(), e.getMessage());
+        }
     }
 }

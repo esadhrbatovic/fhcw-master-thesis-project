@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.license.api;
 
+import com.hrbatovic.micronaut.master.license.ApiInputValidator;
 import com.hrbatovic.micronaut.master.license.JwtUtil;
 import com.hrbatovic.micronaut.master.license.db.entities.LicenseTemplateEntity;
 import com.hrbatovic.micronaut.master.license.db.repositories.LicenseTemplateRepository;
@@ -44,6 +45,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @RolesAllowed({"admin"})
     public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
+        ApiInputValidator.calidateCreateLicense(createLicenseTemplateRequest);
         LicenseTemplateEntity licenseTemplateEntity = mapper.toTemplateEntity(createLicenseTemplateRequest);
         licenseTemplateRepository.save(licenseTemplateEntity);
         licenseTemplateCreatedProducer.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
@@ -54,6 +56,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @RolesAllowed({"admin"})
     public DeleteLicenseTemplateResponse deleteLicenseTemplate(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
 
@@ -70,6 +73,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @RolesAllowed({"admin"})
     public LicenseTemplateResponse getLicenseTemplateByProductId(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
         if(licenseTemplateEntity == null){
@@ -93,6 +97,8 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @RolesAllowed({"admin"})
     public LicenseTemplateResponse updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateLicense(updateLicenseTemplateRequest);
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
         if(licenseTemplateEntity == null){

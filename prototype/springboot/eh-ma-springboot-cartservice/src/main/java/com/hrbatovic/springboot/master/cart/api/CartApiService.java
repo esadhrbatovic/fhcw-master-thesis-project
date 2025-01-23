@@ -2,6 +2,7 @@ package com.hrbatovic.springboot.master.cart.api;
 
 import com.hrbatovic.master.springboot.cart.api.CartProductsApi;
 import com.hrbatovic.master.springboot.cart.model.*;
+import com.hrbatovic.springboot.master.cart.ApiInputValidator;
 import com.hrbatovic.springboot.master.cart.ClaimUtils;
 import com.hrbatovic.springboot.master.cart.db.entities.CartEntity;
 import com.hrbatovic.springboot.master.cart.db.entities.CartProductEntity;
@@ -43,6 +44,8 @@ public class CartApiService implements CartProductsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
+        ApiInputValidator.validateAddProductToCart(addCartProductRequest);
+        ApiInputValidator.validateQuantity(addCartProductRequest.getQuantity());
         UUID userId = claimUtils.getUUIDClaim("sub");
 
         ProductEntity productEntity = findProductById(addCartProductRequest.getProductId());
@@ -71,6 +74,7 @@ public class CartApiService implements CartProductsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
+        ApiInputValidator.validateCheckoutCart(startCheckoutRequest);
         CartEntity cartEntity = findCartByUserId(claimUtils.getUUIDClaim("sub"));
 
         if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
@@ -107,6 +111,7 @@ public class CartApiService implements CartProductsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public DeleteCartProductResponse deleteCartProduct(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         CartEntity cartEntity = findCartByUserId(claimUtils.getUUIDClaim("sub"));
 
         removeCartProduct(cartEntity, productId);
@@ -143,6 +148,10 @@ public class CartApiService implements CartProductsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public CartProductResponse updateCartProduct(UUID productId, UpdateCartProductRequest updateCartProductRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateCartProduct(updateCartProductRequest);
+        ApiInputValidator.validateQuantity(updateCartProductRequest.getQuantity());
+
         CartEntity cartEntity = findCartByIdOrEmpty(claimUtils.getUUIDClaim("sub"));
 
         CartProductEntity cartProduct = updateCartProductQuantity(cartEntity, productId, updateCartProductRequest.getQuantity());

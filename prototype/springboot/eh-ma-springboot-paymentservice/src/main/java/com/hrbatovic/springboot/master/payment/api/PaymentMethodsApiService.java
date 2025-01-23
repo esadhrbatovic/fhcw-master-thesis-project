@@ -2,6 +2,7 @@ package com.hrbatovic.springboot.master.payment.api;
 
 import com.hrbatovic.master.springboot.order.api.PaymentMethodsApi;
 import com.hrbatovic.master.springboot.order.model.*;
+import com.hrbatovic.springboot.master.payment.ApiInputValidator;
 import com.hrbatovic.springboot.master.payment.ClaimUtils;
 import com.hrbatovic.springboot.master.payment.db.entities.PaymentMethodEntity;
 import com.hrbatovic.springboot.master.payment.db.repositories.PaymentMethodRepository;
@@ -30,6 +31,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
+        ApiInputValidator.validateCreatePaymentMethod(createPaymentMethodRequest);
         PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
 
         paymentMethodRepository.save(paymentMethodEntity);
@@ -39,6 +41,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public DeletePaymentMethodResponse deletePaymentMethod(UUID id) {
+        ApiInputValidator.validatePaymentMethodId(id);
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
         if(paymentMethodEntity == null){
             throw new EhMaException(404, "Paymentmethod not found.");
@@ -52,6 +55,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public PaymentMethodDetailedResponse getPaymentMethodById(UUID id) {
+        ApiInputValidator.validatePaymentMethodId(id);
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
 
         if(paymentMethodEntity == null){
@@ -79,6 +83,9 @@ public class PaymentMethodsApiService implements PaymentMethodsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public PaymentMethodDetailedResponse updatePaymentMethod(UUID id, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
+        ApiInputValidator.validatePaymentMethodId(id);
+        ApiInputValidator.validateUpdatePaymentMethod(updatePaymentMethodRequest);
+        
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
 
         if(paymentMethodEntity == null){

@@ -4,6 +4,7 @@ import com.hrbatovic.master.springboot.product.api.CategoriesApi;
 import com.hrbatovic.master.springboot.product.model.Category;
 import com.hrbatovic.master.springboot.product.model.CategoryListResponse;
 import com.hrbatovic.master.springboot.product.model.Pagination;
+import com.hrbatovic.springboot.master.product.ApiInputValidator;
 import com.hrbatovic.springboot.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.springboot.master.product.db.repositories.CategoryRepository;
 import com.hrbatovic.springboot.master.product.mapper.MapUtil;
@@ -50,6 +51,7 @@ public class CategoryApiService implements CategoriesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public Category getCategoryById(UUID id) {
+        ApiInputValidator.validateCategoryId(id);
         CategoryEntity categoryEntity = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found for ID: " + id));
         return mapper.map(categoryEntity);

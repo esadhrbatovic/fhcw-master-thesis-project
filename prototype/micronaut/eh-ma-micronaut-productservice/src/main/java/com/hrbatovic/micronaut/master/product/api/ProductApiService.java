@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.product.api;
 
+import com.hrbatovic.micronaut.master.product.ApiInputValidator;
 import com.hrbatovic.micronaut.master.product.JwtUtil;
 import com.hrbatovic.micronaut.master.product.db.entities.CategoryEntity;
 import com.hrbatovic.micronaut.master.product.db.entities.ProductEntity;
@@ -102,6 +103,7 @@ public class ProductApiService implements ProductManagementApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public ProductResponse getProductById(UUID id) {
+        ApiInputValidator.validateProductId(id);
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 
         if(productEntity == null){
@@ -125,6 +127,8 @@ public class ProductApiService implements ProductManagementApi{
     @Override
     @RolesAllowed({"admin"})
     public ProductResponse updateProduct(UUID id, UpdateProductRequest updateProductRequest) {
+        ApiInputValidator.validateProductId(id);
+        ApiInputValidator.validateUpdateProduct(updateProductRequest);
 
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 
@@ -154,6 +158,7 @@ public class ProductApiService implements ProductManagementApi{
     @Override
     @RolesAllowed({"admin"})
     public ProductResponse createProduct(CreateProductRequest createProductRequest) {
+        ApiInputValidator.validateCreateProdocut(createProductRequest);
 
         CategoryEntity category = categoryRepository.findByName(createProductRequest.getCategory()).orElse(null);
         if(category == null){
@@ -172,6 +177,7 @@ public class ProductApiService implements ProductManagementApi{
     @Override
     @RolesAllowed({"admin"})
     public DeleteProductResponse deleteProduct(UUID id) {
+        ApiInputValidator.validateProductId(id);
         ProductEntity productEntity = productRepository.findById(id).orElse(null);
 
         if(productEntity == null){

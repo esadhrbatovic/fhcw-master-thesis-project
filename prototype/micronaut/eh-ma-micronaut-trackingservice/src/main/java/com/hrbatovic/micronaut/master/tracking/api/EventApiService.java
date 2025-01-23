@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.tracking.api;
 
+import com.hrbatovic.micronaut.master.tracking.ApiInputValidator;
 import com.hrbatovic.micronaut.master.tracking.db.entities.EventEntity;
 import com.hrbatovic.micronaut.master.tracking.db.repositories.EventRepository;
 import com.hrbatovic.micronaut.master.tracking.mapper.MapUtil;
@@ -29,6 +30,7 @@ public class EventApiService implements EventsApi {
     @Override
     @RolesAllowed({"admin"})
     public Event getEventById(UUID eventId) {
+        ApiInputValidator.validateEventId(eventId);
         EventEntity eventEntity = eventRepository.findById(eventId).orElse(null);
         if (eventEntity == null) {
             throw new RuntimeException("Event not found for ID: " + eventId);

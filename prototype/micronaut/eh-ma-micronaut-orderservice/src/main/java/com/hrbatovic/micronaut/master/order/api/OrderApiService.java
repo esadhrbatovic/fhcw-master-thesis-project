@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.order.api;
 
+import com.hrbatovic.micronaut.master.order.ApiInputValidator;
 import com.hrbatovic.micronaut.master.order.JwtUtil;
 import com.hrbatovic.micronaut.master.order.db.entities.OrderEntity;
 import com.hrbatovic.micronaut.master.order.db.repositories.OrderRepository;
@@ -52,6 +53,7 @@ public class OrderApiService implements OrdersApi{
     @Override
     @RolesAllowed({"admin"})
     public Order getOrderById(UUID orderId) {
+        ApiInputValidator.validateOrderId(orderId);
         OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
 
         if(orderEntity == null){
@@ -65,6 +67,7 @@ public class OrderApiService implements OrdersApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public OrderListResponse getUserOrders(UUID userId, Integer page, Integer limit, GetAllOrdersStatusParameter status, GetAllOrdersSortParameter sort) {
+        ApiInputValidator.validateUserId(userId);
 
         if (jwtUtil.getRoles().contains("customer") && !jwtUtil.getRoles().contains("admin")) {
             if (!userId.equals(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")))) {

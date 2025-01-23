@@ -50,6 +50,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @Override
     @Secured(SecurityRule.IS_ANONYMOUS)
     public LoginResponse login(LoginRequest loginRequest) {
+        ApiInputValidator.validateLogin(loginRequest);
 
         RegistrationEntity registrationEntity = registrationRepository.findByCredentialsEntityEmail(loginRequest.getCredentials().getEmail()).orElse(null);
 
@@ -69,6 +70,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @Override
     @Secured(SecurityRule.IS_ANONYMOUS)
     public RegisterResponse register(RegisterRequest registerRequest) {
+        ApiInputValidator.validateRegistration(registerRequest);
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(registerRequest.getCredentials().getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
@@ -105,6 +107,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @Override
     @RolesAllowed({"admin", "customer"})
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest userUpdateCredentialsRequest) {
+        ApiInputValidator.validateUpdateCredentials(userUpdateCredentialsRequest);
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(userUpdateCredentialsRequest.getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
@@ -137,6 +140,7 @@ public class AuthApiService implements AuthenticationApi, CredentialsApi {
     @Override
     @RolesAllowed({"admin"})
     public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest adminUpdateCredentialsRequest) {
+        ApiInputValidator.validateAdminUpdateCredentials(adminUpdateCredentialsRequest);
         RegistrationEntity registrationEntity = registrationRepository.findByUserEntityId(id).orElse(null);
         if(registrationEntity == null){
             throw new EhMaException(404, "User not found.");

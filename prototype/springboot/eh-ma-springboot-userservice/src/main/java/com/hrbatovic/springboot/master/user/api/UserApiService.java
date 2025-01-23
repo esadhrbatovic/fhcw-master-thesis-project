@@ -2,6 +2,7 @@ package com.hrbatovic.springboot.master.user.api;
 
 import com.hrbatovic.master.springboot.user.api.UsersApi;
 import com.hrbatovic.master.springboot.user.model.*;
+import com.hrbatovic.springboot.master.user.ApiInputValidator;
 import com.hrbatovic.springboot.master.user.ClaimUtils;
 import com.hrbatovic.springboot.master.user.db.entities.UserEntity;
 import com.hrbatovic.springboot.master.user.db.repositories.UserRepository;
@@ -41,6 +42,7 @@ public class UserApiService implements UsersApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public UserProfileResponse getUser(UUID id) {
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
 
         if(userEntity == null){
@@ -81,6 +83,7 @@ public class UserApiService implements UsersApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public UserProfileResponse updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
+        ApiInputValidator.validateUpdateUser(updateUserProfileRequest);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
 
         if(userEntity == null){
@@ -114,6 +117,7 @@ public class UserApiService implements UsersApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public DeleteUserResponse deleteUser(UUID id) {
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
         if(userEntity == null){
             throw new EhMaException(404, "User not found.");

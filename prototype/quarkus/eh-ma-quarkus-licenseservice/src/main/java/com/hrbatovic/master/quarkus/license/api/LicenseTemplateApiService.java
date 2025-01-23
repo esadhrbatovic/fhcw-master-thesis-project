@@ -10,8 +10,6 @@ import com.hrbatovic.master.quarkus.license.model.*;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
-import jakarta.ws.rs.core.Response;
-import org.apache.kafka.shaded.com.google.protobuf.Api;
 import org.eclipse.microprofile.jwt.Claim;
 import org.eclipse.microprofile.jwt.Claims;
 import org.eclipse.microprofile.reactive.messaging.Channel;
@@ -54,7 +52,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @RolesAllowed({"admin"})
     public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
-        ApiInputValidator.calidateCreateLicense(createLicenseTemplateRequest);
+        ApiInputValidator.validateCreateLicense(createLicenseTemplateRequest);
 
         LicenseTemplateEntity licenseTemplateEntity = mapping.toTemplateEntity(createLicenseTemplateRequest);
         licenseTemplateEntity.persist();

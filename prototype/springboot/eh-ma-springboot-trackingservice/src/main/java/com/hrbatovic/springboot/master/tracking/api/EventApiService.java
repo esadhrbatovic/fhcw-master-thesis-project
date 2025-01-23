@@ -4,6 +4,7 @@ import com.hrbatovic.master.springboot.tracking.api.EventsApi;
 import com.hrbatovic.master.springboot.tracking.model.Event;
 import com.hrbatovic.master.springboot.tracking.model.EventListResponse;
 import com.hrbatovic.master.springboot.tracking.model.EventListResponsePagination;
+import com.hrbatovic.springboot.master.tracking.ApiInputValidator;
 import com.hrbatovic.springboot.master.tracking.db.entities.EventEntity;
 import com.hrbatovic.springboot.master.tracking.db.repositories.EventRepository;
 import com.hrbatovic.springboot.master.tracking.exceptions.EhMaException;
@@ -28,6 +29,7 @@ public class EventApiService implements EventsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Event getEventById(UUID eventId) {
+        ApiInputValidator.validateEventId(eventId);
         EventEntity eventEntity = eventRepository.findById(eventId).orElse(null);
         if (eventEntity == null) {
             throw new EhMaException(404, "Event not found for ID: " + eventId);

@@ -2,10 +2,7 @@ package com.hrbatovic.springboot.master.auth.api;
 
 import com.hrbatovic.master.springboot.auth.api.AuthApi;
 import com.hrbatovic.master.springboot.auth.model.*;
-import com.hrbatovic.springboot.master.auth.Hasher;
-import com.hrbatovic.springboot.master.auth.JwtAuthentication;
-import com.hrbatovic.springboot.master.auth.JwtTokenContainer;
-import com.hrbatovic.springboot.master.auth.JwtUtil;
+import com.hrbatovic.springboot.master.auth.*;
 import com.hrbatovic.springboot.master.auth.db.entities.RegistrationEntity;
 import com.hrbatovic.springboot.master.auth.db.repositories.RegistrationRepository;
 import com.hrbatovic.springboot.master.auth.exceptions.EhMaException;
@@ -50,6 +47,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
+        ApiInputValidator.validateLogin(loginRequest);
         RegistrationEntity registrationEntity = registrationRepository.findByCredentialsEntityEmail(loginRequest.getCredentials().getEmail()).orElse(null);
 
         if (registrationEntity == null) {
@@ -67,6 +65,7 @@ public class AuthApiService implements AuthApi {
 
     @Override
     public RegisterResponse register(RegisterRequest registerRequest) {
+        ApiInputValidator.validateRegistration(registerRequest);
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(registerRequest.getCredentials().getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
             throw new EhMaException(400, "This e-mail is not available.");
@@ -101,7 +100,7 @@ public class AuthApiService implements AuthApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public UpdateCredentialsResponse updateCredentials(UserUpdateCredentialsRequest userUpdateCredentialsRequest) {
-        System.out.println("admin and customer");
+        ApiInputValidator.validateUpdateCredentials(userUpdateCredentialsRequest);
 
         RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(userUpdateCredentialsRequest.getEmail()).orElse(null);
         if(tempRegistrationEntity != null){
@@ -141,8 +140,30 @@ public class AuthApiService implements AuthApi {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public SuccessResponse adminUpdateCredentials(UUID id, AdminUpdateCredentialsRequest adminUpdateCredentialsRequest) {
-        System.out.println("admin only");
+        ApiInputValidator.validateAdminUpdateCredentials(adminUpdateCredentialsRequest);
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication instanceof JwtAuthentication jwtAuth) {
+            RegistrationEntity registrationEntity = registrationRepository.findByUserEntityId(id).orElse(null);
+            if (registrationEntity == null) {
+                throw new EhMaException(400, "User not found");
+            }
+
+            RegistrationEntity tempRegistrationEntity = registrationRepository.findByCredentialsEntityEmail(adminUpdateCredentialsRequest.getEmail()).orElse(null);
+            if (tempRegistrationEntity != null) {
+                throw new EhMaException(400, "This e-mail is not available.");
+            }
+
+            registrationEntity.setCredentialsEntity(mapper.map(adminUpdateCredentialsRequest));
+
+            registrationEntity.getCredentialsEntity().setPassword(hasher.hash(adminUpdateCredentialsRequest.getPassword()));
+
+            registrationRepository.save(registrationEntity);
+
+            userCredentialsUpdatedProducer.send(buildUserCredentialsUpdatedEvent(jwtAuth.getUserId(), registrationEntity, jwtAuth.getSessionId(), jwtAuth.getEmail()));
+
+            return null;
+        }
         return null;
     }
 

@@ -1,8 +1,8 @@
-package com.hrbatovic.master.quarkus.license.api.validators;
+package com.hrbatovic.springboot.master.license;
 
-import com.hrbatovic.master.quarkus.license.exceptions.EhMaException;
-import com.hrbatovic.master.quarkus.license.model.CreateLicenseTemplateRequest;
-import com.hrbatovic.master.quarkus.license.model.UpdateLicenseTemplateRequest;
+import com.hrbatovic.master.springboot.license.model.CreateLicenseTemplateRequest;
+import com.hrbatovic.master.springboot.license.model.UpdateLicenseTemplateRequest;
+import com.hrbatovic.springboot.master.license.exceptions.EhMaException;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;

@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.license.api;
 
+import com.hrbatovic.micronaut.master.license.ApiInputValidator;
 import com.hrbatovic.micronaut.master.license.JwtUtil;
 import com.hrbatovic.micronaut.master.license.db.entities.LicenseEntity;
 import com.hrbatovic.micronaut.master.license.db.repositories.LicenseRepository;
@@ -32,6 +33,8 @@ public class LicenseApiService implements LicensesApi {
     @Override
     @RolesAllowed({"admin", "customer"})
     public LicenseResponse getLicenseBySerialNumber(UUID serialNumber) {
+        ApiInputValidator.validateSerialNumber(serialNumber);
+
         LicenseEntity licenseEntity = licenseRepository.findById(serialNumber).orElse(null);
 
         if (licenseEntity == null) {

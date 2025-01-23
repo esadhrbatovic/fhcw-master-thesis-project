@@ -2,6 +2,7 @@ package com.hrbatovic.springboot.master.license.api;
 
 import com.hrbatovic.master.springboot.license.api.LicenseTemplatesApi;
 import com.hrbatovic.master.springboot.license.model.*;
+import com.hrbatovic.springboot.master.license.ApiInputValidator;
 import com.hrbatovic.springboot.master.license.ClaimUtils;
 import com.hrbatovic.springboot.master.license.db.entities.LicenseTemplateEntity;
 import com.hrbatovic.springboot.master.license.db.repositories.LicenseTemplateRepository;
@@ -46,6 +47,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public LicenseTemplateResponse createLicenseTemplate(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
+        ApiInputValidator.validateCreateLicense(createLicenseTemplateRequest);
         LicenseTemplateEntity licenseTemplateEntity = mapper.toTemplateEntity(createLicenseTemplateRequest);
         licenseTemplateRepository.save(licenseTemplateEntity);
         licenseTemplateCreatedProducer.send(buildLicenseTemplateCreatedEvent(licenseTemplateEntity));
@@ -56,6 +58,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public DeleteLicenseTemplateResponse deleteLicenseTemplate(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
 
@@ -72,6 +75,7 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public LicenseTemplateResponse getLicenseTemplateByProductId(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
         if(licenseTemplateEntity == null){
@@ -95,6 +99,9 @@ public class LicenseTemplateApiService implements LicenseTemplatesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public LicenseTemplateResponse updateLicenseTemplate(UUID productId, UpdateLicenseTemplateRequest updateLicenseTemplateRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateLicense(updateLicenseTemplateRequest);
+
         LicenseTemplateEntity licenseTemplateEntity = licenseTemplateRepository.findByProductId(productId).orElse(null);
 
         if(licenseTemplateEntity == null){

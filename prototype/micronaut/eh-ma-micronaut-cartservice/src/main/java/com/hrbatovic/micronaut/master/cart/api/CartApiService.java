@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.cart.api;
 
+import com.hrbatovic.micronaut.master.cart.ApiInputValidator;
 import com.hrbatovic.micronaut.master.cart.JwtUtil;
 import com.hrbatovic.micronaut.master.cart.db.entities.CartEntity;
 import com.hrbatovic.micronaut.master.cart.db.entities.CartProductEntity;
@@ -43,6 +44,8 @@ public class CartApiService implements ShoppingCartApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public CartProductResponse addProductToCart(AddCartProductRequest addCartProductRequest) {
+        ApiInputValidator.validateAddProductToCart(addCartProductRequest);
+        ApiInputValidator.validateQuantity(addCartProductRequest.getQuantity());
         UUID userId = UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub"));
 
         ProductEntity productEntity = findProductById(addCartProductRequest.getProductId());
@@ -71,6 +74,7 @@ public class CartApiService implements ShoppingCartApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public CheckoutResponse checkoutCart(StartCheckoutRequest startCheckoutRequest) {
+        ApiInputValidator.validateCheckoutCart(startCheckoutRequest);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")));
 
         if(cartEntity == null || cartEntity.getCartProducts() == null || cartEntity.getCartProducts().isEmpty()){
@@ -107,6 +111,7 @@ public class CartApiService implements ShoppingCartApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public DeleteCartProductResponse deleteCartProduct(UUID productId) {
+        ApiInputValidator.validateProductId(productId);
         CartEntity cartEntity = findCartByUserId(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")));
 
         removeCartProduct(cartEntity, productId);
@@ -143,6 +148,9 @@ public class CartApiService implements ShoppingCartApi{
     @Override
     @RolesAllowed({"admin", "customer"})
     public CartProductResponse updateCartProduct(UUID productId, UpdateCartProductRequest updateCartProductRequest) {
+        ApiInputValidator.validateProductId(productId);
+        ApiInputValidator.validateUpdateCartProduct(updateCartProductRequest);
+        ApiInputValidator.validateQuantity(updateCartProductRequest.getQuantity());
 
         CartEntity cartEntity = findCartByIdOrEmpty(UUID.fromString(jwtUtil.getClaimFromSecurityContext("sub")));
 

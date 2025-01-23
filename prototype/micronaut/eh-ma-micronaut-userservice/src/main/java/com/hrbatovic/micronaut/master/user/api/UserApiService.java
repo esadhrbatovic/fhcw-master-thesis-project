@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.user.api;
 
+import com.hrbatovic.micronaut.master.user.ApiInputValidator;
 import com.hrbatovic.micronaut.master.user.JwtUtil;
 import com.hrbatovic.micronaut.master.user.db.entities.UserEntity;
 import com.hrbatovic.micronaut.master.user.db.repositories.UserRepository;
@@ -41,8 +42,7 @@ public class UserApiService implements UserApi {
     @Override
     @RolesAllowed({"admin", "customer"})
     public UserProfileResponse getUser(UUID id) {
-
-
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
 
         if(userEntity == null){
@@ -83,7 +83,7 @@ public class UserApiService implements UserApi {
     @Override
     @RolesAllowed({"admin", "customer"})
     public UserProfileResponse updateUser(UUID id, UpdateUserProfileRequest updateUserProfileRequest) {
-
+        ApiInputValidator.validateUpdateUser(updateUserProfileRequest);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
 
         if(userEntity == null){
@@ -118,6 +118,7 @@ public class UserApiService implements UserApi {
     @Override
     @RolesAllowed({"admin", "customer"})
     public DeleteUserResponse deleteUser(UUID id) {
+        ApiInputValidator.validateUserId(id);
         UserEntity userEntity = userRepository.findById(id).orElse(null);
         if(userEntity == null){
             throw new RuntimeException("User not found.");

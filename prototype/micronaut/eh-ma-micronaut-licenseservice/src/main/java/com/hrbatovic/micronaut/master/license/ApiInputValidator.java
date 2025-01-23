@@ -1,8 +1,8 @@
-package com.hrbatovic.master.quarkus.license.api.validators;
+package com.hrbatovic.micronaut.master.license;
 
-import com.hrbatovic.master.quarkus.license.exceptions.EhMaException;
-import com.hrbatovic.master.quarkus.license.model.CreateLicenseTemplateRequest;
-import com.hrbatovic.master.quarkus.license.model.UpdateLicenseTemplateRequest;
+import com.hrbatovic.micronaut.master.license.exceptions.EhMaException;
+import com.hrbatovic.micronaut.master.license.model.CreateLicenseTemplateRequest;
+import com.hrbatovic.micronaut.master.license.model.UpdateLicenseTemplateRequest;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.UUID;
@@ -16,7 +16,7 @@ public abstract class ApiInputValidator {
         }
     }
 
-    public static void validateCreateLicense(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
+    public static void calidateCreateLicense(CreateLicenseTemplateRequest createLicenseTemplateRequest) {
         if (createLicenseTemplateRequest == null || createLicenseTemplateRequest.getLicenseDuration() == null ||
                 createLicenseTemplateRequest.getProductId() == null || StringUtils.isEmpty(createLicenseTemplateRequest.getProductId().toString())) {
             throw new EhMaException(400, "Not all license information provided");

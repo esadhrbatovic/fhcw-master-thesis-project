@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.notification.api;
 
+import com.hrbatovic.micronaut.master.notification.ApiInputValidator;
 import com.hrbatovic.micronaut.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.micronaut.master.notification.db.repositories.NotificationRepository;
 import com.hrbatovic.micronaut.master.notification.mapper.MapUtil;
@@ -29,6 +30,7 @@ public class NotificationApiService implements NotificationsApi {
     @Override
     @RolesAllowed({"admin"})
     public NotificationResponse getNotificationById(UUID notificationId) {
+        ApiInputValidator.validateNotificationId(notificationId);
         NotificationEntity notificationEntity = notificationRepository.findById(notificationId).orElse(null);
 
         if(notificationEntity == null){

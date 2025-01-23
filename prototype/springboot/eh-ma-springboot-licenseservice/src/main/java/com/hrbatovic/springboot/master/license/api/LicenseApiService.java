@@ -4,6 +4,7 @@ import com.hrbatovic.master.springboot.license.api.LicensesApi;
 import com.hrbatovic.master.springboot.license.model.LicenseListResponse;
 import com.hrbatovic.master.springboot.license.model.LicenseListResponsePagination;
 import com.hrbatovic.master.springboot.license.model.LicenseResponse;
+import com.hrbatovic.springboot.master.license.ApiInputValidator;
 import com.hrbatovic.springboot.master.license.ClaimUtils;
 import com.hrbatovic.springboot.master.license.db.entities.LicenseEntity;
 import com.hrbatovic.springboot.master.license.db.repositories.LicenseRepository;
@@ -32,6 +33,7 @@ public class LicenseApiService implements LicensesApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public LicenseResponse getLicenseBySerialNumber(UUID serialNumber) {
+        ApiInputValidator.validateSerialNumber(serialNumber);
         LicenseEntity licenseEntity = licenseRepository.findById(serialNumber).orElse(null);
 
         if (licenseEntity == null) {

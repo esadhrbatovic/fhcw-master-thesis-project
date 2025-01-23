@@ -5,6 +5,7 @@ import com.hrbatovic.master.springboot.order.api.UsersApi;
 import com.hrbatovic.master.springboot.order.model.Order;
 import com.hrbatovic.master.springboot.order.model.OrderListResponse;
 import com.hrbatovic.master.springboot.order.model.OrderListResponsePagination;
+import com.hrbatovic.springboot.master.order.ApiInputValidator;
 import com.hrbatovic.springboot.master.order.ClaimUtils;
 import com.hrbatovic.springboot.master.order.db.entities.OrderEntity;
 import com.hrbatovic.springboot.master.order.db.repositories.OrderRepository;
@@ -54,6 +55,7 @@ public class OrderApiService implements OrdersApi, UsersApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public Order getOrderById(UUID orderId) {
+        ApiInputValidator.validateOrderId(orderId);
         OrderEntity orderEntity = orderRepository.findById(orderId).orElse(null);
 
         if(orderEntity == null){
@@ -67,6 +69,7 @@ public class OrderApiService implements OrdersApi, UsersApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN', 'CUSTOMER')")
     public OrderListResponse getUserOrders(UUID userId, Integer page, Integer limit, String status, String sort) {
+        ApiInputValidator.validateUserId(userId);
 
         if (claimUtils.getRoles().contains("ROLE_CUSTOMER") && !claimUtils.getRoles().contains("ROLE_ADMIN")) {
             if (!userId.equals(claimUtils.getUUIDClaim("sub"))) {

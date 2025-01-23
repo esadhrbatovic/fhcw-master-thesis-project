@@ -1,5 +1,6 @@
 package com.hrbatovic.micronaut.master.payment.api;
 
+import com.hrbatovic.micronaut.master.payment.ApiInputValidator;
 import com.hrbatovic.micronaut.master.payment.JwtUtil;
 import com.hrbatovic.micronaut.master.payment.db.entities.PaymentMethodEntity;
 import com.hrbatovic.micronaut.master.payment.db.repositories.PaymentMethodRepository;
@@ -29,6 +30,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
     @Override
     @RolesAllowed({"admin"})
     public PaymentMethodResponse createPaymentMethod(CreatePaymentMethodRequest createPaymentMethodRequest) {
+        ApiInputValidator.validateCreatePaymentMethod(createPaymentMethodRequest);
         PaymentMethodEntity paymentMethodEntity = mapper.map(createPaymentMethodRequest);
 
         paymentMethodRepository.save(paymentMethodEntity);
@@ -38,6 +40,8 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
     @Override
     @RolesAllowed({"admin"})
     public DeletePaymentMethodResponse deletePaymentMethod(UUID id) {
+        ApiInputValidator.validatePaymentMethodId(id);
+
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
         if(paymentMethodEntity == null){
             throw new RuntimeException("Paymentmethod not found.");
@@ -51,6 +55,7 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
     @Override
     @RolesAllowed({"admin"})
     public PaymentMethodDetailedResponse getPaymentMethodById(UUID id) {
+        ApiInputValidator.validatePaymentMethodId(id);
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
 
         if(paymentMethodEntity == null){
@@ -78,6 +83,8 @@ public class PaymentMethodsApiService implements PaymentMethodsApi{
     @Override
     @RolesAllowed({"admin"})
     public PaymentMethodDetailedResponse updatePaymentMethod(UUID id, UpdatePaymentMethodRequest updatePaymentMethodRequest) {
+        ApiInputValidator.validatePaymentMethodId(id);
+        ApiInputValidator.validateUpdatePaymentMethod(updatePaymentMethodRequest);
         PaymentMethodEntity paymentMethodEntity = paymentMethodRepository.findById(id).orElse(null);
 
         if(paymentMethodEntity == null){

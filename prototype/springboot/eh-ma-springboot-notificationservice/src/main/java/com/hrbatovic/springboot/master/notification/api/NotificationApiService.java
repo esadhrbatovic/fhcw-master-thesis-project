@@ -4,6 +4,7 @@ import com.hrbatovic.master.springboot.notification.api.NotificationsApi;
 import com.hrbatovic.master.springboot.notification.model.NotificationListResponse;
 import com.hrbatovic.master.springboot.notification.model.NotificationListResponsePagination;
 import com.hrbatovic.master.springboot.notification.model.NotificationResponse;
+import com.hrbatovic.springboot.master.notification.ApiInputValidator;
 import com.hrbatovic.springboot.master.notification.db.entities.NotificationEntity;
 import com.hrbatovic.springboot.master.notification.db.repositories.NotificationRepository;
 import com.hrbatovic.springboot.master.notification.exceptions.EhMaException;
@@ -29,6 +30,8 @@ public class NotificationApiService implements NotificationsApi {
     @Override
     @PreAuthorize("hasAnyRole('ADMIN')")
     public NotificationResponse getNotificationById(UUID notificationId) {
+        ApiInputValidator.validateNotificationId(notificationId);
+
         NotificationEntity notificationEntity = notificationRepository.findById(notificationId).orElse(null);
 
         if(notificationEntity == null){
